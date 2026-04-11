@@ -9,6 +9,9 @@ Use this guide for the overall lesson-writing model. The detailed field and shor
 - [Components]({{< relref "/docs/components" >}})
 - [Glossary & Profiles]({{< relref "/docs/glossary-profiles" >}})
 
+For generic Hextra theme behavior and deeper Hugo mechanics, use the
+[Reference]({{< relref "/reference" >}}) page to jump to the upstream docs.
+
 ## Lesson structure
 
 Use Hugo sections to match the lesson model:

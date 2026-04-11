@@ -4,6 +4,9 @@ weight = 40
 +++
 
 These are the supported lesson-specific components on top of Hextra.
+This page focuses on the Carpentries-style layer added by `hugo-styles`.
+For the broader Hextra and Hugo feature set, use the
+[Reference]({{< relref "/reference" >}}) page and the linked upstream docs.
 
 ## Challenge, hint, and solution
 
@@ -91,6 +94,9 @@ Tabs sync by default. Disable sync per page with:
 +++
 ```
 
+For the full Hextra tab behavior and additional examples, see
+[Hextra Tabs](https://imfing.github.io/hextra/docs/guide/shortcodes/tabs/).
+
 ## Videos
 
 Use Hugo-native shortcodes when supported:
@@ -100,6 +106,8 @@ Use Hugo-native shortcodes when supported:
 ```
 
 Avoid raw iframe HTML for providers that Hugo already supports directly.
+For the full list of embedded providers, see
+[Hugo Embedded Shortcodes](https://gohugo.io/content-management/shortcodes/#embedded).
 
 ## Hextra home components
 
@@ -113,6 +121,8 @@ For landing pages, overview sections, or documentation marketing surfaces, you c
 - `hextra/feature-card`
 
 These are a good fit for non-pedagogy UI such as homepage highlights, getting-started links, or overview cards. The homepage of `hugo-styles` now uses them as the default pattern.
+For more theme-level homepage guidance, see
+[Hextra Getting Started](https://imfing.github.io/hextra/docs/getting-started/).
 
 If you want the same overall homepage structure that Hextra uses, set:
 

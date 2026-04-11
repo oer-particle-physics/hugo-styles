@@ -14,6 +14,9 @@ The lesson infrastructure in this repository is intentionally split in two:
 - a **starter template** that stays light and project-specific
 
 That means people can keep their tutorials current without copying framework files across repositories.
+If you are starting a real lesson, begin with
+[`hugo-styles-template`](https://github.com/oer-particle-physics/hugo-styles-template)
+and treat the pages in this section as examples of supported behavior.
 
 {{< callout type="prereq" title="Who this is for" >}}
 This stack is aimed at lesson authors who want Carpentries-style pedagogy in a Hugo-native workflow.
@@ -30,4 +33,3 @@ As you read the example lesson, look for the places where metadata becomes visib
 {{< instructor >}}
 This first episode is a good place to explain the module/template split before diving into syntax. Learners usually care less about the build system than maintainers do.
 {{< /instructor >}}
-

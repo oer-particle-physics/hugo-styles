@@ -4,7 +4,7 @@ layout = "hextra-home"
 +++
 
 {{< hextra/hero-badge link="docs/quickstart/" >}}
-Shared Module + Example Site {{< icon name="arrow-circle-right" attributes="height=14" >}}
+Shared module docs {{< icon name="arrow-circle-right" attributes="height=14" >}}
 {{< /hextra/hero-badge >}}
 
 <div class="hx:mt-6 hx:mb-6">
@@ -16,37 +16,37 @@ Build Carpentries-style lessons&nbsp;
 
 <div class="hx:mb-12">
 {{< hextra/hero-subtitle >}}
-Keep the teaching structure people already know,&nbsp;
-<br class="hx:lg:block hx:hidden" />with a Hugo-first stack that is easier to update and teach from.
+Start new lesson repositories from `hugo-styles-template`,&nbsp;
+<br class="hx:lg:block hx:hidden" />then use this site for the shared module docs, examples, migration help, and update guidance.
 {{< /hextra/hero-subtitle >}}
 </div>
 
 <div class="hx:mb-6">
-{{< hextra/hero-button text="Get Started" link="docs/quickstart/" >}}
+{{< hextra/hero-button text="Start Here" link="docs/quickstart/" >}}
 </div>
 
 <div class="hx:mt-6"></div>
 
 {{< hextra/feature-grid cols="3" >}}
 {{< hextra/feature-card
-  title="Carpentries pedagogy"
-  subtitle="Challenge blocks, collapsible solutions, learner and instructor views, glossary links, profiles, and aggregated teaching resources are built into the module."
-  icon="academic-cap"
-  link="docs/components/"
-  class="hx:min-h-[220px]"
->}}
-{{< hextra/feature-card
-  title="Thin downstream repos"
-  subtitle="Lesson repositories import this module instead of copying layouts and shortcodes, which keeps updates small, predictable, and easier to review."
+  title="Start a new lesson"
+  subtitle="Use the thin template repo for lesson content and branding, then come back here for the shared module docs."
   icon="book-open"
-  link="episodes/01-introduction/"
+  link="docs/quickstart/"
   class="hx:min-h-[220px]"
 >}}
 {{< hextra/feature-card
-  title="GitHub Pages ready"
-  subtitle="The starter template deploys with GitHub Actions, validates lesson content in CI, and can receive module updates through Dependabot pull requests."
+  title="Feature tour"
+  subtitle="The local example pages exist to demonstrate shared lesson behavior, not to act as the recommended starter content for new repositories."
+  icon="academic-cap"
+  link="episodes/"
+  class="hx:min-h-[220px]"
+>}}
+{{< hextra/feature-card
+  title="Further reading"
+  subtitle="Use the reference page for links to the upstream Hextra and Hugo documentation when you need theme-level or framework-level detail."
   icon="sparkles"
-  link="docs/updates/"
+  link="reference/"
   class="hx:min-h-[220px]"
 >}}
 {{< /hextra/feature-grid >}}

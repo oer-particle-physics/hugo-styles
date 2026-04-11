@@ -3,5 +3,42 @@ title = "Reference"
 weight = 60
 +++
 
-This page is available for command summaries, resource links, or a compact reference sheet that does not fit naturally into the glossary.
+Use this page when you need the next layer of documentation beyond the
+`hugo-styles` guides.
 
+## Start here
+
+- Creating a new lesson repository:
+  [hugo-styles-template](https://github.com/oer-particle-physics/hugo-styles-template)
+- Shared module onboarding:
+  [Quickstart]({{< relref "/docs/quickstart" >}})
+- Shared module authoring conventions:
+  [Authoring Guide]({{< relref "/docs/authoring" >}})
+- Shared module maintenance and updates:
+  [Updating Downstream Lessons]({{< relref "/docs/updates" >}})
+
+## Upstream docs
+
+- Theme-level guidance and defaults:
+  [Hextra Getting Started](https://imfing.github.io/hextra/docs/getting-started/)
+- Hextra tabs and shortcode behavior:
+  [Hextra Tabs](https://imfing.github.io/hextra/docs/guide/shortcodes/tabs/)
+- Hextra deployment guidance:
+  [Hextra Deploy Site](https://imfing.github.io/hextra/docs/guide/deploy-site/)
+- Install Hugo:
+  [Hugo Installation](https://gohugo.io/installation/)
+- Understand module imports and overrides:
+  [Hugo Modules](https://gohugo.io/hugo-modules/)
+- Built-in provider shortcodes such as YouTube:
+  [Hugo Embedded Shortcodes](https://gohugo.io/content-management/shortcodes/#embedded)
+
+## Scope of this site
+
+This site documents the `hugo-styles` layer:
+
+- Carpentries-style pedagogy blocks
+- lesson metadata expectations
+- migration and validation tooling
+- downstream update workflow
+
+For generic Hextra theme behavior or deeper Hugo framework details, prefer the upstream docs above instead of duplicating that material here.

@@ -3,6 +3,18 @@ title = "Quickstart"
 weight = 10
 +++
 
+This page is for lesson authors creating a new repository from
+[`hugo-styles-template`](https://github.com/oer-particle-physics/hugo-styles-template).
+If you want to work on the shared module itself, start with the repository
+README and the [Update Guide]({{< relref "/docs/updates" >}}) instead.
+
+## Before you start
+
+- Install [Hugo Extended](https://gohugo.io/installation/).
+- Install [Go](https://go.dev/doc/install) so Hugo can resolve modules and run the shared checker.
+- You only need GitHub Pages access if you plan to deploy with the template workflow.
+- You do not need Node.js for normal lesson authoring. It is only used in the `hugo-styles` module repository for search bundle maintenance.
+
 ## Create a new lesson
 
 1. Create a new repository from `hugo-styles-template`.
@@ -37,3 +49,13 @@ go run github.com/oer-particle-physics/hugo-styles/cmd/hugo-styles-migrate@lates
 ```
 
 That command flags legacy Carpentries syntax, unsupported Jekyll constructs, and missing lesson metadata before you start a migration.
+
+## Further reading
+
+- [hugo-styles-template](https://github.com/oer-particle-physics/hugo-styles-template)
+- [Hextra Getting Started](https://imfing.github.io/hextra/docs/getting-started/)
+- [Hextra Tabs](https://imfing.github.io/hextra/docs/guide/shortcodes/tabs/)
+- [Hextra Deploy Site](https://imfing.github.io/hextra/docs/guide/deploy-site/)
+- [Hugo Installation](https://gohugo.io/installation/)
+- [Hugo Modules](https://gohugo.io/hugo-modules/)
+- [Hugo Embedded Shortcodes](https://gohugo.io/content-management/shortcodes/#embedded)

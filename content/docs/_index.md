@@ -14,3 +14,4 @@ Use these pages to learn the authoring model, migration flow, and update path fo
 - [Troubleshooting]({{< relref "/docs/troubleshooting" >}})
 - [Migration Guide]({{< relref "/docs/migration" >}})
 - [Updating Downstream Lessons]({{< relref "/docs/updates" >}})
+- [Reference and Further Reading]({{< relref "/reference" >}})

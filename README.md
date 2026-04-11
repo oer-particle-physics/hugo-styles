@@ -16,6 +16,19 @@ This repository serves two roles:
 2. A self-documenting example site
    that demonstrates the supported lesson features.
 
+## Start here
+
+- Creating a new lesson repository? Start with
+  [`hugo-styles-template`](https://github.com/oer-particle-physics/hugo-styles-template).
+- Looking for the shared module docs? Start with the published
+  [Quickstart](https://oer-particle-physics.github.io/hugo-styles/docs/quickstart/),
+  then the
+  [Authoring Guide](https://oer-particle-physics.github.io/hugo-styles/docs/authoring/).
+- Need general theme or framework background? Use the upstream
+  [Hextra docs](https://imfing.github.io/hextra/docs/getting-started/)
+  and
+  [Hugo docs](https://gohugo.io/installation/).
+
 ## What it provides
 
 - Episode layouts with automatic rendering of `questions`, `objectives`, `keypoints`, and teaching/exercise time.
@@ -33,15 +46,16 @@ This repository serves two roles:
 
 The example site in this repository doubles as the public documentation for the module.
 
-- `docs/quickstart`: first-run setup
-- `docs/authoring`: lesson-writing model
-- `docs/frontmatter`: episode metadata contract
-- `docs/components`: shortcode and component reference
-- `docs/glossary-profiles`: glossary/profile authoring
-- `docs/deployment`: GitHub Pages workflow
-- `docs/troubleshooting`: common failures and fixes
-- `docs/migration`: legacy Carpentries migration flow
-- `docs/updates`: downstream update and release workflow
+- [Quickstart](https://oer-particle-physics.github.io/hugo-styles/docs/quickstart/): first-run setup
+- [Authoring Guide](https://oer-particle-physics.github.io/hugo-styles/docs/authoring/): lesson-writing model
+- [Front Matter](https://oer-particle-physics.github.io/hugo-styles/docs/frontmatter/): episode metadata contract
+- [Components](https://oer-particle-physics.github.io/hugo-styles/docs/components/): shortcode and component reference
+- [Glossary and Profiles](https://oer-particle-physics.github.io/hugo-styles/docs/glossary-profiles/): glossary/profile authoring
+- [Deployment](https://oer-particle-physics.github.io/hugo-styles/docs/deployment/): GitHub Pages workflow
+- [Troubleshooting](https://oer-particle-physics.github.io/hugo-styles/docs/troubleshooting/): common failures and fixes
+- [Migration Guide](https://oer-particle-physics.github.io/hugo-styles/docs/migration/): legacy Carpentries migration flow
+- [Update Guide](https://oer-particle-physics.github.io/hugo-styles/docs/updates/): downstream update and release workflow
+- [Reference](https://oer-particle-physics.github.io/hugo-styles/reference/): further reading for Hextra and Hugo
 
 ## Update model
 
@@ -58,6 +72,13 @@ hugo
 For a smoother maintenance experience, downstream lesson repositories should enable Dependabot for `gomod` updates so module bumps arrive as pull requests.
 
 ## Local development
+
+For downstream lesson authors, the practical prerequisites are:
+
+- [Hugo Extended](https://gohugo.io/installation/)
+- [Go](https://go.dev/doc/install)
+
+Node.js is only needed in this repository when maintainers refresh the vendored search bundle.
 
 ```bash
 hugo server

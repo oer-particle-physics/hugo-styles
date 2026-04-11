@@ -1,6 +1,6 @@
 baseURL = "https://oer-particle-physics.github.io/hugo-styles/"
 title = "Hugo Styles"
-languageCode = "en-us"
+locale = "en-US"
 enableGitInfo = false
 disableKinds = ["taxonomy", "term", "RSS"]
 
@@ -54,7 +54,7 @@ disableKinds = ["taxonomy", "term", "RSS"]
 
 [menus]
   [[menus.main]]
-    name = "Episodes"
+    name = "Examples"
     pageRef = "/episodes"
     weight = 10
   [[menus.main]]

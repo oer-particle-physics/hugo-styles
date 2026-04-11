@@ -4,6 +4,8 @@ weight = 60
 +++
 
 `hugo-styles-template` is set up for GitHub Pages via GitHub Actions rather than a committed `gh-pages` branch.
+For hosting patterns beyond this shared setup, see
+[Hextra Deploy Site](https://imfing.github.io/hextra/docs/guide/deploy-site/).
 
 ## Recommended deployment flow
 

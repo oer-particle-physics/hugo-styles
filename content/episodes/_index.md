@@ -1,7 +1,7 @@
 +++
-title = "Episodes"
+title = "Examples"
 weight = 10
 +++
 
-This example lesson uses a few short episodes to demonstrate the shared pedagogy layer and the aggregated teaching resources.
-
+These example pages demonstrate the shared pedagogy layer and the aggregated teaching resources.
+They are a feature tour for the module, not the recommended starter content for a new lesson repository.
