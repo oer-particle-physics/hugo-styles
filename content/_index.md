@@ -50,3 +50,10 @@ Start new lesson repositories from `hugo-styles-template`,&nbsp;
   class="hx:min-h-[220px]"
 >}}
 {{< /hextra/feature-grid >}}
+
+<div class="hx:mt-6"></div>
+{{< lesson/overview >}}
+<div class="hx:mt-6"></div>
+{{< lesson/schedule title="Schedule" >}}
+<div class="hx:mt-6"></div>
+{{< lesson/authors title="Authors and Contributors" >}}

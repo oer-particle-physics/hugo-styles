@@ -109,6 +109,40 @@ Avoid raw iframe HTML for providers that Hugo already supports directly.
 For the full list of embedded providers, see
 [Hugo Embedded Shortcodes](https://gohugo.io/content-management/shortcodes/#embedded).
 
+## Lesson homepage snippets
+
+The lesson landing page is usually `content/_index.md` with `layout = "hextra-home"`.
+The shared module provides a few small shortcodes that make that page carry the
+same lesson metadata as the episode pages without introducing a custom layout.
+
+```md
++++
+title = "My Lesson"
+layout = "hextra-home"
++++
+
+{{</* lesson/overview */>}}
+
+{{</* lesson/schedule title="Schedule" */>}}
+
+{{</* lesson/authors title="Authors and Contributors" */>}}
+```
+
+`lesson/overview` renders a compact table built from the `objectives` lists of all episode pages.
+`lesson/schedule` renders a timetable with an optional untimed setup row, a cumulative start-time column, the episode title, and the episode questions.
+`lesson/authors` renders a compact table of contributors from the repository root `AUTHORS` file on the homepage.
+
+The authors file is intentionally lightweight. One contributor per line is enough:
+
+```text
+# Comments are ignored
+@alice
+Ada Lovelace <ada-lovelace>
+Grace Hopper <https://github.com/gracehopper>
+```
+
+That keeps the convention explicit while avoiding custom HTML includes.
+
 ## Hextra home components
 
 For landing pages, overview sections, or documentation marketing surfaces, you can also use Hextra's own home components directly:

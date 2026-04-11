@@ -24,6 +24,8 @@ README and the [Update Guide]({{< relref "/docs/updates" >}}) instead.
 4. Add episodes with `hugo new --kind episode episodes/my-episode/index.md`.
 5. Customize the landing page by editing `content/_index.md` while keeping `layout = "hextra-home"`.
    See [Components]({{< relref "/docs/components" >}}) for the recommended homepage pattern.
+   If you want authors rendered on the homepage, add an `AUTHORS` file in the repository root
+   and list one GitHub handle per line.
 
 ## Build locally
 

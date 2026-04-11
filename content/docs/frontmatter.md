@@ -19,8 +19,15 @@ Use episode front matter to describe both the teaching flow and the navigation m
 - `exercises`: exercise time in minutes
 - `summary`: override for episode card summaries
 - `draft`: hide unfinished content from production builds
-- `authors`: optional list for lesson-specific credit
 - `[tabs] sync = false`: disable synced Hextra tabs on a page
+
+## Homepage metadata
+
+The lesson homepage usually lives in `content/_index.md` and keeps `layout = "hextra-home"`.
+That page can hold the homepage content blocks in [Components]({{< relref "/docs/components" >}}).
+
+If you want an authors block on the homepage, add a root-level `AUTHORS` file. The `lesson/authors`
+shortcode reads that file directly and renders the contributors there.
 
 ## Example episode front matter
 
