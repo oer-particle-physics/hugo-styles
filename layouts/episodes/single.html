@@ -7,17 +7,19 @@
         <main id="content" class="hx:w-full hx:min-w-0 hextra-max-content-width">
           {{ partial "breadcrumb.html" (dict "page" . "enable" true) }}
           <div class="not-prose hx:mb-6 hx:flex hx:flex-wrap hx:items-center hx:justify-end hx:gap-2">
-            <button class="lesson-display-toggle hx:hidden hx:md:inline-flex" type="button" data-lesson-sidebar-toggle aria-pressed="false" aria-label="Hide lesson navigation" title="Hide lesson navigation">
-              Nav
+            <button class="lesson-display-toggle hx:hidden hx:md:inline-flex" type="button" data-lesson-sidebar-toggle aria-pressed="false" aria-label="Hide lesson menu" title="Hide lesson menu">
+              {{ partial "utils/icon.html" (dict "name" "menu-alt-2" "attributes" "height=14 class=\"hx:shrink-0\"") }}
+              <span>Lesson menu</span>
             </button>
             {{- if ne .Params.toc false -}}
-              <button class="lesson-display-toggle hx:hidden hx:xl:inline-flex" type="button" data-lesson-toc-toggle aria-pressed="false" aria-label="Hide page table of contents" title="Hide page table of contents">
-                TOC
+              <button class="lesson-display-toggle hx:hidden hx:xl:inline-flex" type="button" data-lesson-toc-toggle aria-pressed="false" aria-label="Hide on this page panel" title="Hide on this page panel">
+                {{ partial "utils/icon.html" (dict "name" "document-text" "attributes" "height=14 class=\"hx:shrink-0\"") }}
+                <span>On this page</span>
               </button>
             {{- end -}}
             <div class="lesson-audience-toggle">
-              <button class="hx:rounded-full hx:px-2.5 hx:py-1 hx:text-xs hx:font-medium hx:text-gray-600 hx:transition hx:sm:px-3 hx:sm:py-1.5 hx:sm:text-sm hx:dark:text-gray-400" type="button" data-view-toggle="learner" aria-pressed="false">Learner</button>
-              <button class="hx:rounded-full hx:px-2.5 hx:py-1 hx:text-xs hx:font-medium hx:text-gray-600 hx:transition hx:sm:px-3 hx:sm:py-1.5 hx:sm:text-sm hx:dark:text-gray-400" type="button" data-view-toggle="instructor" aria-pressed="false">Instructor</button>
+              <button class="lesson-audience-option" type="button" data-view-toggle="learner" aria-pressed="false">Learner</button>
+              <button class="lesson-audience-option" type="button" data-view-toggle="instructor" aria-pressed="false">Instructor</button>
             </div>
           </div>
           <div class="content">

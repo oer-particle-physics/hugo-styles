@@ -51,19 +51,20 @@
 
   const applyLessonToggleState = (kind, collapsed) => {
     const next = collapsed ? "true" : "false";
+    const pressed = collapsed ? "false" : "true";
     const attribute = kind === "sidebar" ? "sidebarCollapsed" : "tocCollapsed";
     const buttonSelector = kind === "sidebar" ? "[data-lesson-sidebar-toggle]" : "[data-lesson-toc-toggle]";
-    const collapsedLabel = kind === "sidebar" ? "Show Nav" : "Show TOC";
-    const expandedLabel = kind === "sidebar" ? "Hide Nav" : "Hide TOC";
-    const collapsedAria = kind === "sidebar" ? "Show lesson navigation" : "Show page table of contents";
-    const expandedAria = kind === "sidebar" ? "Hide lesson navigation" : "Hide page table of contents";
+    const collapsedLabel = kind === "sidebar" ? "Show lesson menu" : "Show on this page panel";
+    const expandedLabel = kind === "sidebar" ? "Hide lesson menu" : "Hide on this page panel";
+    const collapsedAria = kind === "sidebar" ? "Show lesson menu" : "Show on this page panel";
+    const expandedAria = kind === "sidebar" ? "Hide lesson menu" : "Hide on this page panel";
 
     lessonShells.forEach((shell) => {
       shell.dataset[attribute] = next;
     });
 
     document.querySelectorAll(buttonSelector).forEach((button) => {
-      button.setAttribute("aria-pressed", next);
+      button.setAttribute("aria-pressed", pressed);
       button.setAttribute("aria-label", collapsed ? collapsedAria : expandedAria);
       button.setAttribute("title", collapsed ? collapsedLabel : expandedLabel);
     });
