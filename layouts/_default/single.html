@@ -1,5 +1,4 @@
 {{ define "main" }}
-  {{ .Store.Set "enableFooterSwitches" true }}
   {{ $resourceLabel := .Type }}
   {{ if eq .Section "glossary" }}
     {{ $resourceLabel = "Glossary Term" }}

@@ -33,6 +33,7 @@ disableKinds = ["taxonomy", "term", "RSS"]
 [params.navbar]
   displayTitle = true
   displayLogo = false
+  width = "wide"
 
 [params.search]
   enable = true

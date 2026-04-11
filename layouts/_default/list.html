@@ -1,5 +1,4 @@
 {{ define "main" }}
-  {{ .Store.Set "enableFooterSwitches" true }}
   {{ $isCompactCollection := in (slice "glossary" "profiles") .Section }}
   {{ $isEpisodeList := eq .Section "episodes" }}
   {{ $sectionLabel := .Type }}

@@ -1,5 +1,4 @@
 {{ define "main" }}
-  {{ .Store.Set "enableFooterSwitches" true }}
   {{ $episodes := sort (where site.RegularPages "Section" "episodes") "Weight" }}
   {{ $scratch := newScratch }}
   {{ $scratch.Set "keypointCount" 0 }}

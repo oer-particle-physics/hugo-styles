@@ -1,5 +1,4 @@
 {{ define "main" }}
-  {{ .Store.Set "enableFooterSwitches" true }}
   {{ $episodes := sort (where site.RegularPages "Section" "episodes") "Weight" }}
   {{ $scratch := newScratch }}
   {{ $scratch.Set "totalMinutes" 0 }}
@@ -65,7 +64,7 @@
                 {{ $episodeAnchor = anchorize .Title }}
               {{ end }}
               <article id="{{ $episodeAnchor }}" class="hx:scroll-mt-24 hx:overflow-hidden hx:rounded-2xl hx:border hx:border-gray-200 hx:bg-white hx:p-6 hx:shadow-sm hx:dark:border-neutral-800 hx:dark:bg-neutral-900" data-aio-episode data-title="{{ .Title }}">
-                {{ partial "episode-content.html" (dict "page" . "showControls" false) }}
+                {{ partial "episode-content.html" (dict "page" .) }}
               </article>
             {{ end }}
           </div>

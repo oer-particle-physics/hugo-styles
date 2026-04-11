@@ -1,16 +1,65 @@
-.lesson-sidebar-toggle {
-  display: none;
-}
-
 .lesson-audience-toggle {
   display: inline-flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
   flex-shrink: 0;
+  padding: 0.25rem;
+  border: 1px solid rgb(229 231 235);
+  border-radius: 9999px;
+  background: rgb(255 255 255 / 0.85);
 }
 
-@media (min-width: 768px) {
-  .lesson-sidebar-toggle {
-    display: inline-flex;
-  }
+.dark .lesson-audience-toggle {
+  border-color: rgb(38 38 38);
+  background: rgb(23 23 23 / 0.85);
+}
+
+.lesson-display-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.125rem;
+  padding: 0.45rem 0.9rem;
+  border: 1px solid rgb(229 231 235);
+  border-radius: 9999px;
+  background: rgb(255 255 255 / 0.85);
+  color: rgb(75 85 99);
+  font-size: 0.875rem;
+  font-weight: 500;
+  line-height: 1;
+  cursor: pointer;
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease;
+}
+
+.lesson-display-toggle:hover {
+  border-color: rgb(107 114 128);
+  color: rgb(17 24 39);
+}
+
+.lesson-display-toggle[aria-pressed="true"] {
+  border-color: rgb(15 23 42);
+  background: rgb(15 23 42);
+  color: rgb(255 255 255);
+}
+
+.dark .lesson-display-toggle {
+  border-color: rgb(38 38 38);
+  background: rgb(23 23 23 / 0.85);
+  color: rgb(156 163 175);
+}
+
+.dark .lesson-display-toggle:hover {
+  border-color: rgb(82 82 91);
+  color: rgb(244 244 245);
+}
+
+.dark .lesson-display-toggle[aria-pressed="true"] {
+  border-color: rgb(226 232 240);
+  background: rgb(226 232 240);
+  color: rgb(15 23 42);
 }
 
 html[data-view="learner"] [data-audience="instructor"],
@@ -86,20 +135,14 @@ html[data-view="instructor"] [data-audience="learner"] {
 }
 
 @media (min-width: 768px) {
-  html[data-sidebar-collapsed="true"] .hextra-sidebar-container {
-    width: 0 !important;
-    min-width: 0 !important;
-    margin: 0 !important;
-    border: 0 !important;
-  }
-
-  html[data-sidebar-collapsed="true"] .hextra-sidebar-container .hextra-scrollbar,
-  html[data-sidebar-collapsed="true"] .hextra-sidebar-container > [data-toggle-animation="show"] {
+  [data-lesson-shell][data-sidebar-collapsed="true"] > .hextra-sidebar-container {
     display: none !important;
   }
+}
 
-  html[data-sidebar-collapsed="true"] article .hextra-max-content-width {
-    max-width: min(72rem, calc(100vw - 8rem));
+@media (min-width: 1280px) {
+  [data-lesson-shell][data-toc-collapsed="true"] > .hextra-toc {
+    display: none !important;
   }
 }
 

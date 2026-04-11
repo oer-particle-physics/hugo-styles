@@ -1,15 +1,31 @@
 {{ define "main" }}
-  <div class='hx:mx-auto hx:flex hextra-max-page-width'>
+  <div class='hx:mx-auto hx:flex hextra-max-page-width' data-lesson-shell data-sidebar-collapsed="false" data-toc-collapsed="false">
     {{ partial "sidebar.html" (dict "context" .) }}
     {{ partial "toc.html" . }}
     <article class="hx:w-full hx:break-words hx:flex hx:min-h-[calc(100vh-var(--navbar-height))] hx:min-w-0 hx:justify-center hx:pb-8 hx:pr-[calc(env(safe-area-inset-right)-1.5rem)]">
-      <main id="content" class="hx:w-full hx:min-w-0 hextra-max-content-width hx:px-6 hx:pt-4 hx:md:px-12">
-        {{ partial "breadcrumb.html" (dict "page" . "enable" true) }}
-        <div class="content">
-          {{ partial "episode-content.html" (dict "page" . "showControls" false) }}
-        </div>
-        {{ partial "components/pager.html" . }}
-      </main>
+      <div class="hx:flex hx:w-full hx:min-w-0 hx:justify-center hx:px-6 hx:pt-4 hx:md:px-12">
+        <main id="content" class="hx:w-full hx:min-w-0 hextra-max-content-width">
+          {{ partial "breadcrumb.html" (dict "page" . "enable" true) }}
+          <div class="not-prose hx:mb-6 hx:flex hx:flex-wrap hx:items-center hx:justify-end hx:gap-2">
+            <button class="lesson-display-toggle hx:hidden hx:md:inline-flex" type="button" data-lesson-sidebar-toggle aria-pressed="false" aria-label="Hide lesson navigation" title="Hide lesson navigation">
+              Nav
+            </button>
+            {{- if ne .Params.toc false -}}
+              <button class="lesson-display-toggle hx:hidden hx:xl:inline-flex" type="button" data-lesson-toc-toggle aria-pressed="false" aria-label="Hide page table of contents" title="Hide page table of contents">
+                TOC
+              </button>
+            {{- end -}}
+            <div class="lesson-audience-toggle">
+              <button class="hx:rounded-full hx:px-2.5 hx:py-1 hx:text-xs hx:font-medium hx:text-gray-600 hx:transition hx:sm:px-3 hx:sm:py-1.5 hx:sm:text-sm hx:dark:text-gray-400" type="button" data-view-toggle="learner" aria-pressed="false">Learner</button>
+              <button class="hx:rounded-full hx:px-2.5 hx:py-1 hx:text-xs hx:font-medium hx:text-gray-600 hx:transition hx:sm:px-3 hx:sm:py-1.5 hx:sm:text-sm hx:dark:text-gray-400" type="button" data-view-toggle="instructor" aria-pressed="false">Instructor</button>
+            </div>
+          </div>
+          <div class="content">
+            {{ partial "episode-content.html" (dict "page" .) }}
+          </div>
+          {{ partial "components/pager.html" . }}
+        </main>
+      </div>
     </article>
   </div>
 {{ end }}

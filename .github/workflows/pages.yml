@@ -55,7 +55,8 @@ jobs:
         run: go test ./...
 
       - name: Validate example lesson content
-        run: go run ./cmd/hugo-styles-migrate check .
+        working-directory: cmd/hugo-styles-migrate
+        run: go run . check ../..
 
       - name: Build
         run: hugo --gc --minify --baseURL "${{ steps.pages.outputs.base_url }}/"

@@ -1,5 +1,4 @@
 {{ define "main" }}
-  {{ .Store.Set "enableFooterSwitches" true }}
   {{ $pages := where site.RegularPages "Section" "in" (slice "episodes" "instructors") }}
   {{ $scratch := newScratch }}
   {{ $scratch.Set "imageCount" 0 }}
