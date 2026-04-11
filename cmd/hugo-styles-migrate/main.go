@@ -13,6 +13,8 @@ import (
 	"regexp"
 	"sort"
 	"strings"
+
+	toml "github.com/pelletier/go-toml/v2"
 )
 
 type finding struct {
@@ -34,6 +36,10 @@ var (
 	commentBlockPattern    = regexp.MustCompile(`(?s)\{%\s*comment\s*%\}.*?\{%\s*endcomment\s*%\}`)
 	baseURLPattern         = regexp.MustCompile(`\{\{\s*site\.baseurl\s*\}\}/?`)
 	pageRootLinkPattern    = regexp.MustCompile(`\{\{\s*page\.root\s*\}\}\{% link _episodes/([^.]+)\.md %\}`)
+	relativeFigPattern     = regexp.MustCompile(`(?:\.\./)+fig/`)
+	relativeFigHTMLPattern = regexp.MustCompile(`(<img\b[^>]*\bsrc=")(?:\.\./)+fig/`)
+	relativeFigMDPattern   = regexp.MustCompile(`(!\[[^\]]*\]\()((?:\.\./)+)fig/`)
+	headingPattern         = regexp.MustCompile(`^(\s{0,3})(#{1,5})(\s+.*)$`)
 	attrPattern            = regexp.MustCompile(`^\{:\s*\.?([a-zA-Z0-9_-]+)\s*\}$`)
 	titleHeadingPattern    = regexp.MustCompile(`^##\s+(.+)$`)
 	htmlAttrCommentPattern = regexp.MustCompile(`(?m)^<!--\s*\{:\s*\.[a-zA-Z0-9_-]+\s*\}\s*-->\s*$`)
@@ -53,6 +59,7 @@ var legacyPatterns = []legacyPattern{
 	{"liquid-variable", regexp.MustCompile(`\{\{\s*site\.[^}]+\}\}`), "replace site-scoped Liquid variables that are not handled automatically"},
 	{"legacy-auto-ids", regexp.MustCompile(`\{:\s*auto_ids\s*\}`), "rewrite glossary auto_ids syntax"},
 	{"iframe-embed", regexp.MustCompile(`(?i)<iframe\b`), "convert supported iframe embeds to Hugo shortcodes"},
+	{"legacy-fig-path", relativeFigPattern, "rewrite lesson-local figure paths to site-root /fig/"},
 }
 
 func main() {
@@ -138,13 +145,13 @@ func runMigrate(args []string) error {
 		}
 	}
 
-	if err := migrateRootPage(*source, *dest, "index.md", filepath.Join("content", "_index.md")); err != nil {
+	if err := migrateRootPage(*source, *dest, "index.md", filepath.Join("content", "_index.md"), "hextra-home"); err != nil {
 		return err
 	}
-	if err := migrateRootPage(*source, *dest, "reference.md", filepath.Join("content", "reference.md")); err != nil {
+	if err := migrateRootPage(*source, *dest, "reference.md", filepath.Join("content", "reference.md"), ""); err != nil {
 		return err
 	}
-	if err := migrateRootPage(*source, *dest, "setup.md", filepath.Join("content", "learners", "setup.md")); err != nil {
+	if err := migrateRootPage(*source, *dest, "setup.md", filepath.Join("content", "learners", "setup.md"), ""); err != nil {
 		return err
 	}
 
@@ -211,7 +218,7 @@ func stripFencedCodeBlocks(text string) string {
 	return inlineCodeSpanPattern.ReplaceAllString(fencedCodeBlockPattern.ReplaceAllString(text, ""), "")
 }
 
-func migrateRootPage(source, dest, srcRel, destRel string) error {
+func migrateRootPage(source, dest, srcRel, destRel, layoutOverride string) error {
 	srcPath := filepath.Join(source, srcRel)
 	if _, err := os.Stat(srcPath); err != nil {
 		if errors.Is(err, os.ErrNotExist) {
@@ -219,7 +226,7 @@ func migrateRootPage(source, dest, srcRel, destRel string) error {
 		}
 		return err
 	}
-	return transformAndWrite(srcPath, filepath.Join(dest, destRel), 0, false, true)
+	return transformAndWrite(srcPath, filepath.Join(dest, destRel), 0, false, true, false, layoutOverride)
 }
 
 func migrateExtras(source, dest string) error {
@@ -242,13 +249,13 @@ func migrateExtras(source, dest string) error {
 		base := strings.TrimSuffix(entry.Name(), ".md")
 		switch base {
 		case "guide":
-			if err := transformAndWrite(srcPath, filepath.Join(dest, "content", "instructors", "instructor-notes.md"), 0, false, false); err != nil {
+			if err := transformAndWrite(srcPath, filepath.Join(dest, "content", "instructors", "instructor-notes.md"), 0, false, false, false, ""); err != nil {
 				return err
 			}
 		case "figures":
 			continue
 		default:
-			if err := transformAndWrite(srcPath, filepath.Join(dest, "content", "learners", base+".md"), 0, false, false); err != nil {
+			if err := transformAndWrite(srcPath, filepath.Join(dest, "content", "learners", base+".md"), 0, false, false, false, ""); err != nil {
 				return err
 			}
 		}
@@ -275,25 +282,43 @@ func migrateEpisodes(source, dest string) error {
 		draft := strings.HasPrefix(name, ".")
 		slug := strings.TrimPrefix(strings.TrimSuffix(name, ".md"), ".")
 		destPath := filepath.Join(dest, "content", "episodes", slug, "index.md")
-		if err := transformAndWrite(srcPath, destPath, (index+1)*10, draft, false); err != nil {
+		if err := transformAndWrite(srcPath, destPath, (index+1)*10, draft, false, true, ""); err != nil {
 			return err
 		}
 	}
 	return nil
 }
 
-func transformAndWrite(sourcePath, destPath string, weight int, draft bool, stripJekyllKeys bool) error {
+func transformAndWrite(sourcePath, destPath string, weight int, draft bool, stripJekyllKeys bool, promoteHeadings bool, layoutOverride string) error {
 	data, err := os.ReadFile(sourcePath)
 	if err != nil {
 		return err
 	}
-	text := string(data)
-	text = transformMarkdown(text)
-	if stripJekyllKeys {
-		text = removeFrontMatterKeys(text, "layout", "root", "permalink")
+	meta, body, err := parseFrontMatter(string(data))
+	if err != nil {
+		return err
 	}
-	if weight > 0 || draft {
-		text = ensureFrontMatterKeys(text, weight, draft)
+	text := transformMarkdown(body)
+	if promoteHeadings {
+		text = promoteHeadingLevels(text)
+	}
+	if stripJekyllKeys {
+		delete(meta, "layout")
+		delete(meta, "root")
+		delete(meta, "permalink")
+	}
+	if layoutOverride != "" {
+		meta["layout"] = layoutOverride
+	}
+	if weight > 0 {
+		meta["weight"] = weight
+	}
+	if draft {
+		meta["draft"] = true
+	}
+	text, err = renderFrontMatter(meta, text)
+	if err != nil {
+		return err
 	}
 	if err := os.MkdirAll(filepath.Dir(destPath), 0o755); err != nil {
 		return err
@@ -309,6 +334,9 @@ func transformMarkdown(text string) string {
 	text = htmlAttrCommentPattern.ReplaceAllString(text, "")
 	text = baseURLPattern.ReplaceAllString(text, "")
 	text = pageRootLinkPattern.ReplaceAllString(text, `{{< relref "/episodes/$1" >}}`)
+	text = relativeFigPattern.ReplaceAllString(text, "/fig/")
+	text = relativeFigHTMLPattern.ReplaceAllString(text, `${1}/fig/`)
+	text = relativeFigMDPattern.ReplaceAllString(text, `${1}/fig/`)
 	text = youtubeIframePattern.ReplaceAllString(text, "{{< youtube $1 >}}")
 	text = vimeoIframePattern.ReplaceAllString(text, "{{< vimeo $1 >}}")
 	text = strings.ReplaceAll(text, "{:auto_ids}", "")
@@ -316,6 +344,52 @@ func transformMarkdown(text string) string {
 	text = convertFenceAttributes(text)
 	text = cleanupSpacing(text)
 	return text
+}
+
+func promoteHeadingLevels(text string) string {
+	var out []string
+	scanner := bufio.NewScanner(strings.NewReader(text))
+	inFence := false
+	var fenceMarker string
+	for scanner.Scan() {
+		line := scanner.Text()
+		trimmed := strings.TrimLeft(line, " ")
+		switch {
+		case !inFence && (strings.HasPrefix(trimmed, "```") || strings.HasPrefix(trimmed, "~~~")):
+			fenceMarker = strings.Repeat(string(trimmed[0]), len(trimmed)-len(strings.TrimLeft(trimmed, string(trimmed[0]))))
+			inFence = true
+			out = append(out, line)
+			continue
+		case inFence && strings.HasPrefix(trimmed, fenceMarker):
+			inFence = false
+			fenceMarker = ""
+			out = append(out, line)
+			continue
+		}
+
+		if !inFence {
+			if match := headingPattern.FindStringSubmatch(line); len(match) == 4 {
+				prefix := match[1]
+				hashes := match[2]
+				if len(hashes) < 6 {
+					line = prefix + strings.Repeat("#", len(hashes)+1) + match[3]
+				}
+			}
+		}
+		out = append(out, line)
+	}
+	return strings.Join(out, "\n")
+}
+
+func renderFrontMatter(meta map[string]any, body string) (string, error) {
+	if len(meta) == 0 {
+		return body, nil
+	}
+	data, err := toml.Marshal(meta)
+	if err != nil {
+		return "", err
+	}
+	return "+++\n" + strings.TrimSpace(string(data)) + "\n+++\n" + body, nil
 }
 
 func convertAttrBlocks(text string) string {
@@ -441,52 +515,6 @@ func convertFenceAttributes(text string) string {
 		}
 	}
 	return strings.Join(out, "\n")
-}
-
-func ensureFrontMatterKeys(text string, weight int, draft bool) string {
-	if front, body, ok := splitYAMLFrontMatter(text); ok {
-		if weight > 0 && !strings.Contains(front, "\nweight:") {
-			front += fmt.Sprintf("\nweight: %d", weight)
-		}
-		if draft && !strings.Contains(front, "\ndraft:") {
-			front += "\ndraft: true"
-		}
-		return front + "\n---\n" + body
-	}
-	var front strings.Builder
-	front.WriteString("---\n")
-	if weight > 0 {
-		fmt.Fprintf(&front, "weight: %d\n", weight)
-	}
-	if draft {
-		front.WriteString("draft: true\n")
-	}
-	front.WriteString("---\n\n")
-	front.WriteString(text)
-	return front.String()
-}
-
-func removeFrontMatterKeys(text string, keys ...string) string {
-	front, body, ok := splitYAMLFrontMatter(text)
-	if !ok {
-		return text
-	}
-	var filtered []string
-	lines := strings.Split(front, "\n")
-	for _, line := range lines {
-		trimmed := strings.TrimSpace(line)
-		drop := false
-		for _, key := range keys {
-			if strings.HasPrefix(trimmed, key+":") {
-				drop = true
-				break
-			}
-		}
-		if !drop {
-			filtered = append(filtered, line)
-		}
-	}
-	return strings.Join(filtered, "\n") + "\n---\n" + body
 }
 
 func cleanupSpacing(text string) string {
