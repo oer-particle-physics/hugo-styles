@@ -15,8 +15,9 @@
         {{ partial "breadcrumb.html" (dict "page" . "enable" true) }}
         <div class="content">
           <h1>{{ .Title }}</h1>
-          {{ with .Content }}<div class="hx:text-gray-600 hx:dark:text-gray-400">{{ . }}</div>{{ end }}
-          <div class="not-prose hx:mt-8 hx:grid hx:gap-4 {{ if $isCompactCollection }}hx:md:grid-cols-2{{ end }}">
+        </div>
+        {{ with .Content }}<div class="content hx:mt-4 hx:text-gray-600 hx:dark:text-gray-400">{{ . }}</div>{{ end }}
+        <div class="not-prose hx:mt-8 hx:grid hx:gap-4 {{ if $isCompactCollection }}hx:md:grid-cols-2{{ end }}">
             {{ range $index, $page := .Pages.ByWeight }}
               {{ $summary := "" }}
               {{ with $page.Description }}
@@ -55,7 +56,6 @@
                 </div>
               </article>
             {{ end }}
-          </div>
         </div>
       </main>
     </article>
