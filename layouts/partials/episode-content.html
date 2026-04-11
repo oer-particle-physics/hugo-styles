@@ -1,0 +1,51 @@
+{{ $page := .page }}
+{{ $minutes := add ($page.Params.teaching | default 0) ($page.Params.exercises | default 0) }}
+{{ $episodeID := "" }}
+{{ with $page.File }}
+  {{ if .Dir }}
+    {{ $episodeID = path.Base (strings.TrimSuffix "/" .Dir) }}
+  {{ else }}
+    {{ $episodeID = .TranslationBaseName }}
+  {{ end }}
+{{ end }}
+{{ if not $episodeID }}
+  {{ $episodeID = anchorize $page.Title }}
+{{ end }}
+<p class="hx:mb-2 hx:text-xs hx:font-semibold hx:uppercase hx:tracking-[0.16em] hx:text-gray-500 hx:dark:text-gray-400">Episode</p>
+<h1 id="{{ $episodeID }}">{{ $page.Title }}</h1>
+<div class="hx:mt-5 hx:flex hx:flex-wrap hx:gap-2">
+  {{ if $page.Params.teaching }}<span class="hx:rounded-full hx:border hx:border-primary-200 hx:bg-primary-50 hx:px-3 hx:py-1 hx:text-sm hx:font-medium hx:text-primary-700 hx:dark:border-primary-700/40 hx:dark:bg-primary-900/20 hx:dark:text-primary-300">Teaching {{ $page.Params.teaching }} min</span>{{ end }}
+  {{ if $page.Params.exercises }}<span class="hx:rounded-full hx:border hx:border-primary-200 hx:bg-primary-50 hx:px-3 hx:py-1 hx:text-sm hx:font-medium hx:text-primary-700 hx:dark:border-primary-700/40 hx:dark:bg-primary-900/20 hx:dark:text-primary-300">Exercises {{ $page.Params.exercises }} min</span>{{ end }}
+  {{ if gt $minutes 0 }}<span class="hx:rounded-full hx:border hx:border-primary-200 hx:bg-primary-50 hx:px-3 hx:py-1 hx:text-sm hx:font-medium hx:text-primary-700 hx:dark:border-primary-700/40 hx:dark:bg-primary-900/20 hx:dark:text-primary-300">Estimated {{ $minutes }} min</span>{{ end }}
+</div>
+{{ if or $page.Params.questions $page.Params.objectives }}
+  <div class="hx:mt-8 hx:grid hx:gap-4 hx:md:grid-cols-2">
+    {{ with $page.Params.questions }}
+      <section class="hx:rounded-2xl hx:border hx:border-gray-200 hx:bg-white hx:p-6 hx:shadow-sm hx:dark:border-neutral-800 hx:dark:bg-neutral-900">
+        <h2>Questions</h2>
+        <ul>
+          {{ range . }}<li>{{ . }}</li>{{ end }}
+        </ul>
+      </section>
+    {{ end }}
+    {{ with $page.Params.objectives }}
+      <section class="hx:rounded-2xl hx:border hx:border-gray-200 hx:bg-white hx:p-6 hx:shadow-sm hx:dark:border-neutral-800 hx:dark:bg-neutral-900">
+        <h2>Objectives</h2>
+        <ul>
+          {{ range . }}<li>{{ . }}</li>{{ end }}
+        </ul>
+      </section>
+    {{ end }}
+  </div>
+{{ end }}
+{{ $page.Content }}
+{{ with $page.Params.keypoints }}
+  <section class="hx:mt-10">
+    <section class="hx:rounded-2xl hx:border hx:border-gray-200 hx:bg-white hx:p-6 hx:shadow-sm hx:dark:border-neutral-800 hx:dark:bg-neutral-900">
+      <h2>Key Points</h2>
+      <ul>
+        {{ range . }}<li>{{ . }}</li>{{ end }}
+      </ul>
+    </section>
+  </section>
+{{ end }}

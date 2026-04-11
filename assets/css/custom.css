@@ -1,0 +1,112 @@
+.lesson-sidebar-toggle {
+  display: none;
+}
+
+.lesson-audience-toggle {
+  display: inline-flex;
+  flex-shrink: 0;
+}
+
+@media (min-width: 768px) {
+  .lesson-sidebar-toggle {
+    display: inline-flex;
+  }
+}
+
+html[data-view="learner"] [data-audience="instructor"],
+html[data-view="learner"] [data-audience-nav="instructor"] {
+  display: none;
+}
+
+html[data-view="instructor"] [data-audience="learner"] {
+  display: none;
+}
+
+.lesson-audience-toggle [aria-pressed="true"] {
+  background: rgb(15 23 42);
+  color: rgb(255 255 255);
+}
+
+.dark .lesson-audience-toggle [aria-pressed="true"] {
+  background: rgb(226 232 240);
+  color: rgb(15 23 42);
+}
+
+.lesson-audience-toggle [aria-pressed="false"] {
+  background: transparent;
+}
+
+.lesson-rich-content {
+  display: flow-root;
+}
+
+.lesson-rich-content > :first-child {
+  margin-top: 0;
+}
+
+.lesson-rich-content > :last-child {
+  margin-bottom: 0;
+}
+
+.lesson-disclosure-body,
+.lesson-audience-box {
+  line-height: 1.75;
+}
+
+.lesson-disclosure-body {
+  padding-bottom: 1rem;
+}
+
+.lesson-audience-box .lesson-rich-content {
+  padding-top: 0.25rem;
+}
+
+.lesson-footer-meta {
+  row-gap: 0.75rem;
+  column-gap: 1rem;
+}
+
+.lesson-footer-chip,
+.lesson-footer-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2rem;
+}
+
+.lesson-footer-link {
+  text-decoration: none;
+}
+
+.lesson-footer-link:hover {
+  text-decoration: underline;
+}
+
+.lesson-footer-tagline {
+  line-height: 1.6;
+}
+
+@media (min-width: 768px) {
+  html[data-sidebar-collapsed="true"] .hextra-sidebar-container {
+    width: 0 !important;
+    min-width: 0 !important;
+    margin: 0 !important;
+    border: 0 !important;
+  }
+
+  html[data-sidebar-collapsed="true"] .hextra-sidebar-container .hextra-scrollbar,
+  html[data-sidebar-collapsed="true"] .hextra-sidebar-container > [data-toggle-animation="show"] {
+    display: none !important;
+  }
+
+  html[data-sidebar-collapsed="true"] article .hextra-max-content-width {
+    max-width: min(72rem, calc(100vw - 8rem));
+  }
+}
+
+.lesson-aio-search::placeholder {
+  color: rgb(107 114 128);
+}
+
+.dark .lesson-aio-search::placeholder {
+  color: rgb(156 163 175);
+}

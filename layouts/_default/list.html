@@ -1,0 +1,63 @@
+{{ define "main" }}
+  {{ $isCompactCollection := in (slice "glossary" "profiles") .Section }}
+  {{ $isEpisodeList := eq .Section "episodes" }}
+  {{ $sectionLabel := .Type }}
+  {{ if eq .Section "glossary" }}
+    {{ $sectionLabel = "Glossary Term" }}
+  {{ else if eq .Section "profiles" }}
+    {{ $sectionLabel = "Learner Profile" }}
+  {{ end }}
+  <div class='hx:mx-auto hx:flex hextra-max-page-width'>
+    {{ partial "sidebar.html" (dict "context" .) }}
+    {{ partial "toc.html" . }}
+    <article class="hx:w-full hx:break-words hx:flex hx:min-h-[calc(100vh-var(--navbar-height))] hx:min-w-0 hx:justify-center hx:pb-8 hx:pr-[calc(env(safe-area-inset-right)-1.5rem)]">
+      <main id="content" class="hx:w-full hx:min-w-0 hextra-max-content-width hx:px-6 hx:pt-4 hx:md:px-12">
+        {{ partial "breadcrumb.html" (dict "page" . "enable" true) }}
+        <div class="content">
+          <h1>{{ .Title }}</h1>
+          {{ with .Content }}<div class="hx:text-gray-600 hx:dark:text-gray-400">{{ . }}</div>{{ end }}
+          <div class="not-prose hx:mt-8 hx:grid hx:gap-4 {{ if $isCompactCollection }}hx:md:grid-cols-2{{ end }}">
+            {{ range $index, $page := .Pages.ByWeight }}
+              {{ $summary := "" }}
+              {{ with $page.Description }}
+                {{ $summary = . }}
+              {{ else }}
+                {{ $summary = ($page.Summary | plainify | htmlUnescape | strings.TrimSpace | truncate 220) }}
+              {{ end }}
+              {{ $minutes := add ($page.Params.teaching | default 0) ($page.Params.exercises | default 0) }}
+              <article class="hx:group hx:flex hx:h-full hx:flex-col hx:rounded-2xl hx:border hx:border-gray-200 hx:bg-white hx:p-5 hx:shadow-sm hx:transition hover:hx:-translate-y-0.5 hover:hx:border-gray-300 hover:hx:shadow-md hx:dark:border-neutral-800 hx:dark:bg-neutral-900 hx:dark:hover:border-neutral-700">
+                <div class="hx:flex hx:flex-1 hx:flex-col">
+                  <div class="hx:flex hx:items-start hx:justify-between hx:gap-4">
+                    <div class="hx:min-w-0">
+                      <p class="hx:mb-2 hx:text-[11px] hx:font-semibold hx:uppercase hx:tracking-[0.18em] hx:text-gray-500 hx:dark:text-gray-400">{{ if $isEpisodeList }}Episode {{ add $index 1 }}{{ else }}{{ $sectionLabel }}{{ end }}</p>
+                      <h2 class="hx:m-0 hx:text-xl hx:font-semibold hx:tracking-tight hx:text-gray-900 hx:dark:text-gray-100">
+                        <a class="hx:text-inherit hx:no-underline hx:decoration-transparent hx:transition-colors group-hover:hx:text-primary-600 hx:dark:group-hover:text-primary-400" href="{{ $page.RelPermalink }}">{{ $page.Title }}</a>
+                      </h2>
+                    </div>
+                    <span aria-hidden="true" class="hx:mt-0.5 hx:text-gray-400 hx:transition-transform group-hover:hx:translate-x-0.5 group-hover:hx:text-primary-500 hx:dark:text-gray-500 hx:dark:group-hover:text-primary-400">→</span>
+                  </div>
+                  {{ if $isEpisodeList }}
+                    <div class="hx:mt-4 hx:flex hx:flex-wrap hx:gap-2">
+                      {{ if $page.Params.teaching }}<span class="hx:rounded-full hx:border hx:border-primary-200 hx:bg-primary-50 hx:px-2.5 hx:py-1 hx:text-xs hx:font-medium hx:text-primary-700 hx:dark:border-primary-700/40 hx:dark:bg-primary-900/20 hx:dark:text-primary-300">Teaching {{ $page.Params.teaching }} min</span>{{ end }}
+                      {{ if $page.Params.exercises }}<span class="hx:rounded-full hx:border hx:border-primary-200 hx:bg-primary-50 hx:px-2.5 hx:py-1 hx:text-xs hx:font-medium hx:text-primary-700 hx:dark:border-primary-700/40 hx:dark:bg-primary-900/20 hx:dark:text-primary-300">Exercises {{ $page.Params.exercises }} min</span>{{ end }}
+                      {{ if gt $minutes 0 }}<span class="hx:rounded-full hx:border hx:border-gray-200 hx:bg-gray-50 hx:px-2.5 hx:py-1 hx:text-xs hx:font-medium hx:text-gray-600 hx:dark:border-neutral-800 hx:dark:bg-neutral-950 hx:dark:text-gray-300">Estimated {{ $minutes }} min</span>{{ end }}
+                    </div>
+                  {{ end }}
+                  {{ with $summary }}
+                    <p class="hx:mt-4 hx:mb-0 hx:text-sm hx:leading-6 hx:text-gray-600 hx:dark:text-gray-400">{{ . }}</p>
+                  {{ end }}
+                  <div class="hx:mt-4">
+                    <a class="hx:inline-flex hx:items-center hx:gap-1 hx:text-sm hx:font-medium hx:text-primary-600 hx:no-underline hx:transition-colors group-hover:hx:text-primary-700 hx:dark:text-primary-400 hx:dark:group-hover:text-primary-300" href="{{ $page.RelPermalink }}">
+                      Open page
+                      <span aria-hidden="true">→</span>
+                    </a>
+                  </div>
+                </div>
+              </article>
+            {{ end }}
+          </div>
+        </div>
+      </main>
+    </article>
+  </div>
+{{ end }}

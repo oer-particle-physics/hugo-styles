@@ -1,0 +1,74 @@
+{{ define "main" }}
+  {{ $pages := where site.RegularPages "Section" "in" (slice "episodes" "instructors") }}
+  {{ $scratch := newScratch }}
+  {{ $scratch.Set "imageCount" 0 }}
+  {{ $scratch.Set "pageCount" 0 }}
+  {{ range $pages }}
+    {{ $images := findRE `<img[^>]+>` .Content }}
+    {{ if gt (len $images) 0 }}
+      {{ $scratch.Add "pageCount" 1 }}
+      {{ $scratch.Add "imageCount" (len $images) }}
+    {{ end }}
+  {{ end }}
+  <div class='hx:mx-auto hx:flex hextra-max-page-width'>
+    {{ partial "sidebar.html" (dict "context" .) }}
+    {{ partial "toc.html" . }}
+    <article class="hx:w-full hx:break-words hx:flex hx:min-h-[calc(100vh-var(--navbar-height))] hx:min-w-0 hx:justify-center hx:pb-8 hx:pr-[calc(env(safe-area-inset-right)-1.5rem)]">
+      <main id="content" class="hx:w-full hx:min-w-0 hextra-max-content-width hx:px-6 hx:pt-4 hx:md:px-12">
+        {{ partial "breadcrumb.html" (dict "page" . "enable" true) }}
+        <div class="content">
+          <p class="hx:mb-2 hx:text-xs hx:font-semibold hx:uppercase hx:tracking-[0.16em] hx:text-gray-500 hx:dark:text-gray-400">Instructor resource</p>
+          <h1>{{ .Title }}</h1>
+          <div class="hx:text-gray-600 hx:dark:text-gray-400">{{ .Content }}</div>
+          <div class="hx:mt-6">
+            {{ partial "resource-links.html" . }}
+          </div>
+          <div class="hx:mt-6 hx:flex hx:flex-wrap hx:gap-2">
+            <span class="hx:inline-flex hx:items-center hx:rounded-full hx:border hx:border-primary-200 hx:bg-primary-50 hx:px-3 hx:py-1.5 hx:text-sm hx:font-medium hx:text-primary-700 hx:dark:border-primary-700/40 hx:dark:bg-primary-900/20 hx:dark:text-primary-300">{{ $scratch.Get "imageCount" }} images gathered</span>
+            <span class="hx:inline-flex hx:items-center hx:rounded-full hx:border hx:border-primary-200 hx:bg-primary-50 hx:px-3 hx:py-1.5 hx:text-sm hx:font-medium hx:text-primary-700 hx:dark:border-primary-700/40 hx:dark:bg-primary-900/20 hx:dark:text-primary-300">{{ $scratch.Get "pageCount" }} source pages</span>
+            <span class="hx:inline-flex hx:items-center hx:rounded-full hx:border hx:border-gray-200 hx:bg-white hx:px-3 hx:py-1.5 hx:text-sm hx:text-gray-600 hx:dark:border-neutral-800 hx:dark:bg-neutral-900 hx:dark:text-gray-300">Best for visual QA before teaching</span>
+          </div>
+          <div class="hx:mt-6 hx:grid hx:gap-4 hx:xl:grid-cols-2">
+            {{ range sort $pages "Weight" }}
+              {{ $page := . }}
+              {{ range findRE `<img[^>]+>` $page.Content }}
+                {{ $tag := . }}
+                {{ $srcMatch := findRESubmatch `src="([^"]+)"` $tag 1 }}
+                {{ $altMatch := findRESubmatch `alt="([^"]*)"` $tag 1 }}
+                {{ with $srcMatch }}
+                  {{ $src := index (index . 0) 1 }}
+                  {{ $alt := "" }}
+                  {{ with $altMatch }}
+                    {{ $alt = index (index . 0) 1 }}
+                  {{ end }}
+                  <article class="hx:overflow-hidden hx:rounded-2xl hx:border hx:border-gray-200 hx:bg-white hx:shadow-sm hx:dark:border-neutral-800 hx:dark:bg-neutral-900">
+                    <figure class="hx:m-0">
+                      <div class="hx:border-b hx:border-gray-200 hx:bg-gray-50 hx:p-3 hx:dark:border-neutral-800 hx:dark:bg-neutral-950/60">
+                        <div class="hx:flex hx:flex-wrap hx:items-center hx:gap-2">
+                          <span class="hx:inline-flex hx:items-center hx:rounded-full hx:border hx:border-gray-200 hx:bg-white hx:px-2.5 hx:py-1 hx:text-[11px] hx:font-semibold hx:uppercase hx:tracking-[0.16em] hx:text-gray-600 hx:dark:border-neutral-700 hx:dark:bg-neutral-900 hx:dark:text-gray-300">{{ if eq $page.Section "instructors" }}Instructor note{{ else }}Episode{{ end }}</span>
+                          <span class="hx:inline-flex hx:items-center hx:rounded-full hx:px-2.5 hx:py-1 hx:text-[11px] hx:font-semibold hx:uppercase hx:tracking-[0.16em] {{ if $alt }}hx:bg-emerald-50 hx:text-emerald-700 hx:dark:bg-emerald-500/10 hx:dark:text-emerald-300{{ else }}hx:bg-amber-50 hx:text-amber-700 hx:dark:bg-amber-500/10 hx:dark:text-amber-300{{ end }}">{{ if $alt }}Alt text present{{ else }}Alt text missing{{ end }}</span>
+                        </div>
+                      </div>
+                      <div class="hx:flex hx:min-h-[18rem] hx:items-center hx:justify-center hx:bg-white hx:p-4 hx:dark:bg-neutral-900">
+                        <img class="hx:max-h-[22rem] hx:w-full hx:rounded-xl hx:border hx:border-gray-200 hx:object-contain hx:dark:border-neutral-800" src="{{ $src }}" alt="{{ $alt }}" loading="lazy">
+                      </div>
+                      <figcaption class="hx:space-y-3 hx:border-t hx:border-gray-200 hx:p-5 hx:text-sm hx:text-gray-600 hx:dark:border-neutral-800 hx:dark:text-gray-400">
+                        <div class="hx:flex hx:flex-col hx:gap-3 hx:md:flex-row hx:md:items-start hx:md:justify-between">
+                          <div class="hx:min-w-0">
+                            <strong class="hx:block hx:text-base hx:text-gray-900 hx:dark:text-gray-100">{{ $page.Title }}</strong>
+                            <span>{{ if $alt }}{{ $alt }}{{ else }}No alt text provided.{{ end }}</span>
+                          </div>
+                          <a class="hx:inline-flex hx:items-center hx:justify-center hx:rounded-xl hx:border hx:border-gray-200 hx:px-3.5 hx:py-2 hx:text-sm hx:font-medium hx:text-gray-700 hx:no-underline hx:hover:border-primary-300 hx:hover:text-primary-700 hx:dark:border-neutral-800 hx:dark:text-gray-300 hx:dark:hover:border-primary-700 hx:dark:hover:text-primary-300" href="{{ $page.RelPermalink }}">Open source</a>
+                        </div>
+                      </figcaption>
+                    </figure>
+                  </article>
+                {{ end }}
+              {{ end }}
+            {{ end }}
+          </div>
+        </div>
+      </main>
+    </article>
+  </div>
+{{ end }}

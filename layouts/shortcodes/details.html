@@ -1,0 +1,10 @@
+<section class="hx:mt-6">
+  <details class="hx:group hx:rounded-2xl hx:border hx:border-gray-200 hx:bg-neutral-50 hx:dark:border-neutral-800 hx:dark:bg-neutral-900">
+    <summary class="hx:flex hx:cursor-pointer hx:list-none hx:items-center hx:gap-3 hx:px-4 hx:py-3">
+      <span class="hx:font-medium">{{ .Get "title" | default "More details" }}</span>
+    </summary>
+    <div class="hx:px-4 hx:pb-4">
+      {{ .Inner | .Page.RenderString }}
+    </div>
+  </details>
+</section>
