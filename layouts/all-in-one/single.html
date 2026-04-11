@@ -1,4 +1,5 @@
 {{ define "main" }}
+  {{ .Store.Set "enableFooterSwitches" true }}
   {{ $episodes := sort (where site.RegularPages "Section" "episodes") "Weight" }}
   {{ $scratch := newScratch }}
   {{ $scratch.Set "totalMinutes" 0 }}
@@ -15,9 +16,6 @@
           <p class="hx:mb-2 hx:text-xs hx:font-semibold hx:uppercase hx:tracking-[0.16em] hx:text-gray-500 hx:dark:text-gray-400">Aggregated resource</p>
           <h1>{{ .Title }}</h1>
           <div class="hx:text-gray-600 hx:dark:text-gray-400">{{ .Content }}</div>
-          <div class="hx:mt-6">
-            {{ partial "resource-links.html" . }}
-          </div>
           <div class="hx:mt-6 hx:flex hx:flex-wrap hx:gap-2">
             <span class="hx:inline-flex hx:items-center hx:rounded-full hx:border hx:border-primary-200 hx:bg-primary-50 hx:px-3 hx:py-1.5 hx:text-sm hx:font-medium hx:text-primary-700 hx:dark:border-primary-700/40 hx:dark:bg-primary-900/20 hx:dark:text-primary-300">{{ len $episodes }} episodes</span>
             <span class="hx:inline-flex hx:items-center hx:rounded-full hx:border hx:border-primary-200 hx:bg-primary-50 hx:px-3 hx:py-1.5 hx:text-sm hx:font-medium hx:text-primary-700 hx:dark:border-primary-700/40 hx:dark:bg-primary-900/20 hx:dark:text-primary-300">{{ $scratch.Get "totalMinutes" }} min total</span>
