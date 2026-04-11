@@ -29,5 +29,15 @@
         </main>
       </div>
     </article>
+    <button
+      class="lesson-floating-backtotop"
+      type="button"
+      data-lesson-back-to-top
+      aria-label="Scroll to top"
+      title="Scroll to top"
+    >
+      {{ partial "utils/icon.html" (dict "name" "arrow-up" "attributes" "height=14 class=\"hx:shrink-0\"") }}
+      <span>Scroll to top</span>
+    </button>
   </div>
 {{ end }}

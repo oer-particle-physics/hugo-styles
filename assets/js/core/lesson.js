@@ -5,6 +5,33 @@
   const lessonTocStorageKey = "hugo-styles:lesson-toc-collapsed";
   const allowedViews = new Set(["learner", "instructor"]);
   const lessonShells = Array.from(document.querySelectorAll("[data-lesson-shell]"));
+  const floatingBackToTopButtons = Array.from(document.querySelectorAll("[data-lesson-back-to-top]"));
+  const desktopTocMedia = window.matchMedia("(min-width: 1280px)");
+
+  const scrollToTop = () => {
+    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    window.scroll({
+      top: 0,
+      left: 0,
+      behavior: prefersReducedMotion ? "auto" : "smooth",
+    });
+  };
+
+  const syncFloatingBackToTop = () => {
+    if (floatingBackToTopButtons.length === 0) {
+      return;
+    }
+
+    const shouldShow = lessonShells.some((shell) => {
+      const tocHidden = shell.dataset.tocCollapsed === "true" || !desktopTocMedia.matches;
+      return tocHidden && window.scrollY > 300;
+    });
+
+    floatingBackToTopButtons.forEach((button) => {
+      button.dataset.visible = shouldShow ? "true" : "false";
+      button.tabIndex = shouldShow ? 0 : -1;
+    });
+  };
   const syncViewUrl = (view) => {
     const url = new URL(window.location.href);
     if (view === "learner") {
@@ -68,6 +95,8 @@
       button.setAttribute("aria-label", collapsed ? collapsedAria : expandedAria);
       button.setAttribute("title", collapsed ? collapsedLabel : expandedLabel);
     });
+
+    syncFloatingBackToTop();
   };
 
   document.querySelectorAll("[data-aio-search]").forEach((input) => {
@@ -78,6 +107,10 @@
         episode.style.display = !query || haystack.includes(query) ? "" : "none";
       });
     });
+  });
+
+  floatingBackToTopButtons.forEach((button) => {
+    button.addEventListener("click", scrollToTop);
   });
 
   if (lessonShells.length > 0) {
@@ -104,4 +137,8 @@
       });
     });
   }
+
+  document.addEventListener("scroll", syncFloatingBackToTop, { passive: true });
+  desktopTocMedia.addEventListener("change", syncFloatingBackToTop);
+  syncFloatingBackToTop();
 })();
