@@ -1,11 +1,15 @@
 <section class="hx:mt-6">
-  <details class="lesson-disclosure lesson-disclosure-hint hx:group hx:rounded-xl hx:border hx:border-sky-200 hx:bg-white/80 hx:shadow-sm hx:dark:border-sky-400/30 hx:dark:bg-neutral-900/70" data-lesson-disclosure="hint">
-    <summary class="hx:flex hx:cursor-pointer hx:list-none hx:items-center hx:gap-3 hx:px-4 hx:py-3">
-      <span class="hx:inline-flex hx:items-center hx:rounded-full hx:bg-sky-500/15 hx:px-3 hx:py-1 hx:text-xs hx:font-semibold hx:uppercase hx:tracking-[0.16em] hx:text-sky-900 hx:dark:bg-sky-300/15 hx:dark:text-sky-200">Hint</span>
-      <span class="hx:flex-1 hx:font-medium">{{ .Get "title" | default "Need a hint?" }}</span>
-      <span class="hx:text-xs hx:text-gray-500 hx:transition-transform hx:group-open:rotate-180 hx:dark:text-gray-400">▾</span>
+  <details class="lesson-disclosure lesson-disclosure-hint" data-lesson-disclosure="hint">
+    <summary class="lesson-disclosure-summary">
+      <span class="lesson-disclosure-icon" aria-hidden="true">
+        {{ partial "utils/icon.html" (dict "name" "light-bulb" "attributes" "height=18") }}
+      </span>
+      <span class="lesson-disclosure-copy">
+        <span class="lesson-disclosure-title">{{ .Get "title" | default "Need a hint?" }}</span>
+      </span>
+      <span class="lesson-disclosure-chevron" aria-hidden="true">▾</span>
     </summary>
-    <div class="lesson-disclosure-body hx:border-t hx:border-sky-100 hx:px-4 hx:pb-4 hx:pt-4 hx:dark:border-sky-400/20">
+    <div class="lesson-disclosure-body">
       <div class="lesson-rich-content">
         {{ .Inner | .Page.RenderString }}
       </div>

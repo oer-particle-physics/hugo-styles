@@ -1,6 +1,8 @@
 {{ $page := .context }}
 {{ $repo := site.Params.lesson.repo }}
 {{ $editBranch := site.Params.lesson.editBranch | default "main" }}
+{{ $quickstartPage := site.GetPage "/docs/quickstart" }}
+{{ $updatesPage := site.GetPage "/docs/updates" }}
 {{ $path := "" }}
 {{ $lastUpdated := "" }}
 {{ with $page.File }}
@@ -19,8 +21,8 @@
     {{ with $lastUpdated }}<span class="lesson-footer-chip hx:text-gray-500 hx:dark:text-gray-400">Updated: {{ . }}</span>{{ end }}
     {{ with $repo }}<a class="lesson-footer-link hx:font-medium hx:text-current" href="{{ . }}">Source</a>{{ end }}
     {{ if and $repo $path }}<a class="lesson-footer-link hx:font-medium hx:text-current" href="{{ printf "%s/edit/%s/%s" $repo $editBranch $path }}">Edit this page</a>{{ end }}
-    <a class="lesson-footer-link hx:font-medium hx:text-current" href="{{ "docs/updates/" | relURL }}">Update guide</a>
-    <a class="lesson-footer-link hx:font-medium hx:text-current" href="{{ "docs/quickstart/" | relURL }}">Quickstart</a>
+    {{ with $updatesPage }}<a class="lesson-footer-link hx:font-medium hx:text-current" href="{{ .RelPermalink }}">Update guide</a>{{ end }}
+    {{ with $quickstartPage }}<a class="lesson-footer-link hx:font-medium hx:text-current" href="{{ .RelPermalink }}">Quickstart</a>{{ end }}
     {{ with site.Params.lesson.licenseURL }}<a class="lesson-footer-link hx:font-medium hx:text-current" href="{{ . }}">{{ site.Params.lesson.licenseName }}</a>{{ end }}
   </div>
   {{ with site.Params.lesson.tagline }}

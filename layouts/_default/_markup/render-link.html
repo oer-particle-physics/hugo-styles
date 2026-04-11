@@ -1,7 +1,0 @@
-{{ $dest := .Destination }}
-{{ if and (not (strings.HasPrefix $dest "http://")) (not (strings.HasPrefix $dest "https://")) (not (strings.HasPrefix $dest "/")) }}
-  {{ if or (strings.HasPrefix $dest "fig/") (strings.HasPrefix $dest "files/") (strings.HasPrefix $dest "data/") (strings.HasPrefix $dest "code/") }}
-    {{ $dest = relURL $dest }}
-  {{ end }}
-{{ end }}
-<a href="{{ $dest | safeURL }}">{{ .Text | safeHTML }}</a>

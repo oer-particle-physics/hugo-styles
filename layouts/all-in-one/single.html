@@ -6,18 +6,15 @@
     {{ $scratch.Add "totalMinutes" (add (.Params.teaching | default 0) (.Params.exercises | default 0)) }}
   {{ end }}
   <div class='hx:mx-auto hx:flex hextra-max-page-width'>
-    {{ partial "sidebar.html" (dict "context" .) }}
-    {{ partial "toc.html" . }}
+    {{ partial "sidebar.html" (dict "context" . "disableSidebar" true "displayPlaceholder" false) }}
+    {{ partial "all-in-one-toc.html" (dict "page" . "episodes" $episodes) }}
     <article class="hx:w-full hx:break-words hx:flex hx:min-h-[calc(100vh-var(--navbar-height))] hx:min-w-0 hx:justify-center hx:pb-8 hx:pr-[calc(env(safe-area-inset-right)-1.5rem)]">
-      <main id="content" class="hx:w-full hx:min-w-0 hextra-max-content-width hx:px-6 hx:pt-4 hx:md:px-12">
+      <main id="content" class="wide-when-sidebar-hidden hx:w-full hx:min-w-0 hextra-max-content-width hx:px-6 hx:pt-4 hx:md:px-12">
         {{ partial "breadcrumb.html" (dict "page" . "enable" true) }}
         <div class="content">
           <p class="hx:mb-2 hx:text-xs hx:font-semibold hx:uppercase hx:tracking-[0.16em] hx:text-gray-500 hx:dark:text-gray-400">Aggregated resource</p>
           <h1>{{ .Title }}</h1>
           <div class="hx:text-gray-600 hx:dark:text-gray-400">{{ .Content }}</div>
-          <div class="hx:mt-6">
-            {{ partial "resource-links.html" . }}
-          </div>
           <div class="hx:mt-6 hx:flex hx:flex-wrap hx:gap-2">
             <span class="hx:inline-flex hx:items-center hx:rounded-full hx:border hx:border-primary-200 hx:bg-primary-50 hx:px-3 hx:py-1.5 hx:text-sm hx:font-medium hx:text-primary-700 hx:dark:border-primary-700/40 hx:dark:bg-primary-900/20 hx:dark:text-primary-300">{{ len $episodes }} episodes</span>
             <span class="hx:inline-flex hx:items-center hx:rounded-full hx:border hx:border-primary-200 hx:bg-primary-50 hx:px-3 hx:py-1.5 hx:text-sm hx:font-medium hx:text-primary-700 hx:dark:border-primary-700/40 hx:dark:bg-primary-900/20 hx:dark:text-primary-300">{{ $scratch.Get "totalMinutes" }} min total</span>
@@ -66,8 +63,8 @@
               {{ if not $episodeAnchor }}
                 {{ $episodeAnchor = anchorize .Title }}
               {{ end }}
-              <article id="{{ $episodeAnchor }}" class="hx:scroll-mt-24 hx:overflow-hidden hx:rounded-2xl hx:border hx:border-gray-200 hx:bg-white hx:p-6 hx:shadow-sm hx:dark:border-neutral-800 hx:dark:bg-neutral-900" data-aio-episode data-title="{{ .Title }}">
-                {{ partial "episode-content.html" (dict "page" . "showControls" false) }}
+              <article class="hx:scroll-mt-24 hx:overflow-hidden hx:rounded-2xl hx:border hx:border-gray-200 hx:bg-white hx:p-6 hx:shadow-sm hx:dark:border-neutral-800 hx:dark:bg-neutral-900" data-aio-episode data-title="{{ .Title }}">
+                {{ partial "episode-content.html" (dict "page" .) }}
               </article>
             {{ end }}
           </div>

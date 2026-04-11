@@ -68,7 +68,7 @@ hugo server
 The shared checker can validate both legacy Carpentries lessons and Hugo-native lesson repositories:
 
 ```bash
-go run ./cmd/hugo-styles-migrate check .
+(cd cmd/hugo-styles-migrate && go run . check ../..)
 ```
 
 The Hugo-native checks currently cover:
@@ -83,7 +83,7 @@ The Hugo-native checks currently cover:
 Regression tests for the checker and migrator live under `cmd/hugo-styles-migrate/testdata/`.
 
 ```bash
-go test ./...
+(cd cmd/hugo-styles-migrate && go test ./...)
 ```
 
 ## Search bundle maintenance
@@ -105,9 +105,11 @@ package version.
 Run the checker or migration helper directly from this repository:
 
 ```bash
-go run ./cmd/hugo-styles-migrate check .
-go run ./cmd/hugo-styles-migrate migrate --source ../old-training --dest /tmp/converted-training
-go run ./cmd/hugo-styles-migrate check /tmp/converted-training
+cd cmd/hugo-styles-migrate
+go run . check ../..
+go run . migrate --source ../old-training --dest /tmp/converted-training
+go run . check /tmp/converted-training
+cd ../..
 ```
 
 Or from another repository:

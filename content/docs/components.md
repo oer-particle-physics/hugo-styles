@@ -123,3 +123,58 @@ layout = "hextra-home"
 ```
 
 and compose the page from `hextra/hero-badge`, `hextra/hero-headline`, `hextra/hero-subtitle`, `hextra/hero-button`, and `hextra/feature-grid`.
+
+For most downstream lesson repositories, the easiest customization path is:
+
+1. Keep `layout = "hextra-home"` in `content/_index.md`.
+2. Edit the copy, links, and cards in that file.
+3. Prefer Hextra shortcodes over custom layout overrides.
+
+A minimal starting point looks like this:
+
+```md
++++
+title = "My Lesson"
+layout = "hextra-home"
++++
+
+{{< hextra/hero-badge link="docs/quickstart/" >}}
+Workshop-ready lesson materials
+{{< /hextra/hero-badge >}}
+
+<div class="hx:mt-6 hx:mb-6">
+{{< hextra/hero-headline >}}
+Teach particle physics with a Carpentries-style lesson
+{{< /hextra/hero-headline >}}
+</div>
+
+<div class="hx:mb-12">
+{{< hextra/hero-subtitle >}}
+Reuse the familiar teaching structure while keeping the site easy to maintain with Hugo.
+{{< /hextra/hero-subtitle >}}
+</div>
+
+<div class="hx:mb-6">
+{{< hextra/hero-button text="Start Learning" link="episodes/01-introduction/" >}}
+</div>
+
+<div class="hx:mt-6"></div>
+
+{{< hextra/feature-grid cols="3" >}}
+{{< hextra/feature-card title="Episodes" subtitle="Step-by-step lesson flow." icon="book-open" link="episodes/" class="hx:min-h-[220px]" >}}
+{{< hextra/feature-card title="Setup" subtitle="Environment and data requirements." icon="cog" link="learners/setup/" class="hx:min-h-[220px]" >}}
+{{< hextra/feature-card title="Teaching Notes" subtitle="Support for instructors and helpers." icon="academic-cap" link="instructors/" class="hx:min-h-[220px]" >}}
+{{< /hextra/feature-grid >}}
+```
+
+Recommended customization boundaries:
+
+- Change the homepage content in `content/_index.md`.
+- Change site-wide metadata such as the title, repository URL, and menu entries in `hugo.toml`.
+- Add more `hextra/feature-card` entries or additional content sections if the lesson needs more orientation material.
+- Avoid copying `layouts/hextra-home.html`, `navbar.html`, or other theme templates unless you need a structural change that content cannot express.
+- Reach for custom CSS only after the built-in Hextra shortcodes and utilities stop being enough.
+
+That keeps downstream lesson repositories thin and makes future Hextra or `hugo-styles` updates much easier to adopt.
+
+For text-only homepages, adding small wrapper divs with Hextra utility classes like `hx:mt-6`, `hx:mb-6`, and `hx:mb-12` is often enough to create better breathing room between the hero badge, headline, subtitle, button, and card grid.

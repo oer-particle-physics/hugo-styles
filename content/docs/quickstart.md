@@ -10,6 +10,8 @@ weight = 10
    In particular, `params.lesson.repo` is used for the source links and the GitHub button in the top navigation.
 3. Run `hugo server`.
 4. Add episodes with `hugo new --kind episode episodes/my-episode/index.md`.
+5. Customize the landing page by editing `content/_index.md` while keeping `layout = "hextra-home"`.
+   See [Components]({{< relref "/docs/components" >}}) for the recommended homepage pattern.
 
 ## Build locally
 
