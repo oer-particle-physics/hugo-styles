@@ -39,6 +39,8 @@ var (
 	relativeFigPattern     = regexp.MustCompile(`(?:\.\./)+fig/`)
 	relativeFigHTMLPattern = regexp.MustCompile(`(<img\b[^>]*\bsrc=")(?:\.\./)+fig/`)
 	relativeFigMDPattern   = regexp.MustCompile(`(!\[[^\]]*\]\()((?:\.\./)+)fig/`)
+	imageTagPattern        = regexp.MustCompile(`(?is)<img\b[^>]*>`)
+	attributePattern       = regexp.MustCompile(`(?i)\b([a-z0-9:-]+)\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s"'>]+))`)
 	headingPattern         = regexp.MustCompile(`^(\s{0,3})(#{1,5})(\s+.*)$`)
 	attrPattern            = regexp.MustCompile(`^\{:\s*\.?([a-zA-Z0-9_-]+)\s*\}$`)
 	titleHeadingPattern    = regexp.MustCompile(`^##\s+(.+)$`)
@@ -337,6 +339,7 @@ func transformMarkdown(text string) string {
 	text = relativeFigPattern.ReplaceAllString(text, "/fig/")
 	text = relativeFigHTMLPattern.ReplaceAllString(text, `${1}/fig/`)
 	text = relativeFigMDPattern.ReplaceAllString(text, `${1}/fig/`)
+	text = convertImageTags(text)
 	text = youtubeIframePattern.ReplaceAllString(text, "{{< youtube $1 >}}")
 	text = vimeoIframePattern.ReplaceAllString(text, "{{< vimeo $1 >}}")
 	text = strings.ReplaceAll(text, "{:auto_ids}", "")
@@ -521,6 +524,53 @@ func cleanupSpacing(text string) string {
 	text = strings.ReplaceAll(text, "\n\n\n\n", "\n\n\n")
 	text = strings.ReplaceAll(text, "\n\n\n\n", "\n\n\n")
 	return strings.TrimSpace(text) + "\n"
+}
+
+func convertImageTags(text string) string {
+	return imageTagPattern.ReplaceAllStringFunc(text, func(tag string) string {
+		attrs := parseHTMLAttributes(tag)
+		src, ok := attrs["src"]
+		if !ok {
+			return tag
+		}
+		if !(strings.Contains(src, "fig/") || strings.HasPrefix(src, "/fig/") || strings.HasPrefix(src, "../fig/")) {
+			return tag
+		}
+
+		src = normalizeFigureSrc(src)
+		parts := []string{fmt.Sprintf(`src=%q`, src)}
+		for _, key := range []string{"alt", "width", "style", "class"} {
+			if value, ok := attrs[key]; ok && value != "" {
+				parts = append(parts, fmt.Sprintf(`%s=%q`, key, value))
+			}
+		}
+		return fmt.Sprintf("{{< lesson/image %s >}}", strings.Join(parts, " "))
+	})
+}
+
+func parseHTMLAttributes(tag string) map[string]string {
+	attrs := make(map[string]string)
+	for _, m := range attributePattern.FindAllStringSubmatch(tag, -1) {
+		value := m[2]
+		if value == "" {
+			value = m[3]
+		}
+		if value == "" {
+			value = m[4]
+		}
+		attrs[strings.ToLower(m[1])] = value
+	}
+	return attrs
+}
+
+func normalizeFigureSrc(src string) string {
+	src = strings.TrimSpace(src)
+	for strings.HasPrefix(src, "../") {
+		src = strings.TrimPrefix(src, "../")
+	}
+	src = strings.TrimPrefix(src, "./")
+	src = strings.TrimPrefix(src, "/")
+	return src
 }
 
 func parseAttrClass(line string) string {

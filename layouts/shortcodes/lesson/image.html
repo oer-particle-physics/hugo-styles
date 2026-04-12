@@ -1,0 +1,8 @@
+{{ $src := .Get "src" | default "" }}
+{{ $alt := .Get "alt" | default "" }}
+{{ $width := .Get "width" | default "" }}
+{{ $style := .Get "style" | default "" }}
+{{ $class := .Get "class" | default "" }}
+{{ if $src }}
+<img src="{{ $src | relURL }}" alt="{{ $alt }}"{{ with $width }} width="{{ . }}"{{ end }}{{ with $style }} style="{{ . }}"{{ end }}{{ with $class }} class="{{ . }}"{{ end }} loading="lazy" />
+{{ end }}
