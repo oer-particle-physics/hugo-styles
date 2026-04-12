@@ -69,6 +69,7 @@ func TestTransformMarkdownConvertsCommonPatterns(t *testing.T) {
 {: .challenge}
 
 <iframe src="https://www.youtube.com/embed/aqz-KE-bpKQ"></iframe>
+![Diagram](../fig/diagram.svg)
 <img src="../fig/example.png" alt="example">
 `) + "\n"
 
@@ -82,6 +83,9 @@ func TestTransformMarkdownConvertsCommonPatterns(t *testing.T) {
 	}
 	if !strings.Contains(output, `{{< youtube aqz-KE-bpKQ >}}`) {
 		t.Fatalf("expected youtube shortcode conversion, got:\n%s", output)
+	}
+	if !strings.Contains(output, `/fig/diagram.svg`) {
+		t.Fatalf("expected markdown figure path rewrite, got:\n%s", output)
 	}
 	if !strings.Contains(output, `/fig/example.png`) {
 		t.Fatalf("expected figure path rewrite, got:\n%s", output)

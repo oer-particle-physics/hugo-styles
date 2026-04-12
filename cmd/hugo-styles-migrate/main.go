@@ -570,6 +570,9 @@ func normalizeFigureSrc(src string) string {
 	}
 	src = strings.TrimPrefix(src, "./")
 	src = strings.TrimPrefix(src, "/")
+	if strings.HasPrefix(src, "fig/") {
+		src = "/" + src
+	}
 	return src
 }
 
