@@ -1,4 +1,5 @@
 {{ $src := .Get "src" | default "" }}
+{{ $src = strings.TrimPrefix "/" $src }}
 {{ $alt := .Get "alt" | default "" }}
 {{ $width := .Get "width" | default "" }}
 {{ $style := .Get "style" | default "" }}

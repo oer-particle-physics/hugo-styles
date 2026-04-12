@@ -15,6 +15,7 @@ import (
 	"strings"
 
 	toml "github.com/pelletier/go-toml/v2"
+	"gopkg.in/yaml.v3"
 )
 
 type finding struct {
@@ -44,11 +45,13 @@ var (
 	headingPattern         = regexp.MustCompile(`^(\s{0,3})(#{1,5})(\s+.*)$`)
 	attrPattern            = regexp.MustCompile(`^\{:\s*\.?([a-zA-Z0-9_-]+)\s*\}$`)
 	titleHeadingPattern    = regexp.MustCompile(`^##\s+(.+)$`)
+	htmlCommentPattern     = regexp.MustCompile(`(?s)<!--.*?-->`)
 	htmlAttrCommentPattern = regexp.MustCompile(`(?m)^<!--\s*\{:\s*\.[a-zA-Z0-9_-]+\s*\}\s*-->\s*$`)
 	youtubeIframePattern   = regexp.MustCompile(`(?is)<iframe[^>]+src="https?://(?:www\.)?youtube\.com/embed/([^"?/&]+)[^"]*"[^>]*></iframe>`)
 	vimeoIframePattern     = regexp.MustCompile(`(?is)<iframe[^>]+src="https?://player\.vimeo\.com/video/([^"?/&]+)[^"]*"[^>]*></iframe>`)
 	fencedCodeBlockPattern = regexp.MustCompile("(?s)```.*?```|~~~.*?~~~")
 	inlineCodeSpanPattern  = regexp.MustCompile("`[^`\n]+`")
+	legacyTitlePattern     = regexp.MustCompile(`(?m)^title:\s*(.+?)\s*$`)
 )
 
 var legacyPatterns = []legacyPattern{
@@ -147,7 +150,7 @@ func runMigrate(args []string) error {
 		}
 	}
 
-	if err := migrateRootPage(*source, *dest, "index.md", filepath.Join("content", "_index.md"), "hextra-home"); err != nil {
+	if err := migrateLessonHomePage(*source, *dest); err != nil {
 		return err
 	}
 	if err := migrateRootPage(*source, *dest, "reference.md", filepath.Join("content", "reference.md"), ""); err != nil {
@@ -214,6 +217,53 @@ func collectLegacyFindings(root string) ([]finding, error) {
 		return nil
 	})
 	return findings, err
+}
+
+func migrateLessonHomePage(source, dest string) error {
+	srcPath := filepath.Join(source, "index.md")
+	if _, err := os.Stat(srcPath); err != nil {
+		if errors.Is(err, os.ErrNotExist) {
+			return nil
+		}
+		return err
+	}
+
+	data, err := os.ReadFile(srcPath)
+	if err != nil {
+		return err
+	}
+	meta, body, err := parseFrontMatter(string(data))
+	if err != nil {
+		return err
+	}
+
+	text := transformMarkdown(body)
+	delete(meta, "layout")
+	delete(meta, "root")
+	delete(meta, "permalink")
+	meta["layout"] = "hextra-home"
+
+	if stringValue(meta["title"]) == "" {
+		title, err := readLegacyLessonTitle(source)
+		if err != nil {
+			return err
+		}
+		if title != "" {
+			meta["title"] = title
+		}
+	}
+
+	text = buildLessonHomePage(stringValue(meta["title"]), firstLessonLink(source), text)
+	text, err = renderFrontMatter(meta, text)
+	if err != nil {
+		return err
+	}
+
+	destPath := filepath.Join(dest, "content", "_index.md")
+	if err := os.MkdirAll(filepath.Dir(destPath), 0o755); err != nil {
+		return err
+	}
+	return os.WriteFile(destPath, []byte(text), 0o644)
 }
 
 func stripFencedCodeBlocks(text string) string {
@@ -526,6 +576,190 @@ func cleanupSpacing(text string) string {
 	return strings.TrimSpace(text) + "\n"
 }
 
+func buildLessonHomePage(title, startLink, body string) string {
+	body = strings.TrimSpace(htmlCommentPattern.ReplaceAllString(body, ""))
+	lead, remainder := splitLessonHomeIntro(body)
+	var out []string
+
+	if title != "" {
+		out = append(out, strings.Join([]string{
+			`<div class="hx:mt-6 hx:mb-6">`,
+			`{{< hextra/hero-headline >}}`,
+			title,
+			`{{< /hextra/hero-headline >}}`,
+			`</div>`,
+		}, "\n"))
+	}
+
+	if lead != "" {
+		out = append(out, strings.Join([]string{
+			`<div class="hx:mb-12">`,
+			`{{< hextra/hero-subtitle >}}`,
+			lead,
+			`{{< /hextra/hero-subtitle >}}`,
+			`</div>`,
+		}, "\n"))
+	}
+
+	if startLink != "" {
+		out = append(out, strings.Join([]string{
+			`<div class="hx:mb-6">`,
+			fmt.Sprintf(`{{< hextra/hero-button text=%q link=%q >}}`, "Start Lesson", startLink),
+			`</div>`,
+		}, "\n"))
+	}
+
+	out = append(out, strings.Join([]string{
+		`<div class="hx:mt-6"></div>`,
+		`{{< lesson/overview >}}`,
+		`<div class="hx:mt-6"></div>`,
+		`{{< lesson/schedule title="Schedule" >}}`,
+		`<div class="hx:mt-6"></div>`,
+		`{{< lesson/authors title="Authors and Contributors" >}}`,
+	}, "\n"))
+
+	if remainder != "" {
+		out = append(out, "## About This Lesson\n\n"+remainder)
+	}
+
+	return cleanupSpacing(strings.Join(out, "\n\n"))
+}
+
+func splitLessonHomeIntro(text string) (string, string) {
+	blocks := splitMarkdownBlocks(text)
+	if len(blocks) == 0 {
+		return "", ""
+	}
+
+	leadEnd := 0
+	for leadEnd < len(blocks) && isHeroLeadBlock(blocks[leadEnd]) {
+		leadEnd++
+	}
+
+	if leadEnd == 0 {
+		return "", strings.TrimSpace(text)
+	}
+
+	lead := strings.Join(blocks[:leadEnd], "\n\n")
+	remainder := strings.Join(blocks[leadEnd:], "\n\n")
+	return strings.TrimSpace(lead), strings.TrimSpace(remainder)
+}
+
+func splitMarkdownBlocks(text string) []string {
+	text = strings.TrimSpace(text)
+	if text == "" {
+		return nil
+	}
+
+	var blocks []string
+	var current []string
+	for _, line := range strings.Split(text, "\n") {
+		if strings.TrimSpace(line) == "" {
+			if len(current) > 0 {
+				blocks = append(blocks, strings.TrimSpace(strings.Join(current, "\n")))
+				current = nil
+			}
+			continue
+		}
+		current = append(current, line)
+	}
+	if len(current) > 0 {
+		blocks = append(blocks, strings.TrimSpace(strings.Join(current, "\n")))
+	}
+	return blocks
+}
+
+func isHeroLeadBlock(block string) bool {
+	block = strings.TrimSpace(block)
+	if block == "" {
+		return false
+	}
+	switch {
+	case strings.HasPrefix(block, "#"):
+		return false
+	case strings.HasPrefix(block, "{{<"):
+		return false
+	case strings.HasPrefix(block, ">"):
+		return false
+	case strings.HasPrefix(block, "```"), strings.HasPrefix(block, "~~~"):
+		return false
+	case strings.HasPrefix(block, "- "), strings.HasPrefix(block, "* "):
+		return false
+	case orderedListItemPattern.MatchString(block):
+		return false
+	case strings.HasPrefix(block, "<") && !strings.HasPrefix(block, "<!--"):
+		return false
+	default:
+		return true
+	}
+}
+
+func readLegacyLessonTitle(source string) (string, error) {
+	for _, name := range []string{"_config.yml", "_config.yaml"} {
+		path := filepath.Join(source, name)
+		data, err := os.ReadFile(path)
+		if err != nil {
+			if errors.Is(err, os.ErrNotExist) {
+				continue
+			}
+			return "", err
+		}
+
+		var meta map[string]any
+		if err := yaml.Unmarshal(data, &meta); err != nil {
+			if title := extractLegacyLessonTitle(data); title != "" {
+				return title, nil
+			}
+			return "", fmt.Errorf("parse %s: %w", path, err)
+		}
+		if title := stringValue(meta["title"]); title != "" {
+			return title, nil
+		}
+	}
+	return "", nil
+}
+
+func extractLegacyLessonTitle(data []byte) string {
+	match := legacyTitlePattern.FindSubmatch(data)
+	if len(match) != 2 {
+		return ""
+	}
+	title := strings.TrimSpace(string(match[1]))
+	title = strings.Trim(title, `"'`)
+	return strings.TrimSpace(title)
+}
+
+func firstLessonLink(source string) string {
+	episodesDir := filepath.Join(source, "_episodes")
+	entries, err := os.ReadDir(episodesDir)
+	if err != nil {
+		return "episodes/"
+	}
+
+	var names []string
+	for _, entry := range entries {
+		name := entry.Name()
+		if entry.IsDir() || filepath.Ext(name) != ".md" || name == ".gitkeep" || strings.HasPrefix(name, ".") {
+			continue
+		}
+		names = append(names, name)
+	}
+	if len(names) == 0 {
+		return "episodes/"
+	}
+
+	sort.Strings(names)
+	slug := strings.TrimSuffix(names[0], ".md")
+	return "episodes/" + slug + "/"
+}
+
+func stringValue(value any) string {
+	if text, ok := value.(string); ok {
+		return strings.TrimSpace(text)
+	}
+	return ""
+}
+
 func convertImageTags(text string) string {
 	return imageTagPattern.ReplaceAllStringFunc(text, func(tag string) string {
 		attrs := parseHTMLAttributes(tag)
@@ -583,6 +817,8 @@ func parseAttrClass(line string) string {
 	}
 	return ""
 }
+
+var orderedListItemPattern = regexp.MustCompile(`^\d+\.\s`)
 
 func isFenceAttrClass(class string) bool {
 	if class == "source" || class == "output" || class == "bash" {

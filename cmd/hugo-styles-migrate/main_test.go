@@ -152,3 +152,115 @@ permalink: index.html
 		t.Fatalf("expected legacy keys removed, got:\n%s", out)
 	}
 }
+
+func TestReadLegacyLessonTitle(t *testing.T) {
+	dir := t.TempDir()
+	configPath := filepath.Join(dir, "_config.yml")
+	err := os.WriteFile(configPath, []byte("title: Legacy Lesson\n"), 0o644)
+	if err != nil {
+		t.Fatalf("write config: %v", err)
+	}
+
+	title, err := readLegacyLessonTitle(dir)
+	if err != nil {
+		t.Fatalf("readLegacyLessonTitle returned error: %v", err)
+	}
+	if title != "Legacy Lesson" {
+		t.Fatalf("expected legacy title, got %q", title)
+	}
+}
+
+func TestReadLegacyLessonTitleFallsBackWhenConfigHasDuplicateKeys(t *testing.T) {
+	dir := t.TempDir()
+	configPath := filepath.Join(dir, "_config.yml")
+	err := os.WriteFile(configPath, []byte(strings.TrimSpace(`
+title: Legacy Lesson
+swc_site: https://example.com/one
+swc_site: https://example.com/two
+`)+"\n"), 0o644)
+	if err != nil {
+		t.Fatalf("write config: %v", err)
+	}
+
+	title, err := readLegacyLessonTitle(dir)
+	if err != nil {
+		t.Fatalf("readLegacyLessonTitle returned error: %v", err)
+	}
+	if title != "Legacy Lesson" {
+		t.Fatalf("expected legacy title, got %q", title)
+	}
+}
+
+func TestMigrateLessonHomePageBuildsStructuredLandingPage(t *testing.T) {
+	source := t.TempDir()
+	dest := t.TempDir()
+
+	if err := os.MkdirAll(filepath.Join(source, "_episodes"), 0o755); err != nil {
+		t.Fatalf("mkdir episodes: %v", err)
+	}
+
+	err := os.WriteFile(filepath.Join(source, "_config.yml"), []byte("title: Legacy Lesson\n"), 0o644)
+	if err != nil {
+		t.Fatalf("write config: %v", err)
+	}
+	err = os.WriteFile(filepath.Join(source, "_episodes", "01-first.md"), []byte("---\ntitle: First\n---\n"), 0o644)
+	if err != nil {
+		t.Fatalf("write episode: %v", err)
+	}
+	err = os.WriteFile(filepath.Join(source, "index.md"), []byte(strings.TrimSpace(`---
+layout: lesson
+root: .
+permalink: index.html
+---
+Legacy lesson introduction.
+
+Another lead paragraph.
+
+> ## Prerequisites
+>
+> Familiarity with the shell.
+{: .prereq}
+`)+"\n"), 0o644)
+	if err != nil {
+		t.Fatalf("write homepage: %v", err)
+	}
+
+	if err := migrateLessonHomePage(source, dest); err != nil {
+		t.Fatalf("migrateLessonHomePage returned error: %v", err)
+	}
+
+	outputPath := filepath.Join(dest, "content", "_index.md")
+	output, err := os.ReadFile(outputPath)
+	if err != nil {
+		t.Fatalf("read output: %v", err)
+	}
+
+	meta, body, err := parseFrontMatter(string(output))
+	if err != nil {
+		t.Fatalf("parseFrontMatter returned error: %v", err)
+	}
+	if got := meta["title"]; got != "Legacy Lesson" {
+		t.Fatalf("expected legacy title in front matter, got %#v", got)
+	}
+	if got := meta["layout"]; got != "hextra-home" {
+		t.Fatalf("expected hextra-home layout, got %#v", got)
+	}
+
+	for _, snippet := range []string{
+		"{{< hextra/hero-headline >}}",
+		"Legacy Lesson",
+		"{{< /hextra/hero-headline >}}",
+		`{{< hextra/hero-button text="Start Lesson" link="episodes/01-first/" >}}`,
+		"{{< lesson/overview >}}",
+		`{{< lesson/schedule title="Schedule" >}}`,
+		`{{< lesson/authors title="Authors and Contributors" >}}`,
+		"## About This Lesson",
+		"Legacy lesson introduction.",
+		"Another lead paragraph.",
+		`{{< callout type="prereq" title="Prerequisites" >}}`,
+	} {
+		if !strings.Contains(body, snippet) {
+			t.Fatalf("expected homepage body to contain %q, got:\n%s", snippet, body)
+		}
+	}
+}

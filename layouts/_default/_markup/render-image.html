@@ -1,8 +1,8 @@
 {{ $dest := .Destination }}
-{{ if and (not (strings.HasPrefix $dest "http://")) (not (strings.HasPrefix $dest "https://")) (not (strings.HasPrefix $dest "/")) }}
-  {{ if or (strings.HasPrefix $dest "fig/") (strings.HasPrefix $dest "files/") (strings.HasPrefix $dest "data/") (strings.HasPrefix $dest "code/") }}
-    {{ $dest = relURL $dest }}
+{{ $normalized := strings.TrimPrefix "/" $dest }}
+{{ if and (not (strings.HasPrefix $dest "http://")) (not (strings.HasPrefix $dest "https://")) }}
+  {{ if or (strings.HasPrefix $normalized "fig/") (strings.HasPrefix $normalized "files/") (strings.HasPrefix $normalized "data/") (strings.HasPrefix $normalized "code/") }}
+    {{ $dest = relURL $normalized }}
   {{ end }}
 {{ end }}
 <img src="{{ $dest | safeURL }}" alt="{{ .Text }}" loading="lazy">
-
