@@ -25,7 +25,10 @@
               </td>
               <td class="hx:py-4">
                 <ul class="hx:mb-0">
-                  {{ range .objectives }}<li>{{ . }}</li>{{ end }}
+                  {{ range .objectives }}
+                    {{ $item := replaceRE "`([^`]+)`" "<code>$1</code>" (htmlEscape .) }}
+                    <li>{{ $item | safeHTML }}</li>
+                  {{ end }}
                 </ul>
               </td>
             </tr>

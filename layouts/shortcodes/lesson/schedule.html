@@ -41,7 +41,10 @@
               <td class="hx:px-3 hx:py-4">
                 {{ with $episode.Params.questions }}
                   <ul class="hx:mb-0">
-                    {{ range . }}<li>{{ . }}</li>{{ end }}
+                    {{ range . }}
+                      {{ $item := replaceRE "`([^`]+)`" "<code>$1</code>" (htmlEscape .) }}
+                      <li>{{ $item | safeHTML }}</li>
+                    {{ end }}
                   </ul>
                 {{ else }}
                   <span class="hx:text-gray-500 hx:dark:text-gray-400">No questions listed</span>

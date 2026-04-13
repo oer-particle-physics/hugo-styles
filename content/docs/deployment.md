@@ -10,9 +10,13 @@ For hosting patterns beyond this shared setup, see
 ## Recommended deployment flow
 
 1. create the lesson repository from `hugo-styles-template`
-2. push `main`
-3. in GitHub, enable Pages with the Actions source
-4. let the included workflow build and publish the site
+2. set `baseURL` in `hugo.toml` to `https://<account>.github.io/<repo>/`
+3. in GitHub, enable Pages and choose `GitHub Actions` as the source
+4. push `main`
+5. let the included workflow build and publish the site
+
+The included workflow deploys on pushes to `main`.
+Enable Pages before the first push so that initial deploy run already has a configured publishing target.
 
 ## Local production build
 
@@ -34,3 +38,10 @@ hugo --gc --minify
 - it matches the shared-module update model more naturally
 
 The template repo already includes the workflow and Dependabot setup required for a typical lesson repository.
+
+## Optional: versioned lesson archives
+
+If you want a Hextra-style version switcher, keep the default single-version deployment only for the current site and add a custom build step for archived copies.
+The navbar support is already present in `hugo-styles`; the missing piece is publishing extra builds under stable URLs such as `/versions/latest/` and `/versions/v1.0/`.
+
+See [Versioned Sites]({{< relref "/docs/versioned-sites" >}}) for the pattern Hextra uses upstream and how to adapt it for lesson repositories.

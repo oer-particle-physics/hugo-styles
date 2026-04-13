@@ -8,6 +8,13 @@ This page is for lesson authors creating a new repository from
 If you want to work on the shared module itself, start with the repository
 README and the [hugo-styles Maintenance]({{< relref "/docs/hugo-styles-maintenance" >}}) page instead.
 
+Use this order in a fresh lesson repository:
+
+1. run local setup checks
+2. update `hugo.toml`
+3. replace the sample content
+4. come back here for deeper authoring, deployment, migration, and update guidance
+
 ## Before you start
 
 - Install [Hugo Extended](https://gohugo.io/installation/).
@@ -19,9 +26,12 @@ README and the [hugo-styles Maintenance]({{< relref "/docs/hugo-styles-maintenan
 ## Create a new lesson
 
 1. Create a new repository from `hugo-styles-template`.
-2. Update the site metadata in `hugo.toml`.
-   In particular, `params.lesson.repo` is used for the source links and the GitHub button in the top navigation.
-3. Run `hugo server`.
+2. Run `hugo version` and `hugo server` to confirm the local toolchain before editing lesson content.
+3. Update the site metadata in `hugo.toml`.
+   In particular, `params.lesson.repo` is used for the source and edit links in the page footer.
+   The top-nav GitHub icon is configured separately in `[[menus.main]]`.
+   If you plan to deploy on GitHub Pages, set `baseURL` to `https://<account>.github.io/<repo>/`.
+   In the repository settings, enable Pages and select `GitHub Actions` as the source before the first push to `main`.
 4. Add episodes with `hugo new --kind episode episodes/my-episode/index.md`.
    Episode order is controlled by front matter `weight` (not by file or folder name).
    Use unique integer weights such as `10`, `20`, `30`; numbered slugs like `01-intro` are optional.
@@ -29,12 +39,6 @@ README and the [hugo-styles Maintenance]({{< relref "/docs/hugo-styles-maintenan
    See [Components]({{< relref "/docs/components" >}}) for the recommended homepage pattern.
    If you want authors rendered on the homepage, add an `AUTHORS` file in the repository root
    and list one GitHub handle per line.
-
-## Build locally
-
-```bash
-hugo server
-```
 
 ## Deploy on GitHub Pages
 
@@ -56,4 +60,3 @@ That guide covers when to run migration checks and conversion commands.
 - [Hugo Installation](https://gohugo.io/installation/)
 - [Hugo Modules](https://gohugo.io/hugo-modules/)
 - [Hugo Embedded Shortcodes](https://gohugo.io/content-management/shortcodes/#embedded)
-- [Migration Guide]({{< relref "/docs/migration" >}})

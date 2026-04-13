@@ -75,9 +75,10 @@
                 </div>
                 <ul class="hx:mt-5 hx:space-y-3">
                   {{ range $episode.Params.keypoints }}
+                    {{ $item := replaceRE "`([^`]+)`" "<code>$1</code>" (htmlEscape .) }}
                     <li class="hx:flex hx:gap-3">
                       <span class="hx:mt-1 hx:h-2.5 hx:w-2.5 hx:flex-none hx:rounded-full hx:bg-primary-500 hx:dark:bg-primary-400"></span>
-                      <span>{{ . }}</span>
+                      <span>{{ $item | safeHTML }}</span>
                     </li>
                   {{ end }}
                 </ul>

@@ -24,7 +24,10 @@
       <section class="hx:rounded-2xl hx:border hx:border-gray-200 hx:bg-white hx:p-6 hx:shadow-sm hx:dark:border-neutral-800 hx:dark:bg-neutral-900">
         <h2 id="{{ printf "%s-questions" $episodeID }}">Questions</h2>
         <ul>
-          {{ range . }}<li>{{ . }}</li>{{ end }}
+          {{ range . }}
+            {{ $item := replaceRE "`([^`]+)`" "<code>$1</code>" (htmlEscape .) }}
+            <li>{{ $item | safeHTML }}</li>
+          {{ end }}
         </ul>
       </section>
     {{ end }}
@@ -32,7 +35,10 @@
       <section class="hx:rounded-2xl hx:border hx:border-gray-200 hx:bg-white hx:p-6 hx:shadow-sm hx:dark:border-neutral-800 hx:dark:bg-neutral-900">
         <h2 id="{{ printf "%s-objectives" $episodeID }}">Objectives</h2>
         <ul>
-          {{ range . }}<li>{{ . }}</li>{{ end }}
+          {{ range . }}
+            {{ $item := replaceRE "`([^`]+)`" "<code>$1</code>" (htmlEscape .) }}
+            <li>{{ $item | safeHTML }}</li>
+          {{ end }}
         </ul>
       </section>
     {{ end }}
@@ -44,7 +50,10 @@
     <section class="hx:rounded-2xl hx:border hx:border-gray-200 hx:bg-white hx:p-6 hx:shadow-sm hx:dark:border-neutral-800 hx:dark:bg-neutral-900">
       <h2 id="{{ printf "%s-key-points" $episodeID }}">Key Points</h2>
       <ul>
-        {{ range . }}<li>{{ . }}</li>{{ end }}
+        {{ range . }}
+          {{ $item := replaceRE "`([^`]+)`" "<code>$1</code>" (htmlEscape .) }}
+          <li>{{ $item | safeHTML }}</li>
+        {{ end }}
       </ul>
     </section>
   </section>

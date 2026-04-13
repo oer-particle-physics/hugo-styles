@@ -155,6 +155,11 @@ disableKinds = ["taxonomy", "term", "RSS"]
     pageRef = "/docs/deployment"
     weight = 70
   [[menus.main]]
+    name = "Versioned Sites"
+    parent = "docs"
+    pageRef = "/docs/versioned-sites"
+    weight = 75
+  [[menus.main]]
     name = "Troubleshooting"
     parent = "docs"
     pageRef = "/docs/troubleshooting"
