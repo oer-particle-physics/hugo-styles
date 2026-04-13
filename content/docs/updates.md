@@ -3,16 +3,50 @@ title = "Updating Downstream Lessons"
 weight = 100
 +++
 
-The update path is built around the shared module, not around repeatedly syncing a template repository.
+This page is for lesson maintainers updating lesson repositories.
+If you maintain the shared `hugo-styles` module itself, use
+[hugo-styles Maintenance]({{< relref "/docs/hugo-styles-maintenance" >}}).
 
-## Recommended downstream setup
+## Recommended path: template + automated vendor refresh (no local Go)
 
-- keep lesson-specific content in the lesson repository
-- import `github.com/oer-particle-physics/hugo-styles` as a Hugo Module
-- override only what is genuinely repo-specific
-- let Dependabot open module-update PRs
+For repositories created from `hugo-styles-template`, the intended update flow is:
 
-## Manual update flow
+- keep `_vendor/` committed so lesson authors can build with Hugo Extended only
+- use the **Refresh vendored Hugo modules** GitHub Actions workflow
+- review and merge the PR when it updates `go.mod`, `go.sum`, and `_vendor/`
+- keep lesson-specific overrides in the lesson repository (`content/`, config, and selected overrides)
+
+This avoids requiring local Go for normal lesson authoring.
+
+### What `_vendor/` is for
+
+`_vendor/` is a committed snapshot of Hugo module dependencies pinned by `go.mod` and `go.sum`.
+Committing it keeps lesson builds reproducible and lets authors run `hugo server` without local Go.
+
+### Refresh locally (optional, if Go is available)
+
+If you do have Go locally and want to refresh manually:
+
+```bash
+hugo mod tidy
+hugo mod vendor
+hugo --gc --minify
+```
+
+If you need to bump the shared module first:
+
+```bash
+hugo mod get -u github.com/oer-particle-physics/hugo-styles@latest
+hugo mod tidy
+hugo mod vendor
+```
+
+## Direct module mode (without `_vendor/`)
+
+If a lesson repository imports `github.com/oer-particle-physics/hugo-styles` directly (without committed `_vendor/`),
+enable Dependabot for `gomod` so updates arrive as pull requests.
+
+Manual fallback:
 
 ```bash
 hugo mod get -u github.com/oer-particle-physics/hugo-styles@latest
@@ -21,21 +55,7 @@ hugo mod graph
 hugo
 ```
 
-Review the rendered preview before merging the module bump, especially if the changelog mentions a breaking change.
-
-## Search bundle maintenance
-
-The shared module vendors the FlexSearch runtime locally so lesson builds stay self-contained.
-That bundle is maintained in the `hugo-styles` repository rather than in downstream lessons.
-
-When Dependabot opens an npm update for `flexsearch`, refresh the committed bundle in the module repo with:
-
-```bash
-npm ci
-npm run vendor:flexsearch
-```
-
-CI also runs `npm run check:flexsearch` to catch version bumps where the vendored bundle was not refreshed yet.
+Review the rendered preview before merging a module bump, especially when the changelog mentions a breaking change.
 
 ## Override strategy
 
@@ -47,13 +67,3 @@ Hugo's normal precedence rules let downstream lessons override the module safely
 - local `hugo.toml` values override module defaults
 
 Use that for branding, navigation changes, or lesson-specific extras without forking the shared infrastructure.
-
-## Maintainer release checklist
-
-When updating the shared module itself:
-
-1. run `go test ./...` in `cmd/hugo-styles-migrate`
-2. run `npm run check:flexsearch`
-3. run `hugo --gc --minify`
-4. update `CHANGELOG.md`
-5. tag and publish a release from the `hugo-styles` repository

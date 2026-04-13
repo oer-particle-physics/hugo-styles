@@ -12,6 +12,11 @@ disableKinds = ["taxonomy", "term", "RSS"]
   [markup.goldmark]
     [markup.goldmark.extensions]
       definitionList = true
+      [markup.goldmark.extensions.passthrough]
+        enable = true
+        [markup.goldmark.extensions.passthrough.delimiters]
+          block = [["\\[", "\\]"], ["$$", "$$"]]
+          inline = [["\\(", "\\)"]]
     [markup.goldmark.renderer]
       unsafe = true
 
@@ -134,6 +139,11 @@ disableKinds = ["taxonomy", "term", "RSS"]
     parent = "docs"
     pageRef = "/docs/components"
     weight = 50
+  [[menus.main]]
+    name = "Hextra Features"
+    parent = "docs"
+    pageRef = "/docs/hextra-features"
+    weight = 55
   [[menus.main]]
     name = "Glossary & Profiles"
     parent = "docs"

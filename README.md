@@ -71,12 +71,15 @@ hugo
 
 For a smoother maintenance experience, downstream lesson repositories should enable Dependabot for `gomod` updates so module bumps arrive as pull requests.
 
+The `hugo-styles-template` repository commits `_vendor/` so lesson authors can run local builds with Hugo Extended alone.
+Template maintainers still use Go when refreshing `go.mod`/`go.sum` and `_vendor/`.
+
 ## Local development
 
 For downstream lesson authors, the practical prerequisites are:
 
 - [Hugo Extended](https://gohugo.io/installation/)
-- [Go](https://go.dev/doc/install)
+- [Go](https://go.dev/doc/install) (optional for template-based authoring with committed `_vendor/`; required for module maintenance and migration checks)
 
 Node.js is only needed in this repository when maintainers refresh the vendored search bundle.
 

@@ -14,8 +14,12 @@ Use this page when you need the next layer of documentation beyond the
   [Quickstart]({{< relref "/docs/quickstart" >}})
 - Shared module authoring conventions:
   [Authoring Guide]({{< relref "/docs/authoring" >}})
-- Shared module maintenance and updates:
+- Curated Hextra usage for particle-physics lessons:
+  [Hextra Features for Physics Lessons]({{< relref "/docs/hextra-features" >}})
+- Downstream lesson update workflow:
   [Updating Downstream Lessons]({{< relref "/docs/updates" >}})
+- Shared `hugo-styles` repository maintenance:
+  [hugo-styles Maintenance]({{< relref "/docs/hugo-styles-maintenance" >}})
 
 ## Upstream docs
 

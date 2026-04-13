@@ -7,6 +7,8 @@ These are the supported lesson-specific components on top of Hextra.
 This page focuses on the Carpentries-style layer added by `hugo-styles`.
 For the broader Hextra and Hugo feature set, use the
 [Reference]({{< relref "/reference" >}}) page and the linked upstream docs.
+For a particle-physics-focused Hextra feature walkthrough, see
+[Hextra Features for Physics Lessons]({{< relref "/docs/hextra-features" >}}).
 
 ## Challenge, hint, and solution
 
@@ -182,33 +184,33 @@ title = "My Lesson"
 layout = "hextra-home"
 +++
 
-{{< hextra/hero-badge link="docs/quickstart/" >}}
+{{</* hextra/hero-badge link="docs/quickstart/" */>}}
 Workshop-ready lesson materials
-{{< /hextra/hero-badge >}}
+{{</* /hextra/hero-badge */>}}
 
 <div class="hx:mt-6 hx:mb-6">
-{{< hextra/hero-headline >}}
+{{</* hextra/hero-headline */>}}
 Teach particle physics with a Carpentries-style lesson
-{{< /hextra/hero-headline >}}
+{{</* /hextra/hero-headline */>}}
 </div>
 
 <div class="hx:mb-12">
-{{< hextra/hero-subtitle >}}
+{{</* hextra/hero-subtitle */>}}
 Reuse the familiar teaching structure while keeping the site easy to maintain with Hugo.
-{{< /hextra/hero-subtitle >}}
+{{</* /hextra/hero-subtitle */>}}
 </div>
 
 <div class="hx:mb-6">
-{{< hextra/hero-button text="Start Learning" link="episodes/01-introduction/" >}}
+{{</* hextra/hero-button text="Start Learning" link="episodes/01-introduction/" */>}}
 </div>
 
 <div class="hx:mt-6"></div>
 
-{{< hextra/feature-grid cols="3" >}}
-{{< hextra/feature-card title="Episodes" subtitle="Step-by-step lesson flow." icon="book-open" link="episodes/" class="hx:min-h-[220px]" >}}
-{{< hextra/feature-card title="Setup" subtitle="Environment and data requirements." icon="cog" link="learners/setup/" class="hx:min-h-[220px]" >}}
-{{< hextra/feature-card title="Teaching Notes" subtitle="Support for instructors and helpers." icon="academic-cap" link="instructors/" class="hx:min-h-[220px]" >}}
-{{< /hextra/feature-grid >}}
+{{</* hextra/feature-grid cols="3" */>}}
+{{</* hextra/feature-card title="Episodes" subtitle="Step-by-step lesson flow." icon="book-open" link="episodes/" class="hx:min-h-[220px]" */>}}
+{{</* hextra/feature-card title="Setup" subtitle="Environment and data requirements." icon="cog" link="learners/setup/" class="hx:min-h-[220px]" */>}}
+{{</* hextra/feature-card title="Teaching Notes" subtitle="Support for instructors and helpers." icon="academic-cap" link="instructors/" class="hx:min-h-[220px]" */>}}
+{{</* /hextra/feature-grid */>}}
 ```
 
 Recommended customization boundaries:

@@ -186,6 +186,7 @@ The example lesson intentionally demonstrates the lesson-specific UI:
 - [Designing a Hugo-first lesson]({{< relref "/episodes/01-introduction" >}})
 - [Using challenge and solution blocks]({{< relref "/episodes/02-facilitating-activity" >}})
 - [Setup choices, profiles, and native embeds]({{< relref "/episodes/03-setup-choices" >}})
+- [Physics notation, diagrams, and richer docs]({{< relref "/episodes/04-physics-doc-features" >}})
 - [Learner setup page]({{< relref "/learners/setup" >}})
 
 ## Videos
