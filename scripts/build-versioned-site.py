@@ -409,7 +409,6 @@ def resolve_targets(
     repo_root: Path | None,
     current_branch: str | None,
 ) -> list[BuildTarget]:
-    root_path = site_root_path(base_url)
     enable_versioning = as_bool(versioning.get("enable"), default=False)
 
     latest_cfg = versioning.get("latest") or {}
@@ -445,7 +444,7 @@ def resolve_targets(
                 kind="root",
                 git_ref=root_git_ref,
                 base_url=normalize_base_url(base_url),
-                menu_path=root_path,
+                menu_path="/",
                 destination=destination_root,
                 include_in_menu=latest_enabled,
             )
@@ -458,7 +457,7 @@ def resolve_targets(
                 kind="root",
                 git_ref=root_git_ref,
                 base_url=normalize_base_url(base_url),
-                menu_path=root_path,
+                menu_path="/",
                 destination=destination_root,
                 include_in_menu=False,
             )
@@ -498,7 +497,7 @@ def resolve_targets(
                     kind=kind,
                     git_ref=git_ref,
                     base_url=join_url(base_url, "versions", ref_name),
-                    menu_path=join_site_path(root_path, "versions", ref_name),
+                    menu_path=join_site_path("/", "versions", ref_name),
                     destination=destination_root / "versions" / ref_name,
                     include_in_menu=True,
                 )
