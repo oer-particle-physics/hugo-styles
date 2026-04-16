@@ -3,97 +3,173 @@ title = "Versioned Sites"
 weight = 75
 +++
 
-Hextra's public docs site does not use a special built-in versioning feature.
-It combines two ordinary Hugo features:
+`hugo-styles` and `hugo-styles-template` now ship with version-aware deployment support.
+The default behavior is intentionally small:
 
-1. a navbar dropdown created from nested `menus.main` entries
-2. a deployment step that builds multiple copies of the site under stable subpaths
+- the default branch is published at the site root and labelled `Latest`
+- plain `hugo server` still serves only the current checkout
+- archived branches or tags are only added when you opt into them in `hugo.toml`
 
-Upstream references:
+This keeps local authoring simple while still letting the GitHub Pages build publish multiple refs under stable URLs.
 
-- [Hextra docs menu config](https://github.com/imfing/hextra/blob/main/docs/hugo.yaml)
-- [Hextra multi-version build script](https://github.com/imfing/hextra/blob/main/build.sh)
-- [Hextra GitHub Pages workflow](https://github.com/imfing/hextra/blob/main/.github/workflows/pages.yml)
+## The config model
 
-## What Hextra does
-
-Hextra's docs config defines a top-level `Versions` menu item with children that point at published URLs such as:
-
-- `/versions/latest/`
-- `/versions/v0.11/`
-- `/versions/v0.10/`
-
-The theme renders that as a dropdown because child menu entries are already supported in the navbar.
-There is no automatic tag discovery and no theme-specific version registry.
-The links are configured manually in site config.
-
-## Can this use a branch or a tag?
-
-Yes.
-Hextra's `build.sh` stores each version as a Git ref and then runs `git checkout <ref>` before building that copy of the site.
-That means the ref can be:
-
-- a branch such as `main`
-- a tag such as `v0.11.3`
-
-Upstream uses `main` for the `latest` docs build and release tags for archived versions.
-
-## What this means for `hugo-styles`
-
-`hugo-styles` already preserves nested navbar menus, so no layout or module change is required to support a version dropdown.
-To use the pattern in a lesson repository, you need to do two things:
-
-1. publish separate builds at predictable URLs
-2. add matching `Versions` links in `hugo.toml`
-
-If you do not need archived lesson releases, keep the default single-version deployment from `hugo-styles-template`.
-
-## Minimal menu example
+Both repositories include this block by default:
 
 ```toml
-[[menus.main]]
-  name = "Versions"
-  identifier = "versions"
-  weight = 70
+[params.versioning]
+  enable = true
+  defaultBranch = "main"
+  menuName = "Versions"
+  menuIdentifier = "versions"
+  menuWeight = 70
 
-[[menus.main]]
-  name = "Development ↗"
-  parent = "versions"
-  url = "https://example.github.io/example-lesson/versions/latest/"
-  weight = 10
+  [params.versioning.latest]
+    enable = true
+    label = "Latest"
 
-[[menus.main]]
-  name = "v1.0 ↗"
-  parent = "versions"
-  url = "https://example.github.io/example-lesson/versions/v1.0/"
-  weight = 20
+  [params.versioning.branches]
+    refs = []
+    patterns = []
+    all = false
+
+  [params.versioning.tags]
+    refs = []
+    patterns = []
+    all = false
 ```
 
-Use absolute URLs here because each entry typically points at a separately published site copy.
+## What this does by default
 
-## Minimal build idea
+With the default config:
 
-Hextra's upstream script builds each version into `public/versions/<name>/`.
-The same idea works for lesson sites:
+- the GitHub Pages workflow builds the configured default branch as the site root
+- the navbar gets a `Versions` dropdown with one entry: `Latest`
+- no extra branch or tag builds are published
+
+The generated output uses these URL patterns:
+
+- `https://<account>.github.io/<repo>/` for `Latest`
+- `https://<account>.github.io/<repo>/versions/<name>/` for extra branches or tags
+
+## Add specific branches or tags
+
+To publish named refs explicitly:
+
+```toml
+[params.versioning.branches]
+  refs = ["release-2026"]
+
+[params.versioning.tags]
+  refs = ["v1.0.0", "v1.1.0"]
+```
+
+These appear in the dropdown as:
+
+- `Latest`
+- `release-2026`
+- `v1.0.0`
+- `v1.1.0`
+
+If `Latest` already points at the default branch, that branch is not duplicated under its raw branch name.
+
+## Match tags or branches with wildcards
+
+Pattern matching uses shell-style globs:
+
+```toml
+[params.versioning.tags]
+  patterns = ["v*"]
+
+[params.versioning.branches]
+  patterns = ["release/*"]
+```
+
+Typical uses:
+
+- `v*` for release tags
+- `release/*` for maintenance branches
+- `docs-*` for documentation branches
+
+## Publish all branches or all tags
+
+If you want broad discovery instead of an explicit list:
+
+```toml
+[params.versioning.branches]
+  all = true
+
+[params.versioning.tags]
+  all = true
+```
+
+You can combine `all = true` with `patterns` or `refs`, but in most cases one approach is enough.
+
+## Disable `Latest`
+
+If you only want named version entries in the dropdown:
+
+```toml
+[params.versioning.latest]
+  enable = false
+```
+
+The root site still has to exist for GitHub Pages, so the default branch continues to build at the site root.
+This option only hides the `Latest` menu entry.
+
+## Local development
+
+For day-to-day authoring, keep using:
 
 ```bash
-VERSIONS=(
-  "main:latest"
-  "v1.0.0:v1.0"
-)
-
-for VERSION in "${VERSIONS[@]}"; do
-  IFS=':' read -r REF NAME <<< "$VERSION"
-  git checkout "$REF"
-  hugo --baseURL "$BASE_URL/versions/$NAME/" --destination "../public/versions/$NAME"
-done
+hugo server
 ```
 
-In practice, you would replace the template's single `hugo --gc --minify` build step with a small wrapper script like this in GitHub Actions.
-If you want a cleaner local workflow than repeated `git checkout`, prefer separate worktrees for each ref.
+That serves only the current checkout.
+It does not try to build other tags or branches locally.
 
-## Tradeoffs
+If you want the full deployment artifact on your machine, run the same helper the GitHub Pages workflow uses:
 
-- Good fit for documentation that needs archived releases.
-- More CI complexity and longer build times than a single Pages deployment.
-- Menu entries stay manual, so adding a new release means updating both the build script and the menu links.
+```bash
+python3 scripts/build-versioned-site.py
+```
+
+You can override the production base URL while testing:
+
+```bash
+python3 scripts/build-versioned-site.py --base-url http://localhost:8000/
+```
+
+Then serve `public/` with any static file server.
+
+For repositories created from `hugo-styles-template`, that helper is committed in the lesson repository
+and refreshed from the pinned `hugo-styles` module version by the template's update workflow and local
+`./scripts/sync-build-versioned-site.sh` helper.
+
+## How the build works
+
+The helper script:
+
+1. reads the effective Hugo config via `hugo config --format json`
+2. resolves the configured branches and tags from Git
+3. creates temporary Git worktrees instead of repeatedly checking out the current directory
+4. generates a small per-build config file with the correct `Versions` menu entries
+5. runs Hugo once for the root site and once for each extra version
+
+This stays close to Hugo's built-in behavior:
+
+- Hugo still handles routing, menus, `baseURL`, and output paths
+- the custom logic is limited to ref discovery and menu generation
+
+## Current limitation
+
+The shared build helper supports one site root per repository via Hugo's normal `--source` option.
+It does not currently support a different `source_dir` per ref like Hextra's own script does for its historical `docs` and `exampleSite` layouts.
+
+That tradeoff is deliberate:
+
+- it keeps the lesson workflow simpler
+- it matches the current `hugo-styles` and template repository layouts
+- it avoids adding extra per-version config unless a real downstream use case needs it
+
+If you need to publish older refs from a different site subdirectory, extend the helper at that point instead of carrying that complexity by default.

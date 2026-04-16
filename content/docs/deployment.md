@@ -4,8 +4,7 @@ weight = 60
 +++
 
 `hugo-styles-template` is set up for GitHub Pages via GitHub Actions rather than a committed `gh-pages` branch.
-For hosting patterns beyond this shared setup, see
-[Hextra Deploy Site](https://imfing.github.io/hextra/docs/guide/deploy-site/).
+For hosting patterns beyond this shared setup, see [Hextra Deploy Site](https://imfing.github.io/hextra/docs/guide/deploy-site/).
 
 ## Recommended deployment flow
 
@@ -17,18 +16,20 @@ For hosting patterns beyond this shared setup, see
 
 The included workflow deploys on pushes to `main`.
 Enable Pages before the first push so that initial deploy run already has a configured publishing target.
+By default it publishes the default branch as `Latest`.
+Extra branch or tag builds come from the `params.versioning` block in `hugo.toml`.
 
 ## Local production build
 
 ```bash
-hugo --gc --minify
+python3 scripts/build-versioned-site.py
 ```
 
 ## Typical checks before publishing
 
 ```bash
 go run github.com/oer-particle-physics/hugo-styles/cmd/hugo-styles-migrate@latest check .
-hugo --gc --minify
+python3 scripts/build-versioned-site.py
 ```
 
 ## Why this uses Actions
@@ -39,9 +40,9 @@ hugo --gc --minify
 
 The template repo already includes the workflow and Dependabot setup required for a typical lesson repository.
 
-## Optional: versioned lesson archives
+## Versioned lesson archives
 
-If you want a Hextra-style version switcher, keep the default single-version deployment only for the current site and add a custom build step for archived copies.
-The navbar support is already present in `hugo-styles`; the missing piece is publishing extra builds under stable URLs such as `/versions/latest/` and `/versions/v1.0/`.
+The shared workflow already knows how to build archived versions.
+The only thing you need to change is `params.versioning` in `hugo.toml`.
 
-See [Versioned Sites]({{< relref "/docs/versioned-sites" >}}) for the pattern Hextra uses upstream and how to adapt it for lesson repositories.
+See [Versioned Sites]({{< relref "/docs/versioned-sites" >}}) for branch/tag examples, wildcard matching, and the exact build helper behavior.

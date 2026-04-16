@@ -72,7 +72,14 @@ hugo
 For a smoother maintenance experience, downstream lesson repositories should enable Dependabot for `gomod` updates so module bumps arrive as pull requests.
 
 The `hugo-styles-template` repository commits `_vendor/` so lesson authors can run local builds with Hugo Extended alone.
-Template maintainers still use Go when refreshing `go.mod`/`go.sum` and `_vendor/`.
+Template maintainers still use Go when refreshing `go.mod`/`go.sum`, `scripts/build-versioned-site.py`, and `_vendor/`,
+either through the **Refresh vendored Hugo modules** workflow or locally with:
+
+```bash
+hugo mod tidy
+./scripts/sync-build-versioned-site.sh
+hugo mod vendor
+```
 
 ## Local development
 

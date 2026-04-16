@@ -19,6 +19,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
 
       - name: Setup Node
         uses: actions/setup-node@v6
@@ -58,8 +60,11 @@ jobs:
         working-directory: cmd/hugo-styles-migrate
         run: go run . check ../..
 
+      - name: Fetch deploy refs
+        run: git fetch --prune origin '+refs/heads/*:refs/remotes/origin/*' --tags
+
       - name: Build
-        run: hugo --gc --minify --baseURL "${{ steps.pages.outputs.base_url }}/"
+        run: python3 scripts/build-versioned-site.py --base-url "${{ steps.pages.outputs.base_url }}/"
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v4

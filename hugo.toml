@@ -57,6 +57,27 @@ disableKinds = ["taxonomy", "term", "RSS"]
   displayPoweredBy = false
   displayCopyright = false
 
+[params.versioning]
+  enable = true
+  defaultBranch = "main"
+  menuName = "Versions"
+  menuIdentifier = "versions"
+  menuWeight = 70
+
+  [params.versioning.latest]
+    enable = true
+    label = "Latest"
+
+  [params.versioning.branches]
+    refs = []
+    patterns = []
+    all = false
+
+  [params.versioning.tags]
+    refs = []
+    patterns = []
+    all = false
+
 [menus]
   [[menus.main]]
     name = "Examples"

@@ -13,7 +13,7 @@ For repositories created from `hugo-styles-template`, the intended update flow i
 
 - keep `_vendor/` committed so lesson authors can build with Hugo Extended only
 - use the **Refresh vendored Hugo modules** GitHub Actions workflow
-- review and merge the PR when it updates `go.mod`, `go.sum`, and `_vendor/`
+- review and merge the PR when it updates `go.mod`, `go.sum`, `scripts/build-versioned-site.py`, and `_vendor/`
 - keep lesson-specific overrides in the lesson repository (`content/`, config, and selected overrides)
 
 This avoids requiring local Go for normal lesson authoring.
@@ -29,8 +29,9 @@ If you do have Go locally and want to refresh manually:
 
 ```bash
 hugo mod tidy
+./scripts/sync-build-versioned-site.sh
 hugo mod vendor
-hugo --gc --minify
+python3 scripts/build-versioned-site.py
 ```
 
 If you need to bump the shared module first:
@@ -38,8 +39,13 @@ If you need to bump the shared module first:
 ```bash
 hugo mod get -u github.com/oer-particle-physics/hugo-styles@latest
 hugo mod tidy
+./scripts/sync-build-versioned-site.sh
 hugo mod vendor
 ```
+
+The sync helper copies `scripts/build-versioned-site.py` from the exact pinned `hugo-styles`
+module version when that version provides the helper.
+That keeps the committed build script aligned with `go.mod` rather than downloading an unrelated head revision.
 
 ## Direct module mode (without `_vendor/`)
 
