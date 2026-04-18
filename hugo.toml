@@ -22,12 +22,12 @@ disableKinds = ["taxonomy", "term", "RSS"]
 
 [params.lesson]
   title = "Hugo Styles"
-  tagline = "A Hugo-first lesson stack for Carpentries-style tutorials."
   description = "Reusable lesson infrastructure with challenge blocks, audience-aware content, aggregated teaching resources, and a thin updateable template."
   contact = "team@example.org"
   repo = "https://github.com/oer-particle-physics/hugo-styles"
   editBranch = "main"
   docsRepo = "https://github.com/oer-particle-physics/hugo-styles"
+  copyrightHolder = "the authors"
   licenseName = "CC BY 4.0"
   licenseURL = "https://creativecommons.org/licenses/by/4.0/"
   lifecycle = "stable"

@@ -503,30 +503,6 @@ html[data-view="instructor"] [data-audience="learner"] {
   color: rgb(254 243 199 / 0.86);
 }
 
-.lesson-footer-meta {
-  row-gap: 0.75rem;
-  column-gap: 1rem;
-}
-
-.lesson-footer-chip,
-.lesson-footer-link {
-  display: inline-flex;
-  align-items: center;
-  min-height: 2rem;
-}
-
-.lesson-footer-link {
-  text-decoration: none;
-}
-
-.lesson-footer-link:hover {
-  text-decoration: underline;
-}
-
-.lesson-footer-tagline {
-  line-height: 1.6;
-}
-
 @media (min-width: 768px) {
   [data-lesson-shell][data-sidebar-collapsed="true"] > .hextra-sidebar-container {
     display: none !important;
