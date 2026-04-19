@@ -1,5 +1,5 @@
 # Managed by hugo-styles.
-# x-release-please-version: v0.1.0
+# x-release-please-version: v0.2.0
 name: Refresh vendored Hugo modules
 
 on:
