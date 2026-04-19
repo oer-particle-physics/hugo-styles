@@ -25,7 +25,7 @@ jobs:
       verify-command: |
         python3 scripts/build-versioned-site.py
         hugo --gc --minify --noBuildLock --destination /tmp/site
-      pr-title: chore: refresh vendored Hugo modules
+      pr-title: "chore: refresh vendored Hugo modules"
       pr-body: |
         Automated refresh of Hugo module metadata, managed maintainer files, reusable workflows, and `_vendor/`.
 
