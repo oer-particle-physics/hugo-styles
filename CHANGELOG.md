@@ -2,7 +2,9 @@
 
 ## Unreleased
 
-- No unreleased changes yet.
+- Add manifest-driven sync for shared maintainer files in downstream lesson repositories.
+- Add reusable GitHub Actions workflows, `release-please`, and Commitizen-based conventional-commit enforcement.
+- Document the `sync-template-files.sh` update flow and the preferred local `prek` hook setup.
 
 ## 0.1.0 - 2026-04-11
 

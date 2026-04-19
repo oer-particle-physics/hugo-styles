@@ -1,0 +1,8 @@
+# source|target|mode
+dist/template-files/.github/workflows/pages.yml|.github/workflows/pages.yml|0644
+dist/template-files/.github/workflows/refresh-vendored-modules.yml|.github/workflows/refresh-vendored-modules.yml|0644
+.github/workflows/reusable-pages.yml|.github/workflows/reusable-pages.yml|0644
+.github/workflows/reusable-refresh-vendored-modules.yml|.github/workflows/reusable-refresh-vendored-modules.yml|0644
+dist/template-files/scripts/sync-template-files.sh|scripts/sync-template-files.sh|0755
+scripts/build-versioned-site.py|scripts/build-versioned-site.py|0755
+lychee.toml|lychee.toml|0644

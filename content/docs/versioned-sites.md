@@ -155,7 +155,7 @@ link checking work even for GitHub Pages project sites that deploy under `/<repo
 
 For repositories created from `hugo-styles-template`, that helper is committed in the lesson repository
 and refreshed from the pinned `hugo-styles` module version by the template's update workflow and local
-`./scripts/sync-build-versioned-site.sh` helper.
+`./scripts/sync-template-files.sh` helper.
 
 ## How the build works
 

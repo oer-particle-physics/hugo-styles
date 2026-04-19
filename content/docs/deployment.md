@@ -20,6 +20,7 @@ By default it publishes the default branch as `Latest`.
 Extra branch or tag builds come from the `params.versioning` block in `hugo.toml`.
 Before the deploy artifact is built, the workflow also builds a local-root version of the site and runs `lychee`
 against the rendered HTML on both pull requests and pushes.
+In template-based lesson repositories, the top-level workflow files are thin managed wrappers that call synced reusable workflow files maintained in `hugo-styles`.
 
 ## Local production build
 
@@ -47,6 +48,7 @@ artifact with the production Pages URL.
 - it matches the shared-module update model more naturally
 
 The template repo already includes the workflow and Dependabot setup required for a typical lesson repository.
+When you update `hugo-styles`, run `./scripts/sync-template-files.sh` so those managed workflow files stay aligned with the pinned module version.
 
 ## Versioned lesson archives
 

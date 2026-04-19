@@ -73,14 +73,25 @@ hugo
 For a smoother maintenance experience, downstream lesson repositories should enable Dependabot for `gomod` updates so module bumps arrive as pull requests.
 
 The `hugo-styles-template` repository commits `_vendor/` so lesson authors can run local builds with Hugo Extended alone.
-Template maintainers still use Go when refreshing `go.mod`/`go.sum`, `scripts/build-versioned-site.py`, `lychee.toml`, and `_vendor/`,
+Template maintainers still use Go when refreshing `go.mod`/`go.sum`, managed maintainer files, and `_vendor/`,
 either through the **Refresh vendored Hugo modules** workflow or locally with:
 
 ```bash
+hugo mod get -u github.com/oer-particle-physics/hugo-styles@latest
 hugo mod tidy
-./scripts/sync-build-versioned-site.sh
+./scripts/sync-template-files.sh
 hugo mod vendor
 ```
+
+The shared sync currently manages:
+
+- `scripts/build-versioned-site.py`
+- `scripts/sync-template-files.sh`
+- `lychee.toml`
+- `.github/workflows/pages.yml`
+- `.github/workflows/refresh-vendored-modules.yml`
+- `.github/workflows/reusable-pages.yml`
+- `.github/workflows/reusable-refresh-vendored-modules.yml`
 
 ## Local development
 
@@ -163,7 +174,16 @@ go run github.com/oer-particle-physics/hugo-styles/cmd/hugo-styles-migrate@lates
 
 ## Release workflow
 
-Before cutting a new `hugo-styles` release:
+`hugo-styles` now uses `release-please` for release PRs and changelog updates.
+The normal maintainer flow is:
+
+```bash
+prek install --hook-type commit-msg
+```
+
+Then work with conventional commits locally. CI also runs `cz check --rev-range ...` on pull requests, so the hook is a faster local guardrail rather than the only enforcement point.
+
+Before merging a release PR or sanity-checking a release candidate:
 
 ```bash
 cd cmd/hugo-styles-migrate && go test ./...
@@ -174,4 +194,5 @@ lychee --cache --config lychee.toml --no-progress --root-dir .cache/linkcheck-si
 hugo --gc --minify
 ```
 
-Then update `CHANGELOG.md`, create the release tag, and let downstream lesson repositories pick it up through `hugo mod get -u ...` or Dependabot PRs.
+The `release-please` workflow expects a `RELEASE_PLEASE_TOKEN` secret so the generated release PRs and tags can trigger follow-up GitHub Actions runs normally.
+Once the release PR is merged, downstream lesson repositories pick up the new version through `hugo mod get -u ...`, the **Refresh vendored Hugo modules** workflow, or Dependabot PRs.

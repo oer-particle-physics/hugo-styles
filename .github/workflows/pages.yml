@@ -15,101 +15,17 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v6
-        with:
-          fetch-depth: 0
-
-      - name: Setup Node
-        uses: actions/setup-node@v6
-        with:
-          node-version: "22"
-          cache: "npm"
-
-      - name: Setup Hugo
-        uses: peaceiris/actions-hugo@v3
-        with:
-          hugo-version: "0.160.1"
-          extended: true
-
-      - name: Setup Go
-        uses: actions/setup-go@v6
-        with:
-          go-version-file: go.mod
-
-      - name: Configure Pages
-        id: pages
-        uses: actions/configure-pages@v6
-
-      - name: Install maintainer tools
-        run: npm ci
-
-      - name: Verify vendored FlexSearch bundle
-        run: npm run check:flexsearch
-
-      - name: Download modules
-        run: hugo mod tidy
-
-      - name: Run migration tool tests
-        working-directory: cmd/hugo-styles-migrate
-        run: go test ./...
-
-      - name: Validate example lesson content
-        working-directory: cmd/hugo-styles-migrate
-        run: go run . check ../..
-
-      - name: Restore lychee cache
-        id: restore-lychee-cache
-        uses: actions/cache/restore@v4
-        with:
-          path: .lycheecache
-          key: cache-lychee-${{ github.sha }}
-          restore-keys: cache-lychee-
-
-      - name: Fetch deploy refs
-        run: git fetch --prune origin '+refs/heads/*:refs/remotes/origin/*' --tags
-
-      - name: Build link-check artifact
-        run: python3 scripts/build-versioned-site.py --base-url / --destination .cache/linkcheck-site --no-minify
-
-      - name: Check rendered links
-        uses: lycheeverse/lychee-action@v2
-        with:
-          args: >-
-            --cache
-            --config ./lychee.toml
-            --no-progress
-            --root-dir ./.cache/linkcheck-site
-            './.cache/linkcheck-site/**/*.html'
-          fail: true
-          jobSummary: true
-          token: ${{ github.token }}
-
-      - name: Save lychee cache
-        if: always()
-        uses: actions/cache/save@v4
-        with:
-          path: .lycheecache
-          key: ${{ steps.restore-lychee-cache.outputs.cache-primary-key }}
-
-      - name: Build deploy artifact
-        run: python3 scripts/build-versioned-site.py --base-url "${{ steps.pages.outputs.base_url }}/"
-
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v5
-        with:
-          path: ./public
-
-  deploy:
-    if: github.event_name == 'push'
-    needs: build
-    runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
-      - name: Deploy
-        id: deployment
-        uses: actions/deploy-pages@v5
+  pages:
+    uses: ./.github/workflows/reusable-pages.yml
+    with:
+      site-root: .
+      go-version-file: go.mod
+      setup-node: true
+      node-version: "22"
+      prepare-command: |
+        npm ci
+        npm run check:flexsearch
+        hugo mod tidy
+        (cd cmd/hugo-styles-migrate && go test ./...)
+      validation-command: |
+        (cd cmd/hugo-styles-migrate && go run . check ../..)
