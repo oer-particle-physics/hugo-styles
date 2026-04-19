@@ -215,3 +215,12 @@ For Hugo lessons, the validator currently checks:
 - unresolved profile references
 - missing image alt text
 - unsupported leftover legacy syntax
+
+Rendered-site link checks are separate because they work on the built HTML rather than the source Markdown:
+
+```bash
+python3 scripts/build-versioned-site.py --base-url / --destination .cache/linkcheck-site --no-minify
+lychee --cache --config lychee.toml --no-progress --root-dir .cache/linkcheck-site '.cache/linkcheck-site/**/*.html'
+```
+
+That catches broken external links and rendered internal links in the same shape the GitHub Actions workflow uses.

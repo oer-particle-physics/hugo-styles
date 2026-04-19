@@ -73,7 +73,7 @@ hugo
 For a smoother maintenance experience, downstream lesson repositories should enable Dependabot for `gomod` updates so module bumps arrive as pull requests.
 
 The `hugo-styles-template` repository commits `_vendor/` so lesson authors can run local builds with Hugo Extended alone.
-Template maintainers still use Go when refreshing `go.mod`/`go.sum`, `scripts/build-versioned-site.py`, and `_vendor/`,
+Template maintainers still use Go when refreshing `go.mod`/`go.sum`, `scripts/build-versioned-site.py`, `lychee.toml`, and `_vendor/`,
 either through the **Refresh vendored Hugo modules** workflow or locally with:
 
 ```bash
@@ -88,6 +88,7 @@ For downstream lesson authors, the practical prerequisites are:
 
 - [Hugo Extended](https://gohugo.io/installation/)
 - [Go](https://go.dev/doc/install) (optional for template-based authoring with committed `_vendor/`; required for module maintenance and migration checks)
+- [lychee](https://lychee.cli.rs/guides/getting-started/) (optional for local rendered-site link checks)
 
 Node.js is only needed in this repository when maintainers refresh the vendored search bundle.
 
@@ -117,6 +118,16 @@ Regression tests for the checker and migrator live under `cmd/hugo-styles-migrat
 ```bash
 (cd cmd/hugo-styles-migrate && go test ./...)
 ```
+
+Rendered-site link checks use `lychee` against a local build that mirrors the GitHub Actions workflow:
+
+```bash
+python3 scripts/build-versioned-site.py --base-url / --destination .cache/linkcheck-site --no-minify
+lychee --cache --config lychee.toml --no-progress --root-dir .cache/linkcheck-site '.cache/linkcheck-site/**/*.html'
+```
+
+The workflow uses `--base-url /` for this validation build so internal links are checked against local files
+instead of a future GitHub Pages URL.
 
 ## Search bundle maintenance
 
@@ -158,6 +169,8 @@ Before cutting a new `hugo-styles` release:
 cd cmd/hugo-styles-migrate && go test ./...
 cd ../..
 npm run check:flexsearch
+python3 scripts/build-versioned-site.py --base-url / --destination .cache/linkcheck-site --no-minify
+lychee --cache --config lychee.toml --no-progress --root-dir .cache/linkcheck-site '.cache/linkcheck-site/**/*.html'
 hugo --gc --minify
 ```
 

@@ -18,6 +18,8 @@ The included workflow deploys on pushes to `main`.
 Enable Pages before the first push so that initial deploy run already has a configured publishing target.
 By default it publishes the default branch as `Latest`.
 Extra branch or tag builds come from the `params.versioning` block in `hugo.toml`.
+Before the deploy artifact is built, the workflow also builds a local-root version of the site and runs `lychee`
+against the rendered HTML on both pull requests and pushes.
 
 ## Local production build
 
@@ -29,8 +31,14 @@ python3 scripts/build-versioned-site.py
 
 ```bash
 go run github.com/oer-particle-physics/hugo-styles/cmd/hugo-styles-migrate@latest check .
+python3 scripts/build-versioned-site.py --base-url / --destination .cache/linkcheck-site --no-minify
+lychee --cache --config lychee.toml --no-progress --root-dir .cache/linkcheck-site '.cache/linkcheck-site/**/*.html'
 python3 scripts/build-versioned-site.py
 ```
+
+The first build is a link-check-only artifact. It forces `baseURL` to `/` so `lychee` can validate internal links
+against local files while still checking external links over the network. The second build remains the real deploy
+artifact with the production Pages URL.
 
 ## Why this uses Actions
 

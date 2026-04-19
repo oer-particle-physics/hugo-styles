@@ -13,7 +13,7 @@ For repositories created from `hugo-styles-template`, the intended update flow i
 
 - keep `_vendor/` committed so lesson authors can build with Hugo Extended only
 - use the **Refresh vendored Hugo modules** GitHub Actions workflow
-- review and merge the PR when it updates `go.mod`, `go.sum`, `scripts/build-versioned-site.py`, and `_vendor/`
+- review and merge the PR when it updates `go.mod`, `go.sum`, `scripts/build-versioned-site.py`, `lychee.toml`, and `_vendor/`
 - keep lesson-specific overrides in the lesson repository (`content/`, config, and selected overrides)
 
 This avoids requiring local Go for normal lesson authoring.
@@ -44,8 +44,8 @@ hugo mod vendor
 ```
 
 The sync helper copies `scripts/build-versioned-site.py` from the exact pinned `hugo-styles`
-module version when that version provides the helper.
-That keeps the committed build script aligned with `go.mod` rather than downloading an unrelated head revision.
+module version, and also syncs the shared `lychee.toml` used for rendered-site link checks.
+That keeps the committed maintainer files aligned with `go.mod` rather than downloading an unrelated head revision.
 
 ## Direct module mode (without `_vendor/`)
 

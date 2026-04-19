@@ -142,6 +142,17 @@ python3 scripts/build-versioned-site.py --base-url http://localhost:8000/
 
 Then serve `public/` with any static file server.
 
+For local rendered-site link checking, build a validation artifact with a root base URL and run `lychee`
+against the generated HTML:
+
+```bash
+python3 scripts/build-versioned-site.py --base-url / --destination .cache/linkcheck-site --no-minify
+lychee --cache --config lychee.toml --no-progress --root-dir .cache/linkcheck-site '.cache/linkcheck-site/**/*.html'
+```
+
+Using `--base-url /` keeps the generated version menu and internal links portable on disk, which makes local
+link checking work even for GitHub Pages project sites that deploy under `/<repo>/`.
+
 For repositories created from `hugo-styles-template`, that helper is committed in the lesson repository
 and refreshed from the pinned `hugo-styles` module version by the template's update workflow and local
 `./scripts/sync-build-versioned-site.sh` helper.

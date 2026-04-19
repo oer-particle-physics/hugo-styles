@@ -2,7 +2,10 @@
 /resources/_gen/
 /_vendor/
 /.hugo_build.lock
+/.hugo-versioned-cache/
+/.lycheecache
 /node_modules/
+/.cache/
 /.DS_Store
 /.idea/
 /.vscode/
