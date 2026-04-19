@@ -30,7 +30,7 @@ The shortcode target should match the content slug, for example:
 
 ## Search updates but results seem odd
 
-Aggregated pages such as `All-in-One` and `Key Points` are intentionally excluded from indexing so they do not crowd out the main lesson pages. If a result feels missing, check whether the relevant page is a generated resource or a real content page.
+Aggregated pages such as `All-in-One`, `Key Points`, and `External Links` are intentionally excluded from indexing so they do not crowd out the main lesson pages. If a result feels missing, check whether the relevant page is a generated resource or a real content page.
 
 ## A downstream lesson does not pick up a shared-module fix
 

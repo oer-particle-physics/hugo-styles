@@ -1,12 +1,19 @@
 {{ $current := .RelPermalink }}
+{{ $scratch := newScratch }}
+{{ $scratch.Set "links" (slice
+  (dict "title" "Key Points" "href" ("key-points/" | relURL))
+  (dict "title" "All-in-One" "href" ("all-in-one/" | relURL))
+) }}
+{{ with site.GetPage "/external-links" }}
+  {{ $scratch.Add "links" (slice (dict "title" "External Links" "href" .RelPermalink)) }}
+{{ end }}
+{{ $scratch.Add "links" (slice
+  (dict "title" "Reference" "href" ("reference/" | relURL))
+  (dict "title" "Glossary" "href" ("glossary/" | relURL))
+  (dict "title" "Profiles" "href" ("profiles/" | relURL))
+) }}
 <div class="lesson-resource-links not-prose hx:flex hx:flex-wrap hx:gap-2">
-  {{ $links := slice
-    (dict "title" "Key Points" "href" ("key-points/" | relURL))
-    (dict "title" "All-in-One" "href" ("all-in-one/" | relURL))
-    (dict "title" "Reference" "href" ("reference/" | relURL))
-    (dict "title" "Glossary" "href" ("glossary/" | relURL))
-    (dict "title" "Profiles" "href" ("profiles/" | relURL))
-  }}
+  {{ $links := $scratch.Get "links" }}
 {{ range $links }}
     {{ $isActive := eq $current .href }}
     <a class="hx:inline-flex hx:items-center hx:rounded-full hx:border hx:px-3 hx:py-1.5 hx:text-sm hx:font-medium hx:no-underline hx:transition-colors {{ if $isActive }}hx:border-primary-300 hx:bg-primary-50 hx:text-primary-700 hx:dark:border-primary-700/60 hx:dark:bg-primary-900/20 hx:dark:text-primary-300{{ else }}hx:border-gray-200 hx:bg-white hx:text-gray-700 hx:hover:border-primary-300 hx:hover:text-primary-700 hx:dark:border-neutral-800 hx:dark:bg-neutral-900 hx:dark:text-gray-300 hx:dark:hover:border-primary-700 hx:dark:hover:text-primary-300{{ end }}" href="{{ .href }}">{{ .title }}</a>

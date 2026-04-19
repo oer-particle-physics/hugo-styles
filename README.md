@@ -37,6 +37,7 @@ This repository serves two roles:
 - Aggregated lesson pages for:
   - Key Points
   - All-in-One
+  - External Links
   - Extract All Images
 - A learner/instructor view toggle.
 - Documentation for authors and maintainers.
