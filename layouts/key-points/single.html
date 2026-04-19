@@ -45,12 +45,12 @@
           <p class="hx:mb-2 hx:text-xs hx:font-semibold hx:uppercase hx:tracking-[0.16em] hx:text-gray-500 hx:dark:text-gray-400">Aggregated resource</p>
           <h1>{{ .Title }}</h1>
           <div class="hx:text-gray-600 hx:dark:text-gray-400">{{ .Content }}</div>
-          <div class="hx:mt-6 hx:flex hx:flex-wrap hx:gap-2">
-            <span class="hx:inline-flex hx:items-center hx:rounded-full hx:border hx:border-primary-200 hx:bg-primary-50 hx:px-3 hx:py-1.5 hx:text-sm hx:font-medium hx:text-primary-700 hx:dark:border-primary-700/40 hx:dark:bg-primary-900/20 hx:dark:text-primary-300">{{ len $episodes }} episodes covered</span>
-            <span class="hx:inline-flex hx:items-center hx:rounded-full hx:border hx:border-primary-200 hx:bg-primary-50 hx:px-3 hx:py-1.5 hx:text-sm hx:font-medium hx:text-primary-700 hx:dark:border-primary-700/40 hx:dark:bg-primary-900/20 hx:dark:text-primary-300">{{ $scratch.Get "keypointCount" }} takeaways</span>
-            <span class="hx:inline-flex hx:items-center hx:rounded-full hx:border hx:border-gray-200 hx:bg-white hx:px-3 hx:py-1.5 hx:text-sm hx:text-gray-600 hx:dark:border-neutral-800 hx:dark:bg-neutral-900 hx:dark:text-gray-300">Best for recap and publish checks</span>
+          <div class="not-prose hx:mt-6 hx:flex hx:flex-wrap hx:gap-2">
+            {{ partial "resource-badge.html" (dict "content" (printf "%d %s covered" (len $episodes) (cond (eq (len $episodes) 1) "episode" "episodes")) "color" "blue") }}
+            {{ partial "resource-badge.html" (dict "content" (printf "%d %s" ($scratch.Get "keypointCount") (cond (eq ($scratch.Get "keypointCount") 1) "takeaway" "takeaways")) "color" "blue") }}
+            {{ partial "resource-badge.html" (dict "content" "Best for recap and publish checks" "color" "gray") }}
           </div>
-          <div class="hx:mt-6 hx:grid hx:gap-4">
+          <div class="not-prose hx:mt-6 hx:grid hx:gap-4">
             {{ range $index, $episode := $episodes }}
               {{ $episodeAnchor := "" }}
               {{ with $episode.File }}

@@ -74,47 +74,50 @@
           <p class="hx:mb-2 hx:text-xs hx:font-semibold hx:uppercase hx:tracking-[0.16em] hx:text-gray-500 hx:dark:text-gray-400">Aggregated resource</p>
           <h1>{{ .Title }}</h1>
           <div class="hx:text-gray-600 hx:dark:text-gray-400">{{ .Content }}</div>
-          <div class="hx:mt-6 hx:flex hx:flex-wrap hx:gap-2">
-            <span class="hx:inline-flex hx:items-center hx:rounded-full hx:border hx:border-primary-200 hx:bg-primary-50 hx:px-3 hx:py-1.5 hx:text-sm hx:font-medium hx:text-primary-700 hx:dark:border-primary-700/40 hx:dark:bg-primary-900/20 hx:dark:text-primary-300">{{ $scratch.Get "linkCount" }} links gathered</span>
-            <span class="hx:inline-flex hx:items-center hx:rounded-full hx:border hx:border-primary-200 hx:bg-primary-50 hx:px-3 hx:py-1.5 hx:text-sm hx:font-medium hx:text-primary-700 hx:dark:border-primary-700/40 hx:dark:bg-primary-900/20 hx:dark:text-primary-300">{{ $scratch.Get "pageCount" }} source episodes</span>
-            <span class="hx:inline-flex hx:items-center hx:rounded-full hx:border hx:border-gray-200 hx:bg-white hx:px-3 hx:py-1.5 hx:text-sm hx:text-gray-600 hx:dark:border-neutral-800 hx:dark:bg-neutral-900 hx:dark:text-gray-300">Best for bibliography reviews and link QA</span>
+          <div class="not-prose hx:mt-6 hx:flex hx:flex-wrap hx:gap-2">
+            {{ partial "resource-badge.html" (dict "content" (printf "%d %s gathered" ($scratch.Get "linkCount") (cond (eq ($scratch.Get "linkCount") 1) "link" "links")) "color" "blue") }}
+            {{ partial "resource-badge.html" (dict "content" (printf "%d source %s" ($scratch.Get "pageCount") (cond (eq ($scratch.Get "pageCount") 1) "episode" "episodes")) "color" "blue") }}
+            {{ partial "resource-badge.html" (dict "content" "Best for bibliography reviews and link QA" "color" "gray") }}
           </div>
           {{ if gt (len $entries) 0 }}
-            <div class="hx:mt-6 hx:space-y-8">
+            <div class="not-prose hx:mt-6 hx:grid hx:gap-4">
               {{ range $entries }}
-                <section id="{{ .sectionID }}" class="hx:scroll-mt-24">
-                  <div class="hx:mb-4 hx:flex hx:flex-col hx:gap-3 hx:md:flex-row hx:md:items-end hx:md:justify-between">
-                    <div>
+                <article id="{{ .sectionID }}" class="hx:group hx:scroll-mt-24 hx:rounded-2xl hx:border hx:border-gray-200 hx:bg-white hx:p-6 hx:shadow-sm hx:dark:border-neutral-800 hx:dark:bg-neutral-900">
+                  <div class="hx:flex hx:flex-col hx:gap-3 hx:md:flex-row hx:md:items-start hx:md:justify-between">
+                    <div class="hx:min-w-0">
                       <p class="hx:mb-1 hx:text-xs hx:font-semibold hx:uppercase hx:tracking-[0.16em] hx:text-gray-500 hx:dark:text-gray-400">Episode {{ .episodeNumber }}</p>
-                      <h2 class="hx:mt-0 hx:mb-0">{{ .page.Title }}</h2>
+                      <h2 class="hx:mt-0 hx:mb-2">
+                        <a class="hx:text-inherit hx:no-underline hx:decoration-transparent hx:transition-colors group-hover:hx:text-primary-600 hx:dark:group-hover:text-primary-400" href="{{ .page.RelPermalink }}">{{ .page.Title }}</a>
+                      </h2>
+                      <p class="hx:mb-0 hx:text-sm hx:text-gray-600 hx:dark:text-gray-400">External links collected from this episode.</p>
                     </div>
-                    <span class="hx:inline-flex hx:items-center hx:self-start hx:rounded-full hx:border hx:border-gray-200 hx:bg-white hx:px-3 hx:py-1.5 hx:text-sm hx:font-medium hx:text-gray-600 hx:dark:border-neutral-800 hx:dark:bg-neutral-900 hx:dark:text-gray-300">{{ len .links }} external links</span>
+                    {{ partial "resource-badge.html" (dict "content" (printf "%d external %s" (len .links) (cond (eq (len .links) 1) "link" "links")) "color" "gray") }}
                   </div>
-                  <div class="hx:mb-4 hx:flex hx:flex-wrap hx:gap-3">
-                    <a class="hx:inline-flex hx:items-center hx:justify-center hx:rounded-xl hx:border hx:border-gray-200 hx:px-3.5 hx:py-2 hx:text-sm hx:font-medium hx:text-gray-700 hx:no-underline hx:hover:border-primary-300 hx:hover:text-primary-700 hx:dark:border-neutral-800 hx:dark:text-gray-300 hx:dark:hover:border-primary-700 hx:dark:hover:text-primary-300" href="{{ .page.RelPermalink }}">Open episode</a>
+                  <div class="hx:mt-4">
+                    <a class="hx:inline-flex hx:items-center hx:gap-1 hx:text-sm hx:font-medium hx:text-primary-600 hx:no-underline hx:transition-colors hover:hx:text-primary-700 hx:dark:text-primary-400 hx:dark:hover:text-primary-300" href="{{ .page.RelPermalink }}">Open episode<span aria-hidden="true">→</span></a>
                   </div>
-                  <div class="hx:grid hx:gap-4">
+                  <ul class="hx:mt-5 hx:space-y-4">
                     {{ range .links }}
-                      <article class="hx:rounded-2xl hx:border hx:border-gray-200 hx:bg-white hx:p-5 hx:shadow-sm hx:dark:border-neutral-800 hx:dark:bg-neutral-900">
+                      <li class="hx:rounded-xl hx:border hx:border-gray-200 hx:bg-gray-50 hx:p-4 hx:dark:border-neutral-800 hx:dark:bg-neutral-950/60">
                         <div class="hx:flex hx:flex-wrap hx:items-center hx:gap-2">
                           {{ with .host }}
-                            <span class="hx:inline-flex hx:items-center hx:rounded-full hx:border hx:border-gray-200 hx:bg-gray-50 hx:px-2.5 hx:py-1 hx:text-[11px] hx:font-semibold hx:uppercase hx:tracking-[0.16em] hx:text-gray-600 hx:dark:border-neutral-700 hx:dark:bg-neutral-950 hx:dark:text-gray-300">{{ . }}</span>
+                            {{ partial "resource-badge.html" (dict "content" . "color" "gray") }}
                           {{ end }}
                         </div>
-                        <h3 class="hx:mb-2 hx:mt-4 hx:text-lg hx:font-semibold hx:tracking-tight hx:text-gray-900 hx:dark:text-gray-100">
-                          <a class="hx:text-inherit hx:no-underline hx:decoration-transparent hx:transition-colors hover:hx:text-primary-600 hx:dark:hover:text-primary-400" href="{{ .href }}" target="_blank" rel="noopener">{{ .label }}</a>
-                        </h3>
+                        <p class="hx:mt-3 hx:mb-1 hx:text-base hx:font-medium hx:text-gray-900 hx:dark:text-gray-100">
+                          <a class="hx:text-inherit hx:no-underline hx:transition-colors hover:hx:text-primary-600 hx:dark:hover:text-primary-400" href="{{ .href }}" target="_blank" rel="noopener">{{ .label }}</a>
+                        </p>
                         <p class="hx:mb-0 hx:break-all hx:text-sm hx:text-gray-600 hx:dark:text-gray-400">
                           <a class="hx:text-inherit hx:no-underline hover:hx:text-primary-600 hx:dark:hover:text-primary-400" href="{{ .href }}" target="_blank" rel="noopener">{{ .href }}</a>
                         </p>
-                      </article>
+                      </li>
                     {{ end }}
-                  </div>
-                </section>
+                  </ul>
+                </article>
               {{ end }}
             </div>
           {{ else }}
-            <div class="hx:mt-6 hx:rounded-2xl hx:border hx:border-dashed hx:border-gray-300 hx:bg-gray-50 hx:p-6 hx:text-sm hx:text-gray-600 hx:dark:border-neutral-700 hx:dark:bg-neutral-900 hx:dark:text-gray-400">
+            <div class="not-prose hx:mt-6 hx:rounded-2xl hx:border hx:border-dashed hx:border-gray-300 hx:bg-gray-50 hx:p-6 hx:text-sm hx:text-gray-600 hx:dark:border-neutral-700 hx:dark:bg-neutral-900 hx:dark:text-gray-400">
               No external links were found in the episode pages for this lesson.
             </div>
           {{ end }}

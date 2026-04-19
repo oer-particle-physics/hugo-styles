@@ -15,12 +15,12 @@
           <p class="hx:mb-2 hx:text-xs hx:font-semibold hx:uppercase hx:tracking-[0.16em] hx:text-gray-500 hx:dark:text-gray-400">Aggregated resource</p>
           <h1>{{ .Title }}</h1>
           <div class="hx:text-gray-600 hx:dark:text-gray-400">{{ .Content }}</div>
-          <div class="hx:mt-6 hx:flex hx:flex-wrap hx:gap-2">
-            <span class="hx:inline-flex hx:items-center hx:rounded-full hx:border hx:border-primary-200 hx:bg-primary-50 hx:px-3 hx:py-1.5 hx:text-sm hx:font-medium hx:text-primary-700 hx:dark:border-primary-700/40 hx:dark:bg-primary-900/20 hx:dark:text-primary-300">{{ len $episodes }} episodes</span>
-            <span class="hx:inline-flex hx:items-center hx:rounded-full hx:border hx:border-primary-200 hx:bg-primary-50 hx:px-3 hx:py-1.5 hx:text-sm hx:font-medium hx:text-primary-700 hx:dark:border-primary-700/40 hx:dark:bg-primary-900/20 hx:dark:text-primary-300">{{ $scratch.Get "totalMinutes" }} min total</span>
-            <span class="hx:inline-flex hx:items-center hx:rounded-full hx:border hx:border-gray-200 hx:bg-white hx:px-3 hx:py-1.5 hx:text-sm hx:text-gray-600 hx:dark:border-neutral-800 hx:dark:bg-neutral-900 hx:dark:text-gray-300">Best for teaching from one tab</span>
+          <div class="not-prose hx:mt-6 hx:flex hx:flex-wrap hx:gap-2">
+            {{ partial "resource-badge.html" (dict "content" (printf "%d %s" (len $episodes) (cond (eq (len $episodes) 1) "episode" "episodes")) "color" "blue") }}
+            {{ partial "resource-badge.html" (dict "content" (printf "%d min total" ($scratch.Get "totalMinutes")) "color" "blue") }}
+            {{ partial "resource-badge.html" (dict "content" "Best for teaching from one tab" "color" "gray") }}
           </div>
-          <section class="hx:mt-6 hx:rounded-2xl hx:border hx:border-gray-200 hx:bg-white hx:p-4 hx:shadow-sm hx:dark:border-neutral-800 hx:dark:bg-neutral-900">
+          <section class="not-prose hx:mt-6 hx:rounded-2xl hx:border hx:border-gray-200 hx:bg-white hx:p-4 hx:shadow-sm hx:dark:border-neutral-800 hx:dark:bg-neutral-900">
             <div class="hx:flex hx:flex-col hx:gap-4">
               <div class="hx:flex hx:flex-col hx:gap-4 hx:lg:flex-row hx:lg:items-center hx:lg:justify-between">
                 <div>
@@ -45,7 +45,7 @@
                   {{ if not $episodeAnchor }}
                     {{ $episodeAnchor = anchorize .Title }}
                   {{ end }}
-                  <a class="hx:inline-flex hx:items-center hx:rounded-full hx:border hx:border-gray-200 hx:bg-gray-50 hx:px-3 hx:py-1.5 hx:text-sm hx:font-medium hx:text-gray-700 hx:no-underline hx:hover:border-primary-300 hx:hover:bg-primary-50 hx:hover:text-primary-700 hx:dark:border-neutral-800 hx:dark:bg-neutral-900 hx:dark:text-gray-300 hx:dark:hover:border-primary-700 hx:dark:hover:bg-primary-900/20 hx:dark:hover:text-primary-300" href="#{{ $episodeAnchor }}">{{ .Title }}</a>
+                  {{ partial "resource-badge.html" (dict "content" .Title "color" "gray" "link" (printf "#%s" $episodeAnchor)) }}
                 {{ end }}
               </div>
             </div>
