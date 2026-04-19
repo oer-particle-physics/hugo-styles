@@ -20,7 +20,7 @@ fi
 UPSTREAM_SYNC_SCRIPT="${MODULE_DIR}/scripts/sync-template-files.sh"
 
 if [[ -f "${UPSTREAM_SYNC_SCRIPT}" ]]; then
-  "${UPSTREAM_SYNC_SCRIPT}" "${REPO_ROOT}"
+  bash "${UPSTREAM_SYNC_SCRIPT}" "${REPO_ROOT}"
   exit 0
 fi
 
