@@ -79,7 +79,7 @@
                   <div class="hx:mb-4 hx:flex hx:flex-col hx:gap-3 hx:md:flex-row hx:md:items-end hx:md:justify-between">
                     <div>
                       <p class="hx:mb-1 hx:text-xs hx:font-semibold hx:uppercase hx:tracking-[0.16em] hx:text-gray-500 hx:dark:text-gray-400">{{ if eq $page.Section "instructors" }}Instructor note{{ else }}Episode{{ end }}</p>
-                      <h2 class="hx:mt-0 hx:mb-0">{{ $page.Title }}</h2>
+                      <h2 class="hx:first:mt-0 hx:mb-0">{{ $page.Title }}</h2>
                     </div>
                     {{ partial "resource-badge.html" (dict "content" (printf "%d %s" (len $imageTags) (cond (eq (len $imageTags) 1) "image" "images")) "color" "gray") }}
                   </div>

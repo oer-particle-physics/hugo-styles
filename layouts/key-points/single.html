@@ -68,7 +68,7 @@
                 <div class="hx:min-w-0">
                   <div class="hx:min-w-0">
                     <p class="hx:mb-2 hx:text-xs hx:font-semibold hx:uppercase hx:tracking-[0.16em] hx:text-gray-500 hx:dark:text-gray-400">Episode {{ add $index 1 }}</p>
-                    <h2 class="hx:mt-0 hx:mb-2">
+                    <h2 class="hx:first:mt-0 hx:mb-2">
                       <a class="hx:text-inherit hx:no-underline hx:decoration-transparent hx:transition-colors group-hover:hx:text-primary-600 hx:dark:group-hover:text-primary-400" href="{{ $episode.RelPermalink }}">{{ $episode.Title }}</a>
                     </h2>
                     <p class="hx:mb-0 hx:text-sm hx:text-gray-600 hx:dark:text-gray-400">{{ len ($episode.Params.keypoints | default (slice)) }} takeaways collected from this episode.</p>

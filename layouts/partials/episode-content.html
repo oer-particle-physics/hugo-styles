@@ -23,7 +23,7 @@
   <div class="hx:mt-8 hx:grid hx:gap-4 hx:md:grid-cols-2">
     {{ with $page.Params.questions }}
       <section class="hx:rounded-2xl hx:border hx:border-gray-200 hx:bg-white hx:p-6 hx:shadow-sm hx:dark:border-neutral-800 hx:dark:bg-neutral-900">
-        <h2 id="{{ printf "%s-questions" $episodeID }}">Questions</h2>
+        <h2 class="hx:first:mt-0" id="{{ printf "%s-questions" $episodeID }}">Questions</h2>
         <ul>
           {{ range . }}
             <li>{{ $page.RenderString $inlineRender . }}</li>
@@ -33,7 +33,7 @@
     {{ end }}
     {{ with $page.Params.objectives }}
       <section class="hx:rounded-2xl hx:border hx:border-gray-200 hx:bg-white hx:p-6 hx:shadow-sm hx:dark:border-neutral-800 hx:dark:bg-neutral-900">
-        <h2 id="{{ printf "%s-objectives" $episodeID }}">Objectives</h2>
+        <h2 class="hx:first:mt-0" id="{{ printf "%s-objectives" $episodeID }}">Objectives</h2>
         <ul>
           {{ range . }}
             <li>{{ $page.RenderString $inlineRender . }}</li>
@@ -45,9 +45,9 @@
 {{ end }}
 {{ $page.Content }}
 {{ with $page.Params.keypoints }}
-  <section class="hx:mt-10">
+  <section class="hx:mt-8">
     <section class="hx:rounded-2xl hx:border hx:border-gray-200 hx:bg-white hx:p-6 hx:shadow-sm hx:dark:border-neutral-800 hx:dark:bg-neutral-900">
-      <h2 id="{{ printf "%s-key-points" $episodeID }}">Key Points</h2>
+      <h2 class="hx:first:mt-0" id="{{ printf "%s-key-points" $episodeID }}">Key Points</h2>
       <ul>
         {{ range . }}
           <li>{{ $page.RenderString $inlineRender . }}</li>
