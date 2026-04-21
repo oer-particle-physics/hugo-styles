@@ -40,6 +40,10 @@ python3 scripts/build-versioned-site.py
 The first build is a link-check-only artifact. It forces `baseURL` to `/` so `lychee` can validate internal links
 against local files while still checking external links over the network. The second build remains the real deploy
 artifact with the production Pages URL.
+If a link fails because the target has really moved or disappeared, fix the content. If a trusted upstream URL is
+known to fail automated checks for reasons outside your control, such as an invalid TLS chain, add a narrow entry
+to that lesson repository's `.lycheeignore` instead of enabling global insecure mode. Keep those exceptions exact
+and documented.
 
 ## Why this uses Actions
 

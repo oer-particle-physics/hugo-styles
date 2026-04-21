@@ -226,3 +226,6 @@ lychee --cache --config lychee.toml --no-progress --root-dir .cache/linkcheck-si
 
 That catches broken external links and rendered internal links in the same shape the GitHub Actions workflow uses.
 For template-based lesson repositories, both the helper script and the workflow files that run this check are managed through `./scripts/sync-template-files.sh`.
+Treat `404` or moved targets as content fixes. Reserve `.lycheeignore` entries for narrow, known external
+exceptions such as trusted sites with invalid TLS chains, and keep them exact rather than excluding a whole host.
+Those entries belong to the lesson repository, not the shared `hugo-styles` sync.

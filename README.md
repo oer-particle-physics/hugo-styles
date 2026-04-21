@@ -139,6 +139,10 @@ lychee --cache --config lychee.toml --no-progress --root-dir .cache/linkcheck-si
 
 The workflow uses `--base-url /` for this validation build so internal links are checked against local files
 instead of a future GitHub Pages URL.
+Keep ordinary broken links as content fixes, but if a trusted upstream URL is known to fail automated validation
+for reasons such as an invalid TLS chain, add a narrow exact-match entry to the downstream repository's
+`.lycheeignore` instead of enabling global insecure mode. The shared template can include a comment-only placeholder,
+but the actual ignore entries are repository-specific.
 
 ## Search bundle maintenance
 
