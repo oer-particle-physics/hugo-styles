@@ -6,6 +6,14 @@
 - Add reusable GitHub Actions workflows, `release-please`, and Commitizen-based conventional-commit enforcement.
 - Document the `sync-template-files.sh` update flow and the preferred local `prek` hook setup.
 
+## [0.3.2](https://github.com/oer-particle-physics/hugo-styles/compare/v0.3.1...v0.3.2) (2026-04-21)
+
+
+### Bug Fixes
+
+* Fix reusable-refresh-vendored-modules workflow definition ([59dbdcc](https://github.com/oer-particle-physics/hugo-styles/commit/59dbdcc1f5757586c47f4c88cf0d2aa069bb13c4))
+* Supply reusable-refresh-vendored-modules workflow with WORKFLOW_SYNC_TOKEN and document this ([897d8a3](https://github.com/oer-particle-physics/hugo-styles/commit/897d8a3f63e697bc54a4e56b8706e807855495b1))
+
 ## [0.3.1](https://github.com/oer-particle-physics/hugo-styles/compare/v0.3.0...v0.3.1) (2026-04-21)
 
 
