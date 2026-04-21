@@ -6,6 +6,13 @@
 - Add reusable GitHub Actions workflows, `release-please`, and Commitizen-based conventional-commit enforcement.
 - Document the `sync-template-files.sh` update flow and the preferred local `prek` hook setup.
 
+## [0.3.5](https://github.com/oer-particle-physics/hugo-styles/compare/v0.3.4...v0.3.5) (2026-04-21)
+
+
+### Bug Fixes
+
+* correct lesson card spacing utilities ([407b949](https://github.com/oer-particle-physics/hugo-styles/commit/407b9494ca96ed748621dc85474633e46bd911ed)), closes [#23](https://github.com/oer-particle-physics/hugo-styles/issues/23)
+
 ## [0.3.4](https://github.com/oer-particle-physics/hugo-styles/compare/v0.3.3...v0.3.4) (2026-04-21)
 
 
