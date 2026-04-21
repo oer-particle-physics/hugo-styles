@@ -11,7 +11,7 @@ Use episode front matter to describe both the teaching flow and the navigation m
 - `weight`: numeric order in the lesson
 - `questions`: list of learner-facing questions rendered near the top
 - `objectives`: list of learning goals rendered near the top
-- `keypoints`: list of recap points rendered near the bottom
+- `keypoints`: list of recap points rendered near the bottom, with inline Markdown support for emphasis and code spans
 
 ## Optional episode fields
 

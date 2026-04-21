@@ -1,5 +1,6 @@
 {{ $page := .page }}
 {{ $minutes := add ($page.Params.teaching | default 0) ($page.Params.exercises | default 0) }}
+{{ $inlineRender := dict "display" "inline" }}
 {{ $episodeID := "" }}
 {{ with $page.File }}
   {{ if .Dir }}
@@ -51,8 +52,7 @@
       <h2 id="{{ printf "%s-key-points" $episodeID }}">Key Points</h2>
       <ul>
         {{ range . }}
-          {{ $item := replaceRE "`([^`]+)`" "<code>$1</code>" (htmlEscape .) }}
-          <li>{{ $item | safeHTML }}</li>
+          <li>{{ $page.RenderString $inlineRender . }}</li>
         {{ end }}
       </ul>
     </section>
