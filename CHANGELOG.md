@@ -6,6 +6,19 @@
 - Add reusable GitHub Actions workflows, `release-please`, and Commitizen-based conventional-commit enforcement.
 - Document the `sync-template-files.sh` update flow and the preferred local `prek` hook setup.
 
+## [0.3.0](https://github.com/oer-particle-physics/hugo-styles/compare/v0.2.1...v0.3.0) (2026-04-21)
+
+
+### Features
+
+* add lesson metadata shortcode ([dac1650](https://github.com/oer-particle-physics/hugo-styles/commit/dac16507de2d343f7dfde3f2a37f2dfcbe8cb905)), closes [#15](https://github.com/oer-particle-physics/hugo-styles/issues/15)
+* make challenge subtitles optional ([790b0a4](https://github.com/oer-particle-physics/hugo-styles/commit/790b0a4eb82ffbdf1e0cd1b968135e82ba9dbb77)), closes [#16](https://github.com/oer-particle-physics/hugo-styles/issues/16)
+
+
+### Bug Fixes
+
+* render keypoints as inline markdown ([2d72e67](https://github.com/oer-particle-physics/hugo-styles/commit/2d72e676c70455a8a6544415a88c68fcadce8d90)), closes [#17](https://github.com/oer-particle-physics/hugo-styles/issues/17)
+
 ## [0.2.1](https://github.com/oer-particle-physics/hugo-styles/compare/v0.2.0...v0.2.1) (2026-04-19)
 
 
