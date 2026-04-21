@@ -25,6 +25,9 @@ Use episode front matter to describe both the teaching flow and the navigation m
 
 The lesson homepage usually lives in `content/_index.md` and keeps `layout = "hextra-home"`.
 That page can hold the homepage content blocks in [Components]({{< relref "/docs/components" >}}).
+Shared lesson metadata such as `params.lesson.title`, `params.lesson.tagline`, and
+`params.lesson.description` belongs in `hugo.toml`, and `lesson/meta` can reuse those values
+inside Markdown body content when you want homepage copy to stay aligned with the config.
 
 If you want an authors block on the homepage, add a root-level `AUTHORS` file. The `lesson/authors`
 shortcode reads that file directly and renders the contributors there.

@@ -133,6 +133,25 @@ layout = "hextra-home"
 `lesson/overview` renders a compact table built from the `objectives` lists of all episode pages.
 `lesson/schedule` renders a timetable with an optional untimed setup row, a cumulative start-time column, the episode title, and the episode questions.
 `lesson/authors` renders a compact table of contributors from the repository root `AUTHORS` file on the homepage.
+`lesson/meta` reuses lesson metadata from `hugo.toml` directly inside Markdown body content.
+
+Use `lesson/meta` when the homepage or another content page should echo the configured lesson title, tagline, or description without duplicating that text:
+
+```text
+{{</* lesson/meta "title" */>}}
+{{</* lesson/meta "tagline" */>}}
+{{</* lesson/meta "description" */>}}
+{{</* lesson/meta "siteTitle" */>}}
+```
+
+Supported keys:
+
+- `title`: `params.lesson.title`, falling back to `title`
+- `tagline`: `params.lesson.tagline`, falling back to `params.lesson.description`
+- `description`: `params.lesson.description`, falling back to `params.lesson.tagline`
+- `siteTitle`: the site-level `title`
+
+Unsupported keys fail the build clearly so typos do not silently render empty content.
 
 The authors file is intentionally lightweight. One contributor per line is enough:
 
