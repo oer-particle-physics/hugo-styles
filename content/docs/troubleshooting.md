@@ -28,6 +28,20 @@ The shortcode target should match the content slug, for example:
 - `content/glossary/formative-assessment.md` -> `{{</* glossary formative-assessment */>}}`
 - `content/profiles/workshop-host.md` -> `{{</* profile workshop-host */>}}`
 
+## TOML front matter reports an invalid escaped character for LaTeX
+
+TOML double-quoted strings treat backslashes as escapes, so `\( ... \)` fails unless every backslash is doubled.
+
+Prefer literal strings in front matter:
+
+```toml
+objectives = [
+  'Clone and configure the \(t\bar{t}\gamma\) analysis repository.'
+]
+```
+
+If the same expression renders in the Markdown body but not in `questions`, `objectives`, or `keypoints`, check your lesson's `hugo.toml`. When you override `[markup.goldmark.extensions]`, keep the passthrough block from `hugo-styles` so `\(...\)` and `\[...\]` still reach the math renderer.
+
 ## Search updates but results seem odd
 
 Aggregated pages such as `All-in-One`, `Key Points`, and `External Links` are intentionally excluded from indexing so they do not crowd out the main lesson pages. If a result feels missing, check whether the relevant page is a generated resource or a real content page.

@@ -9,9 +9,9 @@ Use episode front matter to describe both the teaching flow and the navigation m
 
 - `title`: the page title shown in navigation and episode headers
 - `weight`: numeric order in the lesson
-- `questions`: list of learner-facing questions rendered near the top
-- `objectives`: list of learning goals rendered near the top
-- `keypoints`: list of recap points rendered near the bottom, with inline Markdown support for emphasis and code spans
+- `questions`: list of learner-facing questions rendered near the top, with inline Markdown and math support
+- `objectives`: list of learning goals rendered near the top, with inline Markdown and math support
+- `keypoints`: list of recap points rendered near the bottom, with inline Markdown and math support
 
 ## Optional episode fields
 
@@ -45,6 +45,18 @@ objectives = ["Use challenge, hint, and solution shortcodes naturally."]
 keypoints = ["Hints and solutions should stay collapsible."]
 +++
 ```
+
+## Math in TOML front matter
+
+If you use TOML front matter, prefer literal strings for LaTeX so backslashes are not treated as TOML escapes:
+
+```toml
+objectives = [
+  'Explain the \(t\bar{t}\gamma\) workflow.'
+]
+```
+
+Double-quoted TOML strings also work, but every backslash must be escaped, for example `\\(` and `\\bar`.
 
 ## Section pages
 

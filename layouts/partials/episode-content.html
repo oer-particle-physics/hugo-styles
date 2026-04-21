@@ -26,8 +26,7 @@
         <h2 id="{{ printf "%s-questions" $episodeID }}">Questions</h2>
         <ul>
           {{ range . }}
-            {{ $item := replaceRE "`([^`]+)`" "<code>$1</code>" (htmlEscape .) }}
-            <li>{{ $item | safeHTML }}</li>
+            <li>{{ $page.RenderString $inlineRender . }}</li>
           {{ end }}
         </ul>
       </section>
@@ -37,8 +36,7 @@
         <h2 id="{{ printf "%s-objectives" $episodeID }}">Objectives</h2>
         <ul>
           {{ range . }}
-            {{ $item := replaceRE "`([^`]+)`" "<code>$1</code>" (htmlEscape .) }}
-            <li>{{ $item | safeHTML }}</li>
+            <li>{{ $page.RenderString $inlineRender . }}</li>
           {{ end }}
         </ul>
       </section>

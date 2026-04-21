@@ -1,5 +1,6 @@
 {{ $episodes := sort (where site.RegularPages "Section" "episodes") "Weight" "asc" }}
 {{ $setupPage := site.GetPage "/learners/setup" }}
+{{ $inlineRender := dict "display" "inline" }}
 {{ if gt (len $episodes) 0 }}
 {{ $title := .Get "title" | default "Schedule" }}
 <section class="hx:mt-10 hx:w-full">
@@ -30,6 +31,14 @@
           {{ range $episode := $episodes }}
             {{ $start := printf "%02d:%02d" (div $minutes 60) (mod $minutes 60) }}
             {{ $episodeMinutes := add ($episode.Params.teaching | default 0) ($episode.Params.exercises | default 0) }}
+            {{ with $episode.Params.questions }}
+              {{ range . }}
+                {{ $item := printf "%v" . }}
+                {{ if or (strings.Contains $item "\\(") (strings.Contains $item "\\[") (strings.Contains $item "$$") }}
+                  {{ $.Page.Store.Set "hasMath" true }}
+                {{ end }}
+              {{ end }}
+            {{ end }}
             <tr class="hx:border-b hx:border-gray-100 hx:align-top hx:dark:border-neutral-800/80">
               <td class="hx:px-3 hx:py-4 hx:whitespace-nowrap hx:font-mono hx:text-sm">{{ $start }}</td>
               <td class="hx:px-3 hx:py-4 hx:font-medium">
@@ -42,8 +51,7 @@
                 {{ with $episode.Params.questions }}
                   <ul class="hx:mb-0">
                     {{ range . }}
-                      {{ $item := replaceRE "`([^`]+)`" "<code>$1</code>" (htmlEscape .) }}
-                      <li>{{ $item | safeHTML }}</li>
+                      <li>{{ $episode.RenderString $inlineRender . }}</li>
                     {{ end }}
                   </ul>
                 {{ else }}

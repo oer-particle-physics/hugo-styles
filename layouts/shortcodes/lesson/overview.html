@@ -1,8 +1,15 @@
 {{ $episodes := sort (where site.RegularPages "Section" "episodes") "Weight" "asc" }}
+{{ $inlineRender := dict "display" "inline" }}
 {{ $rows := slice }}
 {{ range $episode := $episodes }}
   {{ with $episode.Params.objectives }}
-    {{ $rows = $rows | append (dict "title" $episode.Title "link" $episode.RelPermalink "objectives" .) }}
+    {{ range . }}
+      {{ $item := printf "%v" . }}
+      {{ if or (strings.Contains $item "\\(") (strings.Contains $item "\\[") (strings.Contains $item "$$") }}
+        {{ $.Page.Store.Set "hasMath" true }}
+      {{ end }}
+    {{ end }}
+    {{ $rows = $rows | append (dict "title" $episode.Title "link" $episode.RelPermalink "objectives" . "page" $episode) }}
   {{ end }}
 {{ end }}
 {{ if gt (len $rows) 0 }}
@@ -19,6 +26,7 @@
         </thead>
         <tbody>
           {{ range $rows }}
+            {{ $row := . }}
             <tr class="hx:border-b hx:border-gray-100 hx:align-top hx:dark:border-neutral-800/80">
               <td class="hx:py-4 hx:pr-4 hx:font-medium">
                 <a class="hx:no-underline hx:hover:underline" href="{{ .link }}">{{ .title }}</a>
@@ -26,8 +34,7 @@
               <td class="hx:py-4">
                 <ul class="hx:mb-0">
                   {{ range .objectives }}
-                    {{ $item := replaceRE "`([^`]+)`" "<code>$1</code>" (htmlEscape .) }}
-                    <li>{{ $item | safeHTML }}</li>
+                    <li>{{ $row.page.RenderString $inlineRender . }}</li>
                   {{ end }}
                 </ul>
               </td>
