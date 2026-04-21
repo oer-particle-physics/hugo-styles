@@ -6,6 +6,13 @@
 - Add reusable GitHub Actions workflows, `release-please`, and Commitizen-based conventional-commit enforcement.
 - Document the `sync-template-files.sh` update flow and the preferred local `prek` hook setup.
 
+## [0.3.4](https://github.com/oer-particle-physics/hugo-styles/compare/v0.3.3...v0.3.4) (2026-04-21)
+
+
+### Bug Fixes
+
+* Add LateX rendering to questions, objectives, and keypoints ([6661527](https://github.com/oer-particle-physics/hugo-styles/commit/66615277d41bbb3be7373391175029293496be9d))
+
 ## [0.3.3](https://github.com/oer-particle-physics/hugo-styles/compare/v0.3.2...v0.3.3) (2026-04-21)
 
 
