@@ -3,7 +3,7 @@
     <span class="lesson-challenge-label">Challenge</span>
     <div class="lesson-challenge-heading">
       {{ with .Get "title" }}<h3 class="lesson-challenge-title">{{ . }}</h3>{{ end }}
-      <p class="lesson-challenge-subtitle">Use short, answerable prompts that work well in workshops and still read clearly in an all-in-one lesson view.</p>
+      {{ with .Get "subtitle" }}<p class="lesson-challenge-subtitle">{{ . }}</p>{{ end }}
     </div>
   </div>
   <div class="lesson-challenge-body">

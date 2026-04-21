@@ -13,7 +13,7 @@ For a particle-physics-focused Hextra feature walkthrough, see
 ## Challenge, hint, and solution
 
 ```text
-{{</* challenge title="Warm-up exercise" */>}}
+{{</* challenge title="Warm-up exercise" subtitle="Try the prompt on your own before the group debrief." */>}}
 Prompt the learner to do something concrete.
 
 {{</* hint */>}}
@@ -27,6 +27,7 @@ Provide the worked answer.
 ```
 
 Use these for real learning activities, not just decorative emphasis.
+The `subtitle` parameter is optional, so leave it out when the challenge title already does enough work on its own.
 
 ## Callouts
 

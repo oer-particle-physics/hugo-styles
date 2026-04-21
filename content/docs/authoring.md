@@ -33,7 +33,7 @@ The goal is to preserve the Carpentries teaching vocabulary while letting Hextra
 ### Challenge, hint, and solution
 
 ```text
-{{</* challenge title="Warm-up exercise" */>}}
+{{</* challenge title="Warm-up exercise" subtitle="Work through the prompt before the discussion." */>}}
 Prompt the learner to do something concrete.
 
 {{</* hint */>}}
@@ -47,6 +47,7 @@ Provide a worked answer or expected approach.
 ```
 
 This renders as a warm challenge panel with nested collapsible hint and solution blocks.
+Use `subtitle` only when the challenge needs an extra framing line; omit it when the title is enough.
 
 ### Callout box types
 
