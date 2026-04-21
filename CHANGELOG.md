@@ -6,6 +6,13 @@
 - Add reusable GitHub Actions workflows, `release-please`, and Commitizen-based conventional-commit enforcement.
 - Document the `sync-template-files.sh` update flow and the preferred local `prek` hook setup.
 
+## [0.3.3](https://github.com/oer-particle-physics/hugo-styles/compare/v0.3.2...v0.3.3) (2026-04-21)
+
+
+### Bug Fixes
+
+* harden nested shortcode body rendering ([33bd3d9](https://github.com/oer-particle-physics/hugo-styles/commit/33bd3d9cc79db4fbe811326857f63b88d7c4d103)), closes [#20](https://github.com/oer-particle-physics/hugo-styles/issues/20)
+
 ## [0.3.2](https://github.com/oer-particle-physics/hugo-styles/compare/v0.3.1...v0.3.2) (2026-04-21)
 
 
