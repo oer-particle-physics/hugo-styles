@@ -62,21 +62,9 @@ jobs:
         run: ${{ inputs.verify-command }}
 
       - name: Create pull request
-        if: ${{ secrets.WORKFLOW_SYNC_TOKEN == '' }}
         uses: peter-evans/create-pull-request@v8
         with:
-          branch: ${{ inputs.pr-branch }}
-          delete-branch: true
-          commit-message: ${{ inputs.pr-title }}
-          title: ${{ inputs.pr-title }}
-          body: ${{ inputs.pr-body }}
-          labels: ${{ inputs.pr-labels }}
-
-      - name: Create pull request with workflow-sync token
-        if: ${{ secrets.WORKFLOW_SYNC_TOKEN != '' }}
-        uses: peter-evans/create-pull-request@v8
-        with:
-          token: ${{ secrets.WORKFLOW_SYNC_TOKEN }}
+          token: ${{ secrets.WORKFLOW_SYNC_TOKEN || github.token }}
           branch: ${{ inputs.pr-branch }}
           delete-branch: true
           commit-message: ${{ inputs.pr-title }}
