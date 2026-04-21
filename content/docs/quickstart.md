@@ -45,6 +45,23 @@ Use this order in a fresh lesson repository:
 The thin template repository includes a GitHub Actions workflow that builds the site and publishes the generated artifact to GitHub Pages.
 See the [Deployment]({{< relref "/docs/deployment" >}}) guide for the exact steps and the [Troubleshooting]({{< relref "/docs/troubleshooting" >}}) guide for common failures.
 
+## Recommended repository secret for automated upstream refreshes
+
+If you want the **Refresh vendored Hugo modules** workflow to keep opening update PRs without manual intervention,
+add a repository Actions secret named `WORKFLOW_SYNC_TOKEN`.
+The managed refresh workflow will use it automatically when it is present.
+
+Use either:
+
+- a fine-grained personal access token scoped to this repository with `Contents: Read and write`, `Pull requests: Read and write`, and `Workflows: Read and write`
+- or a GitHub App installation token with the same repository permissions
+
+This extra token is needed because upstream refreshes can update the managed workflow files under `.github/workflows/`.
+GitHub's default `GITHUB_TOKEN` can create the PR, but GitHub rejects pushes that modify workflow files unless the token also has workflow write permission.
+
+If `WORKFLOW_SYNC_TOKEN` is not configured, the refresh workflow can still work for releases that only change `go.mod`, `go.sum`, scripts, or `_vendor/`,
+but it may fail on releases that also update the managed workflow wrappers.
+
 ## Migrating existing lessons
 
 If you are migrating from a legacy Carpentries-style lesson, use the

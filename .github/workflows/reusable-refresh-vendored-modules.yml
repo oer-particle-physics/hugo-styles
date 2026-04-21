@@ -28,6 +28,9 @@ on:
       pr-labels:
         type: string
         default: "dependencies"
+    secrets:
+      WORKFLOW_SYNC_TOKEN:
+        required: false
 
 jobs:
   refresh:
@@ -59,8 +62,21 @@ jobs:
         run: ${{ inputs.verify-command }}
 
       - name: Create pull request
+        if: ${{ secrets.WORKFLOW_SYNC_TOKEN == '' }}
         uses: peter-evans/create-pull-request@v8
         with:
+          branch: ${{ inputs.pr-branch }}
+          delete-branch: true
+          commit-message: ${{ inputs.pr-title }}
+          title: ${{ inputs.pr-title }}
+          body: ${{ inputs.pr-body }}
+          labels: ${{ inputs.pr-labels }}
+
+      - name: Create pull request with workflow-sync token
+        if: ${{ secrets.WORKFLOW_SYNC_TOKEN != '' }}
+        uses: peter-evans/create-pull-request@v8
+        with:
+          token: ${{ secrets.WORKFLOW_SYNC_TOKEN }}
           branch: ${{ inputs.pr-branch }}
           delete-branch: true
           commit-message: ${{ inputs.pr-title }}

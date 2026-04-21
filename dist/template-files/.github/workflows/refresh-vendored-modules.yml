@@ -14,6 +14,7 @@ permissions:
 jobs:
   refresh:
     uses: ./.github/workflows/reusable-refresh-vendored-modules.yml
+    secrets: inherit
     with:
       site-root: .
       go-version-file: go.mod

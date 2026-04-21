@@ -18,6 +18,22 @@ For repositories created from `hugo-styles-template`, the intended update flow i
 
 This avoids requiring local Go for normal lesson authoring.
 
+### Configure `WORKFLOW_SYNC_TOKEN` once per lesson repository
+
+For the automated refresh workflow to work reliably, add a repository Actions secret named `WORKFLOW_SYNC_TOKEN`.
+The managed refresh workflow will use it automatically when it is present.
+
+Use either:
+
+- a fine-grained personal access token scoped to the lesson repository with `Contents: Read and write`, `Pull requests: Read and write`, and `Workflows: Read and write`
+- or a GitHub App installation token with the same repository permissions
+
+The refresh workflow updates managed files under `.github/workflows/` when `hugo-styles` ships workflow changes.
+GitHub's default `GITHUB_TOKEN` can open pull requests, but GitHub rejects pushes that modify workflow files unless the token also has workflow write permission.
+
+If `WORKFLOW_SYNC_TOKEN` is missing, the refresh workflow may still succeed for releases that do not touch managed workflow files,
+but it can fail during the pull-request step once an upstream release updates `.github/workflows/*`.
+
 ### What `_vendor/` is for
 
 `_vendor/` is a committed snapshot of Hugo module dependencies pinned by `go.mod` and `go.sum`.
