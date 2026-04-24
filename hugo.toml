@@ -126,7 +126,7 @@ disableKinds = ["taxonomy", "term", "RSS"]
     pageRef = "/profiles"
     weight = 50
   [[menus.main]]
-    name = "Extract All Images"
+    name = "All Images"
     parent = "resources"
     pageRef = "/extract-all-images"
     weight = 60

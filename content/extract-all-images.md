@@ -1,5 +1,5 @@
 +++
-title = "Extract All Images"
+title = "All Images"
 layout = "extract-all-images"
 weight = 90
 audience = "instructor"

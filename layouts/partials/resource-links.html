@@ -20,7 +20,7 @@
   {{ end }}
   {{ $instructorLinks := slice
     (dict "title" "Instructor Notes" "href" ("instructors/instructor-notes/" | relURL))
-    (dict "title" "Extract All Images" "href" ("extract-all-images/" | relURL))
+    (dict "title" "All Images" "href" ("extract-all-images/" | relURL))
   }}
   {{ range $instructorLinks }}
     {{ $isActive := eq $current .href }}

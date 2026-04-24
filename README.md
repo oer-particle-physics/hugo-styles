@@ -38,7 +38,7 @@ This repository serves two roles:
   - Key Points
   - All-in-One
   - External Links
-  - Extract All Images
+  - All Images
 - A learner/instructor view toggle.
 - Documentation for authors and maintainers.
 - A Go-based `hugo-styles-migrate` command for migration checks and common conversions.

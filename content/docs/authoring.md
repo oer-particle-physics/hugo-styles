@@ -22,7 +22,7 @@ Use Hugo sections to match the lesson model:
 - `content/glossary/` for reusable definitions
 - `content/profiles/` for learner or maintainer personas
 - `content/reference.md` for a broader reference page when you need one
-- `content/key-points.md`, `content/all-in-one.md`, `content/external-links.md`, and `content/extract-all-images.md` for generated resource surfaces
+- `content/key-points.md`, `content/all-in-one.md`, `content/external-links.md`, and `content/extract-all-images.md` for generated resource surfaces, including the All Images page
 
 Episodes should stay short, ordered, and self-contained. Supplemental setup, reference, or facilitation material should move into the supporting sections instead of bloating the main narrative.
 
