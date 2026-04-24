@@ -80,13 +80,13 @@ disableKinds = ["taxonomy", "term", "RSS"]
 
 [menus]
   [[menus.main]]
+    name = "Setup"
+    pageRef = "/learners/setup"
+    weight = 5
+  [[menus.main]]
     name = "Examples"
     pageRef = "/episodes"
     weight = 10
-  [[menus.main]]
-    name = "Learners"
-    identifier = "learners"
-    weight = 20
   [[menus.main]]
     name = "Resources"
     identifier = "resources"
@@ -95,16 +95,6 @@ disableKinds = ["taxonomy", "term", "RSS"]
     name = "Docs"
     identifier = "docs"
     weight = 40
-  [[menus.main]]
-    name = "Overview"
-    parent = "learners"
-    pageRef = "/learners"
-    weight = 10
-  [[menus.main]]
-    name = "Setup"
-    parent = "learners"
-    pageRef = "/learners/setup"
-    weight = 20
   [[menus.main]]
     name = "Key Points"
     parent = "resources"
