@@ -25,6 +25,7 @@ jobs:
       prepare-command: |
         npm ci
         npm run check:flexsearch
+        npm run check:medium-zoom
         hugo mod tidy
         (cd cmd/hugo-styles-migrate && go test ./...)
       validation-command: |
