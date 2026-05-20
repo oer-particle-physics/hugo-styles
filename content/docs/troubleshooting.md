@@ -21,6 +21,20 @@ Check that:
 - the page does not set `[tabs] sync = false`
 - you are using Hextra's `tabs` and `tab` shortcodes, not a copied custom variant
 
+## The sidebar or browser title still says Example Lesson
+
+Changing `content/_index.md` only updates the homepage content. In a repository created from
+`hugo-styles-template`, also update these values in `hugo.toml`:
+
+- site-level `title`
+- `params.lesson.title`
+- `params.lesson.repo`
+- `params.lesson.docsRepo`
+- the GitHub URL in `[[menus.main]]`
+
+The sidebar and browser title can come from Hugo metadata rather than visible Markdown text, so
+`grep` may not find the old title in `content/`.
+
 ## A glossary or profile link is broken
 
 The shortcode target should match the content slug, for example:

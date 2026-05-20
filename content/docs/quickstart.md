@@ -25,11 +25,15 @@ Use this order in a fresh lesson repository:
 
 ## Create a new lesson
 
-1. Create a new repository from `hugo-styles-template`.
+1. Create a new repository from
+   [`hugo-styles-template`](https://github.com/oer-particle-physics/hugo-styles-template)
+   by clicking **Use this template** at the top right of the repository page.
 2. Run `hugo version` and `hugo server` to confirm the local toolchain before editing lesson content.
 3. Update the site metadata in `hugo.toml`.
-   In particular, `params.lesson.repo` is used for the source and edit links in the page footer.
-   The top-nav GitHub icon is configured separately in `[[menus.main]]`.
+   Change both the site-level `title` and `params.lesson.title`; the former controls Hugo's site title,
+   while the latter is reused by lesson components and metadata snippets.
+   Update `params.lesson.repo` and `params.lesson.docsRepo` because they are used for the source, edit, and citation links in the page footer.
+   The top-nav GitHub icon is configured separately in `[[menus.main]]`, so update that menu URL too.
    If you plan to deploy on GitHub Pages, set `baseURL` to `https://<account>.github.io/<repo>/`.
    In the repository settings, enable Pages and select `GitHub Actions` as the source before the first push to `main`.
 4. Add episodes with `hugo new --kind episode episodes/my-episode/index.md`.
