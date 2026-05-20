@@ -53,6 +53,9 @@ disableKinds = ["taxonomy", "term", "RSS"]
 [params.page.tabs]
   sync = true
 
+[params.imageZoom]
+  enable = true
+
 [params.footer]
   displayPoweredBy = false
   displayCopyright = false

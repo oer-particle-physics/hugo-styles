@@ -19,6 +19,7 @@ Use episode front matter to describe both the teaching flow and the navigation m
 - `exercises`: exercise time in minutes
 - `summary`: override for episode card summaries
 - `draft`: hide unfinished content from production builds
+- `imageZoom = false`: disable click-to-zoom behavior for Markdown images on a page
 - `[tabs] sync = false`: disable synced Hextra tabs on a page
 
 ## Homepage metadata

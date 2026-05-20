@@ -1,5 +1,9 @@
 {{ $dest := .Destination }}
 {{ $normalized := strings.TrimPrefix "/" $dest }}
+{{ $enableImageZoom := site.Params.imageZoom.enable | default false }}
+{{ if not (eq .Page.Params.imageZoom nil) }}
+  {{ $enableImageZoom = .Page.Params.imageZoom }}
+{{ end }}
 {{ if and (not (strings.HasPrefix $dest "http://")) (not (strings.HasPrefix $dest "https://")) }}
   {{ $resourcePath := path.Clean (strings.TrimPrefix "./" $normalized) }}
   {{ with .Page }}
@@ -16,4 +20,7 @@
     {{ end }}
   {{ end }}
 {{ end }}
-<img src="{{ $dest | safeURL }}" alt="{{ .Text }}" loading="lazy">
+{{ if $enableImageZoom }}
+  {{ .Page.Store.Set "hasImageZoom" true }}
+{{ end }}
+<img src="{{ $dest | safeURL }}" alt="{{ .Text }}"{{ if $enableImageZoom }} data-zoomable{{ end }} loading="lazy">
