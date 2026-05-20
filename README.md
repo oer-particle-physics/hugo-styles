@@ -144,19 +144,21 @@ for reasons such as an invalid TLS chain, add a narrow exact-match entry to the 
 `.lycheeignore` instead of enabling global insecure mode. The shared template can include a comment-only placeholder,
 but the actual ignore entries are repository-specific.
 
-## Search bundle maintenance
+## Vendored frontend asset maintenance
 
-Search uses a vendored FlexSearch bundle so local and GitHub Pages builds do not depend on a CDN.
-Most lesson authors never need Node.js for this repository, but maintainers do need it when refreshing the
-vendored search asset after a Dependabot bump.
+Search uses a vendored FlexSearch bundle, and image zoom uses a vendored Medium Zoom bundle,
+so local and GitHub Pages builds do not depend on a CDN.
+Most lesson authors never need Node.js for this repository, but maintainers do need it when refreshing
+vendored frontend assets after a Dependabot bump.
 
 ```bash
 npm ci
 npm run vendor:flexsearch
+npm run vendor:medium-zoom
 ```
 
-The `npm run check:flexsearch` command is used in CI to confirm the committed bundle still matches the pinned
-package version.
+The `npm run check:flexsearch` and `npm run check:medium-zoom` commands are used in CI to
+confirm the committed bundles still match the pinned package versions.
 
 ## Migration tool
 
@@ -193,6 +195,7 @@ Before merging a release PR or sanity-checking a release candidate:
 cd cmd/hugo-styles-migrate && go test ./...
 cd ../..
 npm run check:flexsearch
+npm run check:medium-zoom
 python3 scripts/build-versioned-site.py --base-url / --destination .cache/linkcheck-site --no-minify
 lychee --cache --config lychee.toml --no-progress --root-dir .cache/linkcheck-site '.cache/linkcheck-site/**/*.html'
 hugo --gc --minify

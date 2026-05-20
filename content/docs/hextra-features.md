@@ -33,9 +33,12 @@ Enable it for a lesson in `hugo.toml`:
 ```toml
 [params.imageZoom]
   enable = true
+  js = "js/vendor/medium-zoom.min.js"
 ```
 
 After that, rendered Markdown images can be clicked to view them at a larger size.
+The `js` value points to the Medium Zoom bundle vendored by `hugo-styles` so lesson
+builds do not need to fetch it from a CDN.
 If a specific page should keep static images only, set `imageZoom = false` in that
 page's front matter.
 

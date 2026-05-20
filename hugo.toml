@@ -55,6 +55,7 @@ disableKinds = ["taxonomy", "term", "RSS"]
 
 [params.imageZoom]
   enable = true
+  js = "js/vendor/medium-zoom.min.js"
 
 [params.footer]
   displayPoweredBy = false
