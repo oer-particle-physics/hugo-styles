@@ -4,6 +4,7 @@
 {{ $editBranch := site.Params.lesson.editBranch | default "main" }}
 {{ $path := "" }}
 {{ $lastUpdated := "" }}
+{{ $lastUpdatedPage := $page }}
 {{ $copyrightHolder := site.Params.lesson.copyrightHolder | default "the authors" }}
 {{ $citationURL := site.Params.lesson.citationURL }}
 {{ $poweredByURL := "https://oer-particle-physics.github.io/hugo-styles/" }}
@@ -11,10 +12,15 @@
 {{ with $page.File }}
   {{ $path = .Path }}
 {{ end }}
-{{ with $page.Lastmod }}
+{{ if $page.IsHome }}
+  {{ with first 1 (sort site.Pages "Lastmod" "desc") }}
+    {{ $lastUpdatedPage = index . 0 }}
+  {{ end }}
+{{ end }}
+{{ with $lastUpdatedPage.Lastmod }}
   {{ $lastUpdated = partial "utils/format-date.html" . }}
 {{ else }}
-  {{ with $page.Date }}
+  {{ with $lastUpdatedPage.Date }}
     {{ $lastUpdated = partial "utils/format-date.html" . }}
   {{ end }}
 {{ end }}
