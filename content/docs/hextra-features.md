@@ -23,6 +23,21 @@ For full option matrices and edge cases, use the linked upstream Hextra pages.
 | Cards | quick links to key lesson resources | [Cards](https://imfing.github.io/hextra/docs/guide/shortcodes/cards/) |
 | Steps | short procedural workflows | [Steps](https://imfing.github.io/hextra/docs/guide/shortcodes/steps/) |
 | Syntax highlighting | line numbers and highlighted snippets | [Syntax Highlighting](https://imfing.github.io/hextra/docs/guide/syntax-highlighting/) |
+| Image zoom | readable full-size plots, screenshots, and diagrams | [Image Zoom](https://imfing.github.io/hextra/docs/guide/configuration/#image-zoom) |
+
+## Image zoom for dense figures
+
+`hugo-styles` supports Hextra's image zoom behavior for standard Markdown images.
+Enable it for a lesson in `hugo.toml`:
+
+```toml
+[params.imageZoom]
+  enable = true
+```
+
+After that, rendered Markdown images can be clicked to view them at a larger size.
+If a specific page should keep static images only, set `imageZoom = false` in that
+page's front matter.
 
 ## LaTeX for analysis notation
 
