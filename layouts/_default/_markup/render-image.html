@@ -3,4 +3,4 @@
 {{ if $enableImageZoom }}
   {{ .Page.Store.Set "hasImageZoom" true }}
 {{ end }}
-<img src="{{ $dest | safeURL }}" alt="{{ .Text }}"{{ if $enableImageZoom }} data-zoomable{{ end }} loading="lazy">
+<img src="{{ $dest }}" alt="{{ .Text }}"{{ if $enableImageZoom }} data-zoomable{{ end }} loading="lazy">
