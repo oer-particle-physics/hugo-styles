@@ -200,6 +200,7 @@ def load_hugo_config(
     command = [
         hugo_bin,
         "config",
+        "--quiet",
         "--format",
         "json",
         "--config",
