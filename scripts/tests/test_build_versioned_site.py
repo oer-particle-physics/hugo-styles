@@ -215,14 +215,16 @@ class TargetTests(unittest.TestCase):
             page.parent.mkdir(parents=True)
             page.write_text(
                 f'<a href="{placeholders[0]}">Latest</a>'
-                f'<a href="{placeholders[1]}">v1.2.0</a>',
+                f'<a href="{placeholders[1]}">v1.2.0 quoted</a>'
+                f'<a href={placeholders[1]}>v1.2.0 minified</a>',
                 encoding="utf-8",
             )
             builder.rewrite_version_menu_links(output, targets)
             self.assertEqual(
                 page.read_text(encoding="utf-8"),
                 '<a href="/lesson/">Latest</a>'
-                '<a href="/lesson/versions/v1.2.0/">v1.2.0</a>',
+                '<a href="/lesson/versions/v1.2.0/">v1.2.0 quoted</a>'
+                '<a href=/lesson/versions/v1.2.0/>v1.2.0 minified</a>',
             )
 
     def test_current_checkout_avoids_primary_ref_in_detached_head(self) -> None:

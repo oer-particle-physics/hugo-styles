@@ -381,9 +381,7 @@ def apply_version_menu(
 
 def rewrite_version_menu_links(destination: Path, menu_items: list[BuildTarget]) -> None:
     replacements = {
-        f'href="{version_menu_placeholder(item)}"': (
-            f'href="{html.escape(item.menu_path, quote=True)}"'
-        )
+        version_menu_placeholder(item): html.escape(item.menu_path, quote=True)
         for item in menu_items
     }
     for path in destination.rglob("*.html"):
