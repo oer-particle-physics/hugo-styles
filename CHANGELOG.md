@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.5.2](https://github.com/oer-particle-physics/hugo-styles/compare/v0.5.1...v0.5.2) (2026-07-13)
+
+
+### Bug Fixes
+
+* rewrite minified version menu links ([5ebf43d](https://github.com/oer-particle-physics/hugo-styles/commit/5ebf43dc21e51aa85dc1a70fb8c6d8de724b72ab))
+
 ## [0.5.1](https://github.com/oer-particle-physics/hugo-styles/compare/v0.5.0...v0.5.1) (2026-07-13)
 
 
