@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.5.3](https://github.com/oer-particle-physics/hugo-styles/compare/v0.5.2...v0.5.3) (2026-07-13)
+
+
+### Bug Fixes
+
+* validate refreshed template checkout ([a524d96](https://github.com/oer-particle-physics/hugo-styles/commit/a524d9601a3824f299bee7fa609b136d4b32239a))
+
 ## [0.5.2](https://github.com/oer-particle-physics/hugo-styles/compare/v0.5.1...v0.5.2) (2026-07-13)
 
 
