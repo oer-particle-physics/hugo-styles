@@ -50,7 +50,7 @@ disableKinds = ["taxonomy", "term", "RSS"]
 
 [params.banner]
   key = "hugo-styles-feature-demo-v1"
-  message = "This documentation is a live feature demo. See the [feature guide](https://oer-particle-physics.github.io/hugo-styles/docs/hextra-features/)."
+  message = "This documentation is a live feature demo. See the [feature guide](/docs/hextra-features/)."
 
 [params.search]
   enable = true
