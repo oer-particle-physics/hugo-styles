@@ -62,11 +62,6 @@ Aggregated pages such as `All-in-One`, `Key Points`, and `External Links` are in
 
 ## A downstream lesson does not pick up a shared-module fix
 
-Run:
-
-```bash
-hugo mod get -u github.com/oer-particle-physics/hugo-styles@latest
-hugo mod tidy
-```
-
-Then rebuild locally. If the change still does not appear, look for a local override in `layouts/`, `assets/`, or `archetypes/`.
+First confirm that the fix has been included in a `hugo-styles` release. Then run the lesson repository's
+**Refresh vendored Hugo modules** workflow and merge the pull request it opens.
+If the change still does not appear after rebuilding, look for a local override in `layouts/`, `assets/`, or `archetypes/`.

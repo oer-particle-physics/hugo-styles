@@ -65,26 +65,9 @@ The example site in this repository doubles as the public documentation for the 
 
 Downstream lessons should **not** copy layouts, assets, or shortcodes out of this repository. Instead they should import a released version of `hugo-styles` as a Hugo Module.
 
-Typical downstream update flow:
-
-```bash
-hugo mod get -u github.com/oer-particle-physics/hugo-styles@latest
-hugo mod tidy
-hugo
-```
-
-For a smoother maintenance experience, downstream lesson repositories should enable Dependabot for `gomod` updates so module bumps arrive as pull requests.
-
 The `hugo-styles-template` repository commits `_vendor/` so lesson authors can run local builds with Hugo Extended alone.
-Template maintainers still use Go when refreshing `go.mod`/`go.sum`, managed maintainer files, and `_vendor/`,
-either through the **Refresh vendored Hugo modules** workflow or locally with:
-
-```bash
-hugo mod get -u github.com/oer-particle-physics/hugo-styles@latest
-hugo mod tidy
-./scripts/sync-template-files.sh
-hugo mod vendor
-```
+Lesson repositories receive released module updates through the scheduled **Refresh vendored Hugo modules** workflow.
+It updates the pinned module, refreshes `_vendor/` and the managed maintainer files, and opens a pull request for review.
 
 The shared sync currently manages:
 
@@ -214,4 +197,4 @@ lychee --cache --config lychee.toml --no-progress --root-dir .cache/linkcheck-si
 ```
 
 The `release-please` workflow expects a `RELEASE_PLEASE_TOKEN` secret so the generated release PRs and tags can trigger follow-up GitHub Actions runs normally.
-Once the release PR is merged, downstream lesson repositories pick up the new version through `hugo mod get -u ...`, the **Refresh vendored Hugo modules** workflow, or Dependabot PRs.
+Once the release PR is merged, downstream lesson repositories pick up the new version through the **Refresh vendored Hugo modules** workflow.

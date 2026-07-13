@@ -52,8 +52,8 @@ and documented.
 - it avoids the old branch-publishing coupling
 - it matches the shared-module update model more naturally
 
-The template repo already includes the workflow and Dependabot setup required for a typical lesson repository.
-When you update `hugo-styles`, run `./scripts/sync-template-files.sh` so those managed workflow files stay aligned with the pinned module version.
+The template repository includes the deployment and scheduled module-refresh workflows required for a typical lesson repository.
+The refresh workflow keeps the managed workflow files aligned with the pinned `hugo-styles` version.
 
 ## Versioned lesson archives
 
