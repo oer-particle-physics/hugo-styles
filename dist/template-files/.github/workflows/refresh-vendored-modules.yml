@@ -24,7 +24,7 @@ jobs:
         ./scripts/sync-template-files.sh
         hugo mod vendor
       verify-command: |
-        python3 scripts/build-versioned-site.py
+        python3 scripts/build-versioned-site.py --use-current-checkout
         hugo --gc --minify --noBuildLock --destination /tmp/site
       pr-title: "chore: refresh vendored Hugo modules"
       pr-body: |
