@@ -3,244 +3,143 @@ title = "Components"
 weight = 40
 +++
 
-These are the supported lesson-specific components on top of Hextra.
-This page focuses on the Carpentries-style layer added by `hugo-styles`.
-For the broader Hextra and Hugo feature set, use the
-[Reference]({{< relref "/reference" >}}) page and the linked upstream docs.
-For a particle-physics-focused Hextra feature walkthrough, see
-[Hextra Features for Physics Lessons]({{< relref "/docs/hextra-features" >}}).
+This is the live reference for features owned by `hugo-styles`. Each example is rendered here; open the adjacent **Use it** block to copy its source. Theme-level features live in the [Hextra feature guide]({{< relref "/docs/hextra-features" >}}).
 
 ## Challenge, hint, and solution
 
-```text
-{{</* challenge title="Warm-up exercise" subtitle="Try the prompt on your own before the group debrief." */>}}
-Prompt the learner to do something concrete.
+{{< challenge title="Choose a reproducible cut" subtitle="Keep the first pass small." >}}
+Pick one event-selection threshold and explain what it removes.
 
-{{</* hint */>}}
-Offer a small nudge.
-{{</* /hint */>}}
+{{< hint >}}
+Start with a transverse-momentum threshold.
+{{< /hint >}}
 
-{{</* solution */>}}
-Provide the worked answer.
-{{</* /solution */>}}
+{{< solution >}}
+For this toy sample, use \(p_T > 25\,\mathrm{GeV}\), then record the value next to the result.
+{{< /solution >}}
+{{< /challenge >}}
+
+{{< details title="Use it" closed="true" >}}
+{{< codeblock lang="text" >}}
+{{</* challenge title="Choose a reproducible cut" subtitle="Keep the first pass small." */>}}
+Pick one event-selection threshold and explain what it removes.
+
+{{</* hint */>}}Start with a transverse-momentum threshold.{{</* /hint */>}}
+{{</* solution */>}}Use `p_T > 25 GeV` and record it.{{</* /solution */>}}
 {{</* /challenge */>}}
-```
+{{< /codeblock >}}
+{{< /details >}}
 
-Use these for real learning activities, not just decorative emphasis.
-The `subtitle` parameter is optional, so leave it out when the challenge title already does enough work on its own.
+## Callout palette
 
-## Callouts
+{{< callout type="note" title="Note" >}}Supporting context that belongs near the main path.{{< /callout >}}
+{{< callout type="prereq" title="Prerequisite" >}}What learners need before starting.{{< /callout >}}
+{{< callout type="checklist" title="Checklist" >}}A short set of checks before moving on.{{< /callout >}}
+{{< callout type="discussion" title="Discussion" >}}A prompt for comparing approaches.{{< /callout >}}
+{{< callout type="testimonial" title="Instructor perspective" >}}A brief experience or facilitation observation.{{< /callout >}}
+{{< callout type="warning" title="Warning" >}}A likely mistake with meaningful consequences.{{< /callout >}}
+{{< callout type="caution" title="Caution" >}}A migration or workflow edge case worth checking.{{< /callout >}}
 
-Use the `callout` shortcode for the common Carpentries-style boxes:
-
-- `note`
-- `prereq`
-- `checklist`
-- `testimonial`
-- `discussion`
-- `warning`
-- `caution`
-
-```text
-{{</* callout type="discussion" title="Compare approaches" */>}}
-Ask learners to compare trade-offs before you reveal an answer.
-{{</* /callout */>}}
-```
+{{< details title="Use it" closed="true" >}}
+{{< codeblock lang="text" >}}
+{{</* callout type="note" title="Note" */>}}Supporting context.{{</* /callout */>}}
+{{</* callout type="prereq" title="Prerequisite" */>}}Required setup.{{</* /callout */>}}
+{{</* callout type="checklist" title="Checklist" */>}}Checks to complete.{{</* /callout */>}}
+{{</* callout type="discussion" title="Discussion" */>}}Compare approaches.{{</* /callout */>}}
+{{</* callout type="testimonial" title="Instructor perspective" */>}}An experience.{{</* /callout */>}}
+{{</* callout type="warning" title="Warning" */>}}A likely mistake.{{</* /callout */>}}
+{{</* callout type="caution" title="Caution" */>}}An edge case.{{</* /callout */>}}
+{{< /codeblock >}}
+{{< /details >}}
 
 ## Audience-aware content
 
-```text
-{{</* learner */>}}
-Learner-facing support text.
-{{</* /learner */>}}
+Supporting pages can place the selector exactly where readers need it. Episode and All-in-One pages include it automatically.
 
-{{</* instructor */>}}
-Facilitation guidance for instructors.
-{{</* /instructor */>}}
-```
+{{< lesson/audience-toggle >}}
 
-The top-bar learner/instructor switch controls these blocks.
+{{< learner >}}
+Learners see the task, expected inputs, and enough context to proceed.
+{{< /learner >}}
 
-## Details blocks
+{{< instructor >}}
+Instructors see pacing notes, debrief prompts, and facilitation context.
+{{< /instructor >}}
 
-```text
-{{</* details title="Why this matters" */>}}
-Expanded explanation or optional background.
-{{</* /details */>}}
-```
+{{< details title="Use it" closed="true" >}}
+{{< codeblock lang="text" >}}
+{{</* lesson/audience-toggle */>}}
 
-## Tabs
+{{</* learner */>}}Learner-facing guidance.{{</* /learner */>}}
+{{</* instructor */>}}Facilitation guidance.{{</* /instructor */>}}
+{{< /codeblock >}}
 
-Use Hextra-native tabs for OS, shell, or package-manager variants:
-
-```text
-{{</* tabs */>}}
-{{</* tab name="bash" selected=true */>}}
-```bash
-echo hello
-```
-{{</* /tab */>}}
-{{</* tab name="fish" */>}}
-```fish
-echo hello
-```
-{{</* /tab */>}}
-{{</* /tabs */>}}
-```
-
-Tabs sync by default. Disable sync per page with:
+Set the initial view in `hugo.toml`:
 
 ```toml
-+++
-[tabs]
-  sync = false
-+++
+[params.lesson]
+  defaultView = "learner" # or "instructor"
 ```
 
-For the full Hextra tab behavior and additional examples, see
-[Hextra Tabs](https://imfing.github.io/hextra/docs/guide/shortcodes/tabs/).
+The precedence is a valid `?view=` value, a saved choice, this configured default, then `learner`.
+{{< /details >}}
 
-## Videos
+## Glossary and profile links
 
-Use Hugo-native shortcodes when supported:
+Inline references resolve to normal content pages: {{< glossary formative-assessment >}} and {{< profile workshop-host >}}.
 
-```text
-{{</* youtube aqz-KE-bpKQ */>}}
-```
+{{< details title="Use it" closed="true" >}}
+{{< codeblock lang="text" >}}
+{{</* glossary formative-assessment */>}}
+{{</* profile workshop-host */>}}
+{{< /codeblock >}}
+{{< /details >}}
 
-Avoid raw iframe HTML for providers that Hugo already supports directly.
-For the full list of embedded providers, see
-[Hugo Embedded Shortcodes](https://gohugo.io/content-management/shortcodes/#embedded).
+## Lesson image
 
-## Lesson homepage snippets
+`lesson/image` accepts page-bundle resources and the shared `static/{fig,files,data,code}` paths. It requires `src` and meaningful `alt` text and follows the global or per-page image-zoom setting.
 
-The lesson landing page is usually `content/_index.md` with `layout = "hextra-home"`.
-The shared module provides a few small shortcodes that make that page carry the
-same lesson metadata as the episode pages without introducing a custom layout.
+{{< lesson/image src="/fig/lesson-flow.svg" alt="Lesson content flowing into facilitation and reusable resources." width="560" class="hx:rounded-xl" >}}
 
-```md
-+++
-title = "My Lesson"
-layout = "hextra-home"
-+++
+{{< details title="Use it" closed="true" >}}
+{{< codeblock lang="text" >}}
+{{</* lesson/image
+  src="/fig/lesson-flow.svg"
+  alt="Lesson content flowing into facilitation and reusable resources."
+  width="560"
+  class="hx:rounded-xl"
+*/>}}
+{{< /codeblock >}}
 
-{{</* lesson/overview */>}}
+`style` remains available for legacy content, but prefer `width` and `class`. Disable zoom for one page with `imageZoom = false` in its front matter.
+{{< /details >}}
 
-{{</* lesson/schedule title="Schedule" */>}}
+## Live lesson metadata
 
-{{</* lesson/authors title="Authors and Contributors" */>}}
-```
+The configured lesson title is **{{< lesson/meta "title" >}}**. This value comes directly from `params.lesson`, so content does not need to duplicate it.
 
-`lesson/overview` renders a compact table built from the `objectives` lists of all episode pages.
-`lesson/schedule` renders a timetable with an optional untimed setup row, a cumulative start-time column, the episode title, and the episode questions.
-`lesson/authors` renders a compact table of contributors from the repository root `AUTHORS` file on the homepage.
-`lesson/meta` reuses lesson metadata from `hugo.toml` directly inside Markdown body content.
-
-Use `lesson/meta` when the homepage or another content page should echo the configured lesson title, tagline, or description without duplicating that text:
-
-```text
+{{< details title="Use it" closed="true" >}}
+{{< codeblock lang="text" >}}
 {{</* lesson/meta "title" */>}}
 {{</* lesson/meta "tagline" */>}}
 {{</* lesson/meta "description" */>}}
 {{</* lesson/meta "siteTitle" */>}}
-```
+{{< /codeblock >}}
+{{< /details >}}
 
-Supported keys:
+## Generated lesson resources
 
-- `title`: `params.lesson.title`, falling back to `title`
-- `tagline`: `params.lesson.tagline`, falling back to `params.lesson.description`
-- `description`: `params.lesson.description`, falling back to `params.lesson.tagline`
-- `siteTitle`: the site-level `title`
+The homepage already renders the [episode overview, schedule, and authors]({{< relref "/" >}}). The same episode metadata also drives:
 
-Unsupported keys fail the build clearly so typos do not silently render empty content.
+- [All-in-One]({{< relref "/all-in-one" >}})
+- [Key Points]({{< relref "/key-points" >}})
+- [External Links]({{< relref "/external-links" >}})
+- [All Images]({{< relref "/extract-all-images" >}})
 
-The authors file is intentionally lightweight. One contributor per line is enough:
-
-```text
-# Comments are ignored
-@alice
-Ada Lovelace <ada-lovelace>
-Grace Hopper <https://github.com/gracehopper>
-```
-
-That keeps the convention explicit while avoiding custom HTML includes.
-
-## Hextra home components
-
-For landing pages, overview sections, or documentation marketing surfaces, you can also use Hextra's own home components directly:
-
-- `hextra/hero-badge`
-- `hextra/hero-headline`
-- `hextra/hero-subtitle`
-- `hextra/hero-button`
-- `hextra/feature-grid`
-- `hextra/feature-card`
-
-These are a good fit for non-pedagogy UI such as homepage highlights, getting-started links, or overview cards. The homepage of `hugo-styles` now uses them as the default pattern.
-For more theme-level homepage guidance, see
-[Hextra Getting Started](https://imfing.github.io/hextra/docs/getting-started/).
-
-If you want the same overall homepage structure that Hextra uses, set:
-
-```toml
-+++
-layout = "hextra-home"
-+++
-```
-
-and compose the page from `hextra/hero-badge`, `hextra/hero-headline`, `hextra/hero-subtitle`, `hextra/hero-button`, and `hextra/feature-grid`.
-
-For most downstream lesson repositories, the easiest customization path is:
-
-1. Keep `layout = "hextra-home"` in `content/_index.md`.
-2. Edit the copy, links, and cards in that file.
-3. Prefer Hextra shortcodes over custom layout overrides.
-
-A minimal starting point looks like this:
-
-```md
-+++
-title = "My Lesson"
-layout = "hextra-home"
-+++
-
-{{</* hextra/hero-badge link="docs/quickstart/" */>}}
-Workshop-ready lesson materials
-{{</* /hextra/hero-badge */>}}
-
-<div class="hx:mt-6 hx:mb-6">
-{{</* hextra/hero-headline */>}}
-Teach particle physics with a Carpentries-style lesson
-{{</* /hextra/hero-headline */>}}
-</div>
-
-<div class="hx:mb-12">
-{{</* hextra/hero-subtitle */>}}
-Reuse the familiar teaching structure while keeping the site easy to maintain with Hugo.
-{{</* /hextra/hero-subtitle */>}}
-</div>
-
-<div class="hx:mb-6">
-{{</* hextra/hero-button text="Start Learning" link="episodes/01-introduction/" */>}}
-</div>
-
-<div class="hx:mt-6"></div>
-
-{{</* hextra/feature-grid cols="3" */>}}
-{{</* hextra/feature-card title="Episodes" subtitle="Step-by-step lesson flow." icon="book-open" link="episodes/" class="hx:min-h-[220px]" */>}}
-{{</* hextra/feature-card title="Setup" subtitle="Environment and data requirements." icon="cog" link="learners/setup/" class="hx:min-h-[220px]" */>}}
-{{</* hextra/feature-card title="Teaching Notes" subtitle="Support for instructors and helpers." icon="academic-cap" link="instructors/" class="hx:min-h-[220px]" */>}}
-{{</* /hextra/feature-grid */>}}
-```
-
-Recommended customization boundaries:
-
-- Change the homepage content in `content/_index.md`.
-- Change site-wide metadata such as the title, repository URL, and menu entries in `hugo.toml`.
-- Add more `hextra/feature-card` entries or additional content sections if the lesson needs more orientation material.
-- Avoid copying `layouts/hextra-home.html`, `navbar.html`, or other theme templates unless you need a structural change that content cannot express.
-- Reach for custom CSS only after the built-in Hextra shortcodes and utilities stop being enough.
-
-That keeps downstream lesson repositories thin and makes future Hextra or `hugo-styles` updates much easier to adopt.
-
-For text-only homepages, adding small wrapper divs with Hextra utility classes like `hx:mt-6`, `hx:mb-6`, and `hx:mb-12` is often enough to create better breathing room between the hero badge, headline, subtitle, button, and card grid.
+{{< details title="Use it on a homepage" closed="true" >}}
+{{< codeblock lang="text" >}}
+{{</* lesson/overview */>}}
+{{</* lesson/schedule title="Schedule" */>}}
+{{</* lesson/authors title="Authors and Contributors" */>}}
+{{< /codeblock >}}
+{{< /details >}}

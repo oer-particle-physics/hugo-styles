@@ -7,16 +7,16 @@ Use episode front matter to describe both the teaching flow and the navigation m
 
 ## Required episode fields
 
-- `title`: the page title shown in navigation and episode headers
-- `weight`: numeric order in the lesson
-- `questions`: list of learner-facing questions rendered near the top, with inline Markdown and math support
-- `objectives`: list of learning goals rendered near the top, with inline Markdown and math support
-- `keypoints`: list of recap points rendered near the bottom, with inline Markdown and math support
+- `title`: a non-empty string shown in navigation and episode headers
+- `weight`: an integer order in the lesson
+- `questions`: a non-empty list of non-empty learner-facing strings
+- `objectives`: a non-empty list of non-empty learning-goal strings
+- `keypoints`: a non-empty list of non-empty recap strings
 
 ## Optional episode fields
 
-- `teaching`: teaching time in minutes
-- `exercises`: exercise time in minutes
+- `teaching`: a non-negative integer teaching time in minutes
+- `exercises`: a non-negative integer exercise time in minutes
 - `summary`: override for episode card summaries
 - `draft`: hide unfinished content from production builds
 - `imageZoom = false`: disable click-to-zoom behavior for Markdown images on a page
@@ -69,10 +69,8 @@ Section index pages such as `content/episodes/_index.md` or `content/glossary/_i
 
 ## Validator expectations
 
-The shared `check` command currently expects:
-
-- every episode to define all required fields
-- every episode weight to be unique
-- weight values to be integers
+The shared `check` command enforces the types and non-empty values listed above and requires every episode
+weight to be unique. Values such as `weight = 2.5`, `questions = "one string"`, empty list items, and
+negative times fail validation.
 
 If you intentionally want a draft episode excluded from normal builds, still give it complete front matter. That keeps previews and future publication simpler.

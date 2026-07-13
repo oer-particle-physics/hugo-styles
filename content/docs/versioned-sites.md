@@ -3,26 +3,16 @@ title = "Versioned Sites"
 weight = 75
 +++
 
-`hugo-styles` and `hugo-styles-template` now ship with version-aware deployment support.
-The default behavior is intentionally small:
+The versioned builder publishes the configured default branch as `Latest` and optional branches or tags below
+`versions/<name>/`. This documentation site demonstrates the result with the archived `v0.4.0` tag.
 
-- the default branch is published at the site root and labelled `Latest`
-- plain `hugo server` still serves only the current checkout
-- archived branches or tags are only added when you opt into them in `hugo.toml`
-
-This keeps local authoring simple while still letting the GitHub Pages build publish multiple refs under stable URLs.
-
-## The config model
-
-Both repositories include this block by default:
+## Select published refs
 
 ```toml
 [params.versioning]
   enable = true
   defaultBranch = "main"
   menuName = "Versions"
-  menuIdentifier = "versions"
-  menuWeight = 70
 
   [params.versioning.latest]
     enable = true
@@ -34,153 +24,72 @@ Both repositories include this block by default:
     all = false
 
   [params.versioning.tags]
-    refs = []
+    refs = ["v0.4.0"]
     patterns = []
     all = false
 ```
 
-## What this does by default
+Use `refs` for an explicit list, shell-style `patterns = ["v*"]` or `["release/*"]` for matching refs, or
+`all = true` for every local ref of that kind. A missing explicitly named ref fails the build.
 
-With the default config:
+Published URLs are:
 
-- the GitHub Pages workflow builds the configured default branch as the site root
-- the navbar gets a `Versions` dropdown with one entry: `Latest`
-- no extra branch or tag builds are published
+- `https://<account>.github.io/<repo>/` for Latest
+- `https://<account>.github.io/<repo>/versions/<name>/` for a branch or tag
 
-The generated output uses these URL patterns:
+Each ref is built with its own Hugo configuration and content. The builder only injects the common version menu
+and that target's `baseURL`, so historical theme and feature settings remain accurate.
 
-- `https://<account>.github.io/<repo>/` for `Latest`
-- `https://<account>.github.io/<repo>/versions/<name>/` for extra branches or tags
+## Local and pull-request builds
 
-## Add specific branches or tags
-
-To publish named refs explicitly:
-
-```toml
-[params.versioning.branches]
-  refs = ["release-2026"]
-
-[params.versioning.tags]
-  refs = ["v1.0.0", "v1.1.0"]
-```
-
-These appear in the dropdown as:
-
-- `Latest`
-- `release-2026`
-- `v1.0.0`
-- `v1.1.0`
-
-If `Latest` already points at the default branch, that branch is not duplicated under its raw branch name.
-
-## Match tags or branches with wildcards
-
-Pattern matching uses shell-style globs:
-
-```toml
-[params.versioning.tags]
-  patterns = ["v*"]
-
-[params.versioning.branches]
-  patterns = ["release/*"]
-```
-
-Typical uses:
-
-- `v*` for release tags
-- `release/*` for maintenance branches
-- `docs-*` for documentation branches
-
-## Publish all branches or all tags
-
-If you want broad discovery instead of an explicit list:
-
-```toml
-[params.versioning.branches]
-  all = true
-
-[params.versioning.tags]
-  all = true
-```
-
-You can combine `all = true` with `patterns` or `refs`, but in most cases one approach is enough.
-
-## Disable `Latest`
-
-If you only want named version entries in the dropdown:
-
-```toml
-[params.versioning.latest]
-  enable = false
-```
-
-The root site still has to exist for GitHub Pages, so the default branch continues to build at the site root.
-This option only hides the `Latest` menu entry.
-
-## Local development
-
-For day-to-day authoring, keep using:
+Normal authoring still uses the current tree only:
 
 ```bash
 hugo server
 ```
 
-That serves only the current checkout.
-It does not try to build other tags or branches locally.
-
-If you want the full deployment artifact on your machine, run the same helper the GitHub Pages workflow uses:
+To validate the current checkout while also building configured archived refs:
 
 ```bash
-python3 scripts/build-versioned-site.py
+python3 scripts/build-versioned-site.py \
+  --use-current-checkout \
+  --base-url / \
+  --destination .cache/versioned-site \
+  --no-minify
 ```
 
-You can override the production base URL while testing:
+`--use-current-checkout` matters in CI and detached pull-request checkouts: it builds the checked-out changes
+as Latest instead of silently rebuilding `main`.
+
+## Destination safety
+
+The builder only replaces an empty directory or output containing its
+`.hugo-styles-versioned-output` managed marker. For a non-empty directory created by another tool, review the
+path and add `--force`. Structural protections still reject the source,
+repository root, filesystem root, their ancestors, and destinations that escape through symlinks.
+
+Destinations outside the site root require a separate acknowledgement:
 
 ```bash
-python3 scripts/build-versioned-site.py --base-url http://localhost:8000/
+python3 scripts/build-versioned-site.py \
+  --destination /tmp/hugo-styles-preview \
+  --allow-external-destination
 ```
 
-Then serve `public/` with any static file server.
+`--force` never bypasses these structural or external-path checks. Every target is built in staging; the
+destination is swapped only after all targets succeed. A failed build leaves the previous published output intact.
 
-For local rendered-site link checking, build a validation artifact with a root base URL and run `lychee`
-against the generated HTML:
+## Rendered-link validation
 
 ```bash
-python3 scripts/build-versioned-site.py --base-url / --destination .cache/linkcheck-site --no-minify
-lychee --cache --config lychee.toml --no-progress --root-dir .cache/linkcheck-site '.cache/linkcheck-site/**/*.html'
+python3 scripts/build-versioned-site.py \
+  --use-current-checkout \
+  --base-url / \
+  --destination .cache/linkcheck-site \
+  --no-minify
+lychee --cache --config lychee.toml --no-progress \
+  --root-dir .cache/linkcheck-site '.cache/linkcheck-site/**/*.html'
 ```
 
-Using `--base-url /` keeps the generated version menu and internal links portable on disk, which makes local
-link checking work even for GitHub Pages project sites that deploy under `/<repo>/`.
-
-For repositories created from `hugo-styles-template`, that helper is committed in the lesson repository
-and refreshed from the pinned `hugo-styles` module version by the template's update workflow and local
-`./scripts/sync-template-files.sh` helper.
-
-## How the build works
-
-The helper script:
-
-1. reads the effective Hugo config via `hugo config --format json`
-2. resolves the configured branches and tags from Git
-3. creates temporary Git worktrees instead of repeatedly checking out the current directory
-4. generates a small per-build config file with the correct `Versions` menu entries
-5. runs Hugo once for the root site and once for each extra version
-
-This stays close to Hugo's built-in behavior:
-
-- Hugo still handles routing, menus, `baseURL`, and output paths
-- the custom logic is limited to ref discovery and menu generation
-
-## Current limitation
-
-The shared build helper supports one site root per repository via Hugo's normal `--source` option.
-It does not currently support a different `source_dir` per ref like Hextra's own script does for its historical `docs` and `exampleSite` layouts.
-
-That tradeoff is deliberate:
-
-- it keeps the lesson workflow simpler
-- it matches the current `hugo-styles` and template repository layouts
-- it avoids adding extra per-version config unless a real downstream use case needs it
-
-If you need to publish older refs from a different site subdirectory, extend the helper at that point instead of carrying that complexity by default.
+For template-based lessons, `scripts/build-versioned-site.py` and its workflows are managed files refreshed from
+the exact `hugo-styles` version pinned in `go.mod`.

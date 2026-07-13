@@ -73,31 +73,38 @@ func main() {
 		os.Exit(2)
 	}
 
+	var err error
 	switch os.Args[1] {
 	case "check":
-		if err := runCheck(os.Args[2:]); err != nil {
-			fmt.Fprintln(os.Stderr, err)
-			os.Exit(1)
-		}
+		err = runCheck(os.Args[2:])
 	case "migrate":
-		if err := runMigrate(os.Args[2:]); err != nil {
-			fmt.Fprintln(os.Stderr, err)
-			os.Exit(1)
-		}
+		err = runMigrate(os.Args[2:])
 	default:
 		usage()
 		os.Exit(2)
+	}
+	if errors.Is(err, flag.ErrHelp) {
+		return
+	}
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(1)
 	}
 }
 
 func usage() {
 	fmt.Println("usage:")
 	fmt.Println("  hugo-styles-migrate check [path]")
-	fmt.Println("  hugo-styles-migrate migrate --source <legacy repo> --dest <output dir>")
+	fmt.Println("  hugo-styles-migrate migrate --source <legacy repo> --dest <template repo> [--dry-run]")
 }
 
 func runCheck(args []string) error {
 	fs := flag.NewFlagSet("check", flag.ContinueOnError)
+	fs.SetOutput(os.Stdout)
+	fs.Usage = func() {
+		fmt.Fprintln(fs.Output(), "usage: hugo-styles-migrate check [path]")
+		fs.PrintDefaults()
+	}
 	if err := fs.Parse(args); err != nil {
 		return err
 	}
@@ -111,20 +118,26 @@ func runCheck(args []string) error {
 		return err
 	}
 	if len(findings) == 0 {
-		fmt.Println("no migration blockers found")
+		fmt.Println("validation passed: no issues found")
 		return nil
 	}
 
 	for _, f := range findings {
 		fmt.Printf("%s [%s] %s\n", f.Path, f.Kind, f.Message)
 	}
-	return fmt.Errorf("found %d migration issues", len(findings))
+	return fmt.Errorf("validation failed: found %d issues", len(findings))
 }
 
 func runMigrate(args []string) error {
 	fs := flag.NewFlagSet("migrate", flag.ContinueOnError)
+	fs.SetOutput(os.Stdout)
 	source := fs.String("source", "", "legacy lesson repository")
-	dest := fs.String("dest", "", "output directory")
+	dest := fs.String("dest", "", "clean hugo-styles template repository")
+	dryRun := fs.Bool("dry-run", false, "show managed path changes without writing them")
+	fs.Usage = func() {
+		fmt.Fprintln(fs.Output(), "usage: hugo-styles-migrate migrate --source <legacy repo> --dest <template repo> [--dry-run]")
+		fs.PrintDefaults()
+	}
 	if err := fs.Parse(args); err != nil {
 		return err
 	}
@@ -132,43 +145,7 @@ func runMigrate(args []string) error {
 		return errors.New("both --source and --dest are required")
 	}
 
-	if err := os.MkdirAll(filepath.Join(*dest, "content", "episodes"), 0o755); err != nil {
-		return err
-	}
-	for _, dir := range []string{"learners", "instructors", "glossary", "profiles"} {
-		if err := os.MkdirAll(filepath.Join(*dest, "content", dir), 0o755); err != nil {
-			return err
-		}
-	}
-
-	for _, dir := range []string{"fig", "files", "data", "code"} {
-		srcDir := filepath.Join(*source, dir)
-		if stat, err := os.Stat(srcDir); err == nil && stat.IsDir() {
-			if err := copyTree(srcDir, filepath.Join(*dest, "static", dir)); err != nil {
-				return err
-			}
-		}
-	}
-
-	if err := migrateLessonHomePage(*source, *dest); err != nil {
-		return err
-	}
-	if err := migrateRootPage(*source, *dest, "reference.md", filepath.Join("content", "reference.md"), ""); err != nil {
-		return err
-	}
-	if err := migrateRootPage(*source, *dest, "setup.md", filepath.Join("content", "learners", "setup.md"), ""); err != nil {
-		return err
-	}
-
-	if err := migrateExtras(*source, *dest); err != nil {
-		return err
-	}
-	if err := migrateEpisodes(*source, *dest); err != nil {
-		return err
-	}
-
-	fmt.Printf("migrated %s -> %s\n", *source, *dest)
-	return nil
+	return migrateIntoTemplate(*source, *dest, *dryRun)
 }
 
 func collectLegacyFindings(root string) ([]finding, error) {

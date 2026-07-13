@@ -51,11 +51,14 @@ The example site in this repository doubles as the public documentation for the 
 - [Authoring Guide](https://oer-particle-physics.github.io/hugo-styles/docs/authoring/): lesson-writing model
 - [Front Matter](https://oer-particle-physics.github.io/hugo-styles/docs/frontmatter/): episode metadata contract
 - [Components](https://oer-particle-physics.github.io/hugo-styles/docs/components/): shortcode and component reference
+- [Hextra Features](https://oer-particle-physics.github.io/hugo-styles/docs/hextra-features/): live theme-feature examples and configuration
 - [Glossary and Profiles](https://oer-particle-physics.github.io/hugo-styles/docs/glossary-profiles/): glossary/profile authoring
 - [Deployment](https://oer-particle-physics.github.io/hugo-styles/docs/deployment/): GitHub Pages workflow
+- [Versioned Sites](https://oer-particle-physics.github.io/hugo-styles/docs/versioned-sites/): archived refs and safe build output
 - [Troubleshooting](https://oer-particle-physics.github.io/hugo-styles/docs/troubleshooting/): common failures and fixes
 - [Migration Guide](https://oer-particle-physics.github.io/hugo-styles/docs/migration/): legacy Carpentries migration flow
 - [Update Guide](https://oer-particle-physics.github.io/hugo-styles/docs/updates/): downstream update and release workflow
+- [hugo-styles Maintenance](https://oer-particle-physics.github.io/hugo-styles/docs/hugo-styles-maintenance/): shared-module test and release checklist
 - [Reference](https://oer-particle-physics.github.io/hugo-styles/reference/): further reading for Hextra and Hugo
 
 ## Update model
@@ -101,7 +104,7 @@ For downstream lesson authors, the practical prerequisites are:
 - [Go](https://go.dev/doc/install) (optional for template-based authoring with committed `_vendor/`; required for module maintenance and migration checks)
 - [lychee](https://lychee.cli.rs/guides/getting-started/) (optional for local rendered-site link checks)
 
-Node.js is only needed in this repository when maintainers refresh the vendored search bundle.
+Node.js is only needed in this repository when maintainers refresh vendored frontend assets or run browser tests.
 
 ```bash
 hugo server
@@ -117,7 +120,7 @@ The shared checker can validate both legacy Carpentries lessons and Hugo-native 
 
 The Hugo-native checks currently cover:
 
-- required episode metadata
+- strict required episode metadata types and non-empty values
 - duplicate episode weights
 - unresolved glossary references
 - unresolved profile references
@@ -127,13 +130,16 @@ The Hugo-native checks currently cover:
 Regression tests for the checker and migrator live under `cmd/hugo-styles-migrate/testdata/`.
 
 ```bash
-(cd cmd/hugo-styles-migrate && go test ./...)
+(cd cmd/hugo-styles-migrate && go test ./... && go vet ./...)
+python3 -m unittest discover -s scripts/tests -v
+npm run test:browser
 ```
 
 Rendered-site link checks use `lychee` against a local build that mirrors the GitHub Actions workflow:
 
 ```bash
-python3 scripts/build-versioned-site.py --base-url / --destination .cache/linkcheck-site --no-minify
+python3 scripts/build-versioned-site.py --use-current-checkout \
+  --base-url / --destination .cache/linkcheck-site --no-minify
 lychee --cache --config lychee.toml --no-progress --root-dir .cache/linkcheck-site '.cache/linkcheck-site/**/*.html'
 ```
 
@@ -167,10 +173,14 @@ Run the checker or migration helper directly from this repository:
 ```bash
 cd cmd/hugo-styles-migrate
 go run . check ../..
-go run . migrate --source ../old-training --dest /tmp/converted-training
-go run . check /tmp/converted-training
+go run . migrate --source ../old-training --dest ../clean-template-training --dry-run
+go run . migrate --source ../old-training --dest ../clean-template-training
+go run . check ../clean-template-training
 cd ../..
 ```
+
+The destination must be a clean Git worktree created from `hugo-styles-template`; migration preserves its
+configuration, workflows, branding, generated-resource pages, and section indexes.
 
 Or from another repository:
 
@@ -192,13 +202,15 @@ Then work with conventional commits locally. CI also runs `cz check --rev-range 
 Before merging a release PR or sanity-checking a release candidate:
 
 ```bash
-cd cmd/hugo-styles-migrate && go test ./...
-cd ../..
+(cd cmd/hugo-styles-migrate && go test ./... && go vet ./...)
+python3 -m unittest discover -s scripts/tests -v
 npm run check:flexsearch
 npm run check:medium-zoom
-python3 scripts/build-versioned-site.py --base-url / --destination .cache/linkcheck-site --no-minify
+npm run test:browser
+hugo --gc --minify --panicOnWarning
+python3 scripts/build-versioned-site.py --use-current-checkout \
+  --base-url / --destination .cache/linkcheck-site --no-minify
 lychee --cache --config lychee.toml --no-progress --root-dir .cache/linkcheck-site '.cache/linkcheck-site/**/*.html'
-hugo --gc --minify
 ```
 
 The `release-please` workflow expects a `RELEASE_PLEASE_TOKEN` secret so the generated release PRs and tags can trigger follow-up GitHub Actions runs normally.

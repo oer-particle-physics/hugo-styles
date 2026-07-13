@@ -32,7 +32,8 @@ python3 scripts/build-versioned-site.py
 
 ```bash
 go run github.com/oer-particle-physics/hugo-styles/cmd/hugo-styles-migrate@latest check .
-python3 scripts/build-versioned-site.py --base-url / --destination .cache/linkcheck-site --no-minify
+python3 scripts/build-versioned-site.py --use-current-checkout \
+  --base-url / --destination .cache/linkcheck-site --no-minify
 lychee --cache --config lychee.toml --no-progress --root-dir .cache/linkcheck-site '.cache/linkcheck-site/**/*.html'
 python3 scripts/build-versioned-site.py
 ```

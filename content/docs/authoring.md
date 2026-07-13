@@ -3,229 +3,64 @@ title = "Authoring Guide"
 weight = 20
 +++
 
-Use this guide for the overall lesson-writing model. The detailed field and shortcode references live in:
+This is the shortest path from an empty template to a checked lesson. Keep the
+[Front Matter]({{< relref "/docs/frontmatter" >}}) and
+[Components]({{< relref "/docs/components" >}}) references open when you need field or shortcode details.
 
-- [Front Matter]({{< relref "/docs/frontmatter" >}})
-- [Components]({{< relref "/docs/components" >}})
-- [Glossary & Profiles]({{< relref "/docs/glossary-profiles" >}})
+## 1. Create an episode
 
-For generic Hextra theme behavior and deeper Hugo mechanics, use the
-[Reference]({{< relref "/reference" >}}) page to jump to the upstream docs.
-
-## Lesson structure
-
-Use Hugo sections to match the lesson model:
-
-- `content/episodes/` for the main teaching flow
-- `content/learners/` for learner-facing supporting pages
-- `content/instructors/` for instructor-only notes
-- `content/glossary/` for reusable definitions
-- `content/profiles/` for learner or maintainer personas
-- `content/reference.md` for a broader reference page when you need one
-- `content/key-points.md`, `content/all-in-one.md`, `content/external-links.md`, and `content/extract-all-images.md` for generated resource surfaces, including the All Images page
-
-Episodes should stay short, ordered, and self-contained. Supplemental setup, reference, or facilitation material should move into the supporting sections instead of bloating the main narrative.
-
-## Pedagogy blocks
-
-The goal is to preserve the Carpentries teaching vocabulary while letting Hextra handle the overall visual language. The boxes below are intentional teaching signals, not generic decoration.
-
-### Challenge, hint, and solution
-
-```text
-{{</* challenge title="Warm-up exercise" subtitle="Work through the prompt before the discussion." */>}}
-Prompt the learner to do something concrete.
-
-{{</* hint */>}}
-Offer a small nudge when learners get stuck.
-{{</* /hint */>}}
-
-{{</* solution */>}}
-Provide a worked answer or expected approach.
-{{</* /solution */>}}
-{{</* /challenge */>}}
-```
-
-This renders as a warm challenge panel with nested collapsible hint and solution blocks.
-Use `subtitle` only when the challenge needs an extra framing line; omit it when the title is enough.
-
-### Callout box types
-
-The `callout` shortcode covers the common Carpentries box families and keeps them visually aligned with Hextra:
-
-- `note`
-- `prereq`
-- `checklist`
-- `testimonial`
-- `discussion`
-- `warning`
-- `caution`
-
-```text
-{{</* callout type="note" title="Teaching note" */>}}
-Context or a side comment.
-{{</* /callout */>}}
-
-{{</* callout type="discussion" title="Discuss" */>}}
-Prompt learners to compare approaches.
-{{</* /callout */>}}
-
-{{</* callout type="warning" title="Watch out" */>}}
-Flag a likely mistake or risky step.
-{{</* /callout */>}}
-```
-
-Challenge and solution remain their own shortcodes because they carry different authoring and interaction behaviour than generic callouts.
-
-### Audience-specific content
-
-```text
-{{</* learner */>}}
-Learner-facing note.
-{{</* /learner */>}}
-
-{{</* instructor */>}}
-Facilitation advice for instructors.
-{{</* /instructor */>}}
-```
-
-The learner and instructor switch in the top navigation changes which of these blocks are visible, following the same idea as Workbench while staying inside the Hextra shell.
-
-### Generic callouts and spoilers
-
-```text
-{{</* callout type="prereq" title="Before you start" */>}}
-Explain assumptions or required setup.
-{{</* /callout */>}}
-
-{{</* details title="Why this matters" */>}}
-Expandable extra context.
-{{</* /details */>}}
-```
-
-## Tabs for setup variants
-
-Use Hextra's native `tabs` and `tab` shortcodes for repeated setup variants such as operating systems, shells, or package managers. This keeps the lesson source compact and avoids long repeated sections.
-
-### Operating system tabs
-
-~~~text
-{{</* tabs */>}}
-{{</* tab name="macOS" selected=true */>}}
 ```bash
-brew install hugo go
+hugo new content --kind episode episodes/05-your-topic/index.md
 ```
-{{</* /tab */>}}
-{{</* tab name="Linux" */>}}
+
+Put the teaching sequence in `content/episodes/`. Use `content/learners/` for learner setup or reference material and
+`content/instructors/` for facilitation notes. Keep glossary entries and audience profiles in their matching
+`content/glossary/` and `content/profiles/` sections.
+
+## 2. Complete the episode metadata
+
+Every episode needs a non-empty string `title`, an integer `weight`, and non-empty lists of non-empty
+`questions`, `objectives`, and `keypoints`. Optional `teaching` and `exercises` values are
+non-negative integer minutes.
+
+See [Front Matter]({{< relref "/docs/frontmatter" >}}) for a copyable example and TOML math guidance.
+
+## 3. Add teaching components
+
+Use project-owned components for pedagogy and audience-specific content, then Hextra components for general
+documentation UI. The live references place copyable source beside every example:
+
+- [Components]({{< relref "/docs/components" >}}): challenge, hint, solution, callouts, audience blocks, links, images, and lesson metadata
+- [Hextra Features]({{< relref "/docs/hextra-features" >}}): math, Mermaid, tabs, details, steps, cards, code, PDF, Jupyter, search, theme, and other theme features
+- [Glossary & Profiles]({{< relref "/docs/glossary-profiles" >}}): reusable glossary and profile pages
+
+Episode and All-in-One pages add the learner/instructor selector automatically. On another page that contains
+`learner` or `instructor` blocks, place `{{</* lesson/audience-toggle */>}}` above them.
+
+## 4. Preview both audiences
+
 ```bash
-sudo apt install hugo golang
+hugo server
 ```
-{{</* /tab */>}}
-{{</* tab name="Windows" */>}}
-```powershell
-winget install Hugo.Hugo.Extended
-```
-{{</* /tab */>}}
-{{</* /tabs */>}}
-~~~
 
-### Shell tabs
+Open an episode and the All-in-One page, switch between learner and instructor, and check any local links or
+page-bundle images. Add `?view=learner` or `?view=instructor` to test a direct audience URL.
 
-~~~text
-{{</* tabs */>}}
-{{</* tab name="bash" selected=true */>}}
+## 5. Validate and build
+
 ```bash
-source ~/.bashrc
-```
-{{</* /tab */>}}
-{{</* tab name="zsh" */>}}
-```zsh
-source ~/.zshrc
-```
-{{</* /tab */>}}
-{{</* tab name="fish" */>}}
-```fish
-source ~/.config/fish/config.fish
-```
-{{</* /tab */>}}
-{{</* /tabs */>}}
-~~~
-
-### Sync behavior
-
-`hugo-styles` enables synced tabs by default with Hextra's built-in tab sync. That means repeated tab groups with the same labels on a page, such as `bash` / `zsh` / `fish`, stay aligned automatically.
-
-Use synced tabs when:
-
-- the same choice repeats across a page
-- learners should not have to reselect their environment each time
-- the tab names mean the same thing in each group
-
-Opt out on a page when the tab groups are only locally meaningful:
-
-```toml
-+++
-[tabs]
-  sync = false
-+++
+go run github.com/oer-particle-physics/hugo-styles/cmd/hugo-styles-migrate@latest check .
+hugo --gc --minify --panicOnWarning
 ```
 
-That disables syncing for all tab groups on that page while keeping the same shortcode syntax.
+The validator checks episode metadata types and values, unique weights, glossary/profile targets, image alt text,
+and unsupported legacy syntax. The Hugo build catches rendering warnings. Maintainers can run the full browser
+and rendered-link suite from [hugo-styles Maintenance]({{< relref "/docs/hugo-styles-maintenance" >}}).
 
-### Recommended setup structure
-
-- Use tabs for short, parallel variants of the same step.
-- Use separate pages or sections when the platform workflows genuinely diverge.
-- Keep tab labels short and familiar: `macOS`, `Linux`, `Windows`, `bash`, `zsh`, `fish`.
-- Prefer one decision axis per tab group. Do not mix OS and shell in the same tab set.
-- When multiple tab groups on a page should sync, keep the labels identical and in the same order.
-
-## Where to see the examples
-
-The example lesson intentionally demonstrates the lesson-specific UI:
+## Live lesson examples
 
 - [Designing a Hugo-first lesson]({{< relref "/episodes/01-introduction" >}})
 - [Using challenge and solution blocks]({{< relref "/episodes/02-facilitating-activity" >}})
 - [Setup choices, profiles, and native embeds]({{< relref "/episodes/03-setup-choices" >}})
 - [Physics notation, diagrams, and richer docs]({{< relref "/episodes/04-physics-doc-features" >}})
 - [Learner setup page]({{< relref "/learners/setup" >}})
-
-## Videos
-
-Use Hugo's built-in provider shortcodes when they exist:
-
-```text
-{{</* youtube aqz-KE-bpKQ */>}}
-```
-
-That keeps the source cleaner than raw iframe HTML and makes migration rules easier to reason about.
-
-## Quality checks
-
-The shared validator can check both legacy lessons and Hugo-native lesson repos:
-
-```bash
-go run github.com/oer-particle-physics/hugo-styles/cmd/hugo-styles-migrate@latest check .
-```
-
-For Hugo lessons, the validator currently checks:
-
-- required episode metadata
-- duplicate episode weights
-- unresolved glossary references
-- unresolved profile references
-- missing image alt text
-- unsupported leftover legacy syntax
-
-Rendered-site link checks are separate because they work on the built HTML rather than the source Markdown:
-
-```bash
-python3 scripts/build-versioned-site.py --base-url / --destination .cache/linkcheck-site --no-minify
-lychee --cache --config lychee.toml --no-progress --root-dir .cache/linkcheck-site '.cache/linkcheck-site/**/*.html'
-```
-
-That catches broken external links and rendered internal links in the same shape the GitHub Actions workflow uses.
-For template-based lesson repositories, both the helper script and the workflow files that run this check are managed through `./scripts/sync-template-files.sh`.
-Treat `404` or moved targets as content fixes. Reserve `.lycheeignore` entries for narrow, known external
-exceptions such as trusted sites with invalid TLS chains, and keep them exact rather than excluding a whole host.
-Those entries belong to the lesson repository, not the shared `hugo-styles` sync.

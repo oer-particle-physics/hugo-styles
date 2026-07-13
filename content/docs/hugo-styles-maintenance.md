@@ -35,14 +35,36 @@ CI remains authoritative and runs `cz check --rev-range ...` on pull requests.
 
 Before merging a release PR or sanity-checking a release candidate:
 
-1. run `go test ./...` in `cmd/hugo-styles-migrate`
-2. run `npm run check:flexsearch`
-3. run `npm run check:medium-zoom`
-4. run `python3 scripts/build-versioned-site.py --base-url / --destination .cache/linkcheck-site --no-minify`
-5. run `lychee --cache --config lychee.toml --no-progress --root-dir .cache/linkcheck-site '.cache/linkcheck-site/**/*.html'`
-6. run `hugo --gc --minify`
-7. confirm the `RELEASE_PLEASE_TOKEN` secret is available to the workflow
-8. merge the release PR that `release-please` opens
+1. run `go test ./...` and `go vet ./...` in `cmd/hugo-styles-migrate`
+2. run `python3 -m unittest discover -s scripts/tests -v`
+3. run `npm ci`, both `npm run check:*` asset checks, and `npm run test:browser`
+4. run `hugo --gc --minify --panicOnWarning`
+5. build the current checkout and configured archived refs with `--use-current-checkout`
+6. run `lychee` against that versioned output
+7. confirm the `RELEASE_PLEASE_TOKEN` secret is available, then merge the release PR
+
+```bash
+(cd cmd/hugo-styles-migrate && go test ./... && go vet ./...)
+python3 -m unittest discover -s scripts/tests -v
+npm ci
+npm run check:flexsearch
+npm run check:medium-zoom
+npm run test:browser
+hugo --gc --minify --panicOnWarning
+python3 scripts/build-versioned-site.py --use-current-checkout \
+  --base-url / --destination .cache/versioned-site --no-minify
+lychee --cache --config lychee.toml --no-progress \
+  --root-dir .cache/versioned-site '.cache/versioned-site/**/*.html'
+```
+
+The release workflow creates the root `vX.Y.Z` tag and idempotently mirrors it as
+`cmd/hugo-styles-migrate/vX.Y.Z`. After release, confirm both tags exist and that:
+
+```bash
+go list -m github.com/oer-particle-physics/hugo-styles/cmd/hugo-styles-migrate@latest
+```
+
+resolves to the semantic release rather than a pseudo-version.
 
 After release, downstream lesson repositories consume updates via:
 
