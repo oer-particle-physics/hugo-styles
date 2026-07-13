@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.5.4](https://github.com/oer-particle-physics/hugo-styles/compare/v0.5.3...v0.5.4) (2026-07-13)
+
+
+### Bug Fixes
+
+* correct edit links and downstream update flow ([77343ea](https://github.com/oer-particle-physics/hugo-styles/commit/77343ea152a4c0e704305199e011a851dbb554fd))
+
 ## [0.5.3](https://github.com/oer-particle-physics/hugo-styles/compare/v0.5.2...v0.5.3) (2026-07-13)
 
 
