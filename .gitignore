@@ -5,6 +5,7 @@
 /.hugo-versioned-cache/
 /.lycheecache
 /node_modules/
+/test-results/
 /.cache/
 /.DS_Store
 /.idea/

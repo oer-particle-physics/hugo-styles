@@ -13,6 +13,9 @@ test("banner dismissal, search, and theme controls work", async ({ page }, testI
 
   const banner = page.locator(".hextra-banner");
   await expect(banner).toBeVisible();
+  const bannerFeatureLink = banner.getByRole("link", { name: "feature guide" });
+  await expect(bannerFeatureLink).toHaveAttribute("href", "/docs/hextra-features/");
+  expect(await bannerFeatureLink.getAttribute("target")).toBeNull();
   await page.getByRole("button", { name: "Close banner" }).click();
   expect(await page.evaluate(() => localStorage.getItem("hugo-styles-feature-demo-v1"))).toBe("0");
   await page.reload();

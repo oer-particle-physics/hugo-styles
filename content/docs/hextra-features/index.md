@@ -248,7 +248,7 @@ The dismissible banner at the top identifies this documentation as a live demo. 
 ```toml
 [params.banner]
   key = "hugo-styles-feature-demo-v1"
-  message = "This documentation is a live feature demo."
+  message = "This documentation is a live feature demo. See the [feature guide](/docs/hextra-features/)."
 
 [params.search]
   enable = true
@@ -258,7 +258,7 @@ The dismissible banner at the top identifies this documentation as a live demo. 
   default = "system"
   displayToggle = true
 ```
-Changing the banner key makes a revised announcement visible even to readers who dismissed an older one.
+Use a root-relative path for an internal banner link so Hugo applies the site's base path and keeps navigation in the same tab. Changing the banner key makes a revised announcement visible even to readers who dismissed an older one.
 {{< /details >}}
 
 ## Markdown context menu
