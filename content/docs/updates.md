@@ -19,7 +19,7 @@ The v0.5 safety changes are intentional:
 
 Fix validation errors rather than bypassing them. Existing content URLs and shortcode names remain compatible.
 
-## Recommended path: template + automated vendor refresh (no local Go)
+## Update through the scheduled refresh workflow
 
 For repositories created from `hugo-styles-template`, the intended update flow is:
 
@@ -51,18 +51,6 @@ but it can fail during the pull-request step once an upstream release updates `.
 `_vendor/` is a committed snapshot of Hugo module dependencies pinned by `go.mod` and `go.sum`.
 Committing it keeps lesson builds reproducible and lets authors run `hugo server` without local Go.
 
-### Refresh locally (optional, if Go is available)
-
-If you do have Go locally and want to refresh manually:
-
-```bash
-hugo mod get -u github.com/oer-particle-physics/hugo-styles@latest
-hugo mod tidy
-./scripts/sync-template-files.sh
-hugo mod vendor
-python3 scripts/build-versioned-site.py
-```
-
 The sync helper copies the managed maintainer files from the exact pinned `hugo-styles`
 module version. That currently includes:
 
@@ -75,22 +63,7 @@ module version. That currently includes:
 - `.github/workflows/reusable-refresh-vendored-modules.yml`
 
 That keeps the committed maintainer files aligned with `go.mod` rather than downloading an unrelated head revision.
-
-## Direct module mode (without `_vendor/`)
-
-If a lesson repository imports `github.com/oer-particle-physics/hugo-styles` directly (without committed `_vendor/`),
-enable Dependabot for `gomod` so updates arrive as pull requests.
-
-Manual fallback:
-
-```bash
-hugo mod get -u github.com/oer-particle-physics/hugo-styles@latest
-hugo mod tidy
-hugo mod graph
-hugo
-```
-
-Review the rendered preview before merging a module bump, especially when the changelog mentions a breaking change.
+Review the rendered preview and workflow checks before merging the refresh pull request, especially when the changelog mentions a breaking change.
 
 ## Override strategy
 

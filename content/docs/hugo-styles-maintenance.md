@@ -69,4 +69,3 @@ resolves to the semantic release rather than a pseudo-version.
 After release, downstream lesson repositories consume updates via:
 
 - `hugo-styles-template` vendored refresh PRs (`go.mod`, `go.sum`, managed files, `_vendor/`)
-- direct-module Dependabot PRs or manual `hugo mod get -u ...`

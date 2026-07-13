@@ -2,6 +2,17 @@ import { expect, test } from "@playwright/test";
 
 const episodePath = "/episodes/01-introduction/";
 
+test("footer edit links include the repository content path", async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== "desktop-chromium", "Link generation is viewport-independent.");
+
+  await page.goto(episodePath);
+
+  await expect(page.getByRole("link", { name: "Edit this page" })).toHaveAttribute(
+    "href",
+    "https://github.com/oer-particle-physics/hugo-styles/edit/main/content/episodes/01-introduction/index.md",
+  );
+});
+
 test("episode controls respect desktop and mobile breakpoints", async ({ page }, testInfo) => {
   await page.goto(episodePath);
 
