@@ -5,9 +5,11 @@
     "vendor:flexsearch": "node scripts/vendor-flexsearch.mjs",
     "check:flexsearch": "node scripts/vendor-flexsearch.mjs --check",
     "vendor:medium-zoom": "node scripts/vendor-medium-zoom.mjs",
-    "check:medium-zoom": "node scripts/vendor-medium-zoom.mjs --check"
+    "check:medium-zoom": "node scripts/vendor-medium-zoom.mjs --check",
+    "test:browser": "playwright test"
   },
   "devDependencies": {
+    "@playwright/test": "^1.61.1",
     "flexsearch": "^0.8.212",
     "medium-zoom": "1.1.0"
   }

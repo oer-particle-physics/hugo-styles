@@ -8,7 +8,6 @@ import (
 	"path/filepath"
 	"regexp"
 	"sort"
-	"strconv"
 	"strings"
 
 	toml "github.com/pelletier/go-toml/v2"
@@ -27,6 +26,7 @@ type contentDoc struct {
 var (
 	markdownImagePattern  = regexp.MustCompile(`!\[([^\]]*)\]\(([^)]+)\)`)
 	htmlImagePattern      = regexp.MustCompile(`(?is)<img\b([^>]*?)>`)
+	lessonImagePattern    = regexp.MustCompile(`(?is)\{\{[<%]\s*lesson/image\b([^}%]*?)[>%]\}\}`)
 	glossaryShortcodeExpr = regexp.MustCompile(`\{\{<\s*glossary\s+(?:"([^"]+)"|([A-Za-z0-9._/-]+))`)
 	profileShortcodeExpr  = regexp.MustCompile(`\{\{<\s*profile\s+(?:"([^"]+)"|([A-Za-z0-9._/-]+))`)
 )
@@ -237,28 +237,71 @@ func isEpisodeDoc(doc contentDoc) bool {
 
 func validateEpisodeDoc(doc contentDoc) ([]finding, int, bool) {
 	var findings []finding
-	requiredKeys := []string{"title", "weight", "questions", "objectives", "keypoints"}
-	for _, key := range requiredKeys {
-		value, ok := doc.Meta[key]
-		if !ok || isEmptyMetaValue(value) {
-			findings = append(findings, finding{
-				Path:    doc.Path,
-				Kind:    "metadata",
-				Message: "episode is missing " + key,
-			})
+	if title, ok := doc.Meta["title"].(string); !ok || strings.TrimSpace(title) == "" {
+		findings = append(findings, metadataFinding(doc.Path, "episode title must be a non-empty string"))
+	}
+	for _, key := range []string{"questions", "objectives", "keypoints"} {
+		if !nonEmptyStringList(doc.Meta[key]) {
+			findings = append(findings, metadataFinding(
+				doc.Path,
+				fmt.Sprintf("episode %s must be a non-empty list of non-empty strings", key),
+			))
 		}
 	}
 
-	weight, ok := intValue(doc.Meta["weight"])
+	weight, ok := strictIntValue(doc.Meta["weight"])
 	if !ok {
-		findings = append(findings, finding{
-			Path:    doc.Path,
-			Kind:    "metadata",
-			Message: "episode weight must be an integer",
-		})
+		findings = append(findings, metadataFinding(doc.Path, "episode weight must be an integer"))
+	}
+	for _, key := range []string{"teaching", "exercises"} {
+		value, present := doc.Meta[key]
+		if !present {
+			continue
+		}
+		minutes, valid := strictIntValue(value)
+		if !valid || minutes < 0 {
+			findings = append(findings, metadataFinding(
+				doc.Path,
+				fmt.Sprintf("episode %s must be a non-negative integer", key),
+			))
+		}
+	}
+	if !ok {
 		return findings, 0, false
 	}
 	return findings, weight, true
+}
+
+func metadataFinding(path, message string) finding {
+	return finding{Path: path, Kind: "metadata", Message: message}
+}
+
+func nonEmptyStringList(value any) bool {
+	switch typed := value.(type) {
+	case []string:
+		if len(typed) == 0 {
+			return false
+		}
+		for _, item := range typed {
+			if strings.TrimSpace(item) == "" {
+				return false
+			}
+		}
+		return true
+	case []any:
+		if len(typed) == 0 {
+			return false
+		}
+		for _, item := range typed {
+			text, ok := item.(string)
+			if !ok || strings.TrimSpace(text) == "" {
+				return false
+			}
+		}
+		return true
+	default:
+		return false
+	}
 }
 
 func unresolvedShortcodeFindings(doc contentDoc, glossarySlugs, profileSlugs map[string]struct{}) []finding {
@@ -325,7 +368,33 @@ func missingAltTextFindings(doc contentDoc) []finding {
 			})
 		}
 	}
+	for _, match := range lessonImagePattern.FindAllStringSubmatch(doc.Body, -1) {
+		attrs := parseQuotedAttrs(match[1])
+		src := strings.TrimSpace(attrs["src"])
+		if src == "" {
+			findings = append(findings, finding{
+				Path:    doc.Path,
+				Kind:    "image-src",
+				Message: "lesson/image is missing src",
+			})
+		}
+		if strings.TrimSpace(attrs["alt"]) == "" {
+			findings = append(findings, finding{
+				Path:    doc.Path,
+				Kind:    "image-alt",
+				Message: fmt.Sprintf("lesson/image %q is missing alt text", src),
+			})
+		}
+	}
 	return findings
+}
+
+func parseQuotedAttrs(attrText string) map[string]string {
+	attrs := map[string]string{}
+	for _, match := range attributePattern.FindAllStringSubmatch(attrText, -1) {
+		attrs[strings.ToLower(match[1])] = firstNonEmpty(match[2], match[3], match[4])
+	}
+	return attrs
 }
 
 func parseHTMLAttrs(attrText string) map[string]string {
@@ -342,34 +411,26 @@ func parseHTMLAttrs(attrText string) map[string]string {
 	return attrs
 }
 
-func isEmptyMetaValue(value any) bool {
-	switch typed := value.(type) {
-	case nil:
-		return true
-	case string:
-		return strings.TrimSpace(typed) == ""
-	case []any:
-		return len(typed) == 0
-	case []string:
-		return len(typed) == 0
-	default:
-		return false
-	}
-}
-
-func intValue(value any) (int, bool) {
+func strictIntValue(value any) (int, bool) {
 	switch typed := value.(type) {
 	case int:
 		return typed, true
+	case int8:
+		return int(typed), true
+	case int16:
+		return int(typed), true
 	case int64:
 		return int(typed), true
 	case int32:
 		return int(typed), true
-	case float64:
+	case uint:
 		return int(typed), true
-	case string:
-		n, err := strconv.Atoi(strings.TrimSpace(typed))
-		return n, err == nil
+	case uint8:
+		return int(typed), true
+	case uint16:
+		return int(typed), true
+	case uint32:
+		return int(typed), true
 	default:
 		return 0, false
 	}

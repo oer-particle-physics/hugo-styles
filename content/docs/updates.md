@@ -7,6 +7,18 @@ This page is for lesson maintainers updating lesson repositories.
 If you maintain the shared `hugo-styles` module itself, use
 [hugo-styles Maintenance]({{< relref "/docs/hugo-styles-maintenance" >}}).
 
+## v0.5 compatibility notes
+
+The v0.5 safety changes are intentional:
+
+- the versioned-site builder protects marked output, requires `--force` for an unmarked non-empty destination,
+  and requires `--allow-external-destination` outside the site root
+- migration writes only into a clean, recognized `hugo-styles-template` Git worktree
+- `lesson/image` requires both `src` and a non-empty `alt`
+- episode metadata now uses strict string, integer, and non-empty-list validation
+
+Fix validation errors rather than bypassing them. Existing content URLs and shortcode names remain compatible.
+
 ## Recommended path: template + automated vendor refresh (no local Go)
 
 For repositories created from `hugo-styles-template`, the intended update flow is:

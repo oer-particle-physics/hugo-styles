@@ -21,7 +21,8 @@ Use this order in a fresh lesson repository:
 - For normal authoring from `hugo-styles-template`, local Go is optional because the template commits `_vendor/`.
 - Install [Go](https://go.dev/doc/install) only if you plan to maintain module versions locally.
 - You only need GitHub Pages access if you plan to deploy with the template workflow.
-- You do not need Node.js for normal lesson authoring. It is only used in the `hugo-styles` module repository for search bundle maintenance.
+- You do not need Node.js for normal lesson authoring. It is only used in the `hugo-styles` module repository for
+  frontend asset maintenance and browser tests.
 
 ## Create a new lesson
 
@@ -36,7 +37,7 @@ Use this order in a fresh lesson repository:
    The top-nav GitHub icon is configured separately in `[[menus.main]]`, so update that menu URL too.
    If you plan to deploy on GitHub Pages, set `baseURL` to `https://<account>.github.io/<repo>/`.
    In the repository settings, enable Pages and select `GitHub Actions` as the source before the first push to `main`.
-4. Add episodes with `hugo new --kind episode episodes/my-episode/index.md`.
+4. Add episodes with `hugo new content --kind episode episodes/my-episode/index.md`.
    Episode order is controlled by front matter `weight` (not by file or folder name).
    Use unique integer weights such as `10`, `20`, `30`; numbered slugs like `01-intro` are optional.
 5. Customize the landing page by editing `content/_index.md` while keeping `layout = "hextra-home"`.

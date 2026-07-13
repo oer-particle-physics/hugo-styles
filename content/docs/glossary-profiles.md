@@ -10,7 +10,7 @@ Glossary terms and learner profiles are normal Hugo content pages, not hidden da
 Create entries in `content/glossary/`:
 
 ```bash
-hugo new glossary/new-term.md
+hugo new content --kind glossary glossary/new-term.md
 ```
 
 Minimal example:
@@ -34,7 +34,7 @@ Reference a glossary term inline with:
 Create profiles in `content/profiles/`:
 
 ```bash
-hugo new profile/workshop-host.md
+hugo new content --kind profile profiles/workshop-host.md
 ```
 
 Reference a profile inline with:

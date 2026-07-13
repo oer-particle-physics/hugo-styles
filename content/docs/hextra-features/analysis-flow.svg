@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 360" role="img" aria-labelledby="title desc">
+  <title id="title">Toy particle analysis flow</title>
+  <desc id="desc">Four connected stages: events, selection, regions, and result.</desc>
+  <rect width="960" height="360" rx="32" fill="#f8fafc"/>
+  <path d="M220 180h60m160 0h60m160 0h60" stroke="#94a3b8" stroke-width="8" stroke-linecap="round"/>
+  <g font-family="system-ui, sans-serif" text-anchor="middle">
+    <g transform="translate(40 90)">
+      <rect width="180" height="180" rx="24" fill="#dbeafe" stroke="#60a5fa" stroke-width="3"/>
+      <circle cx="90" cy="58" r="25" fill="#2563eb"/>
+      <text x="90" y="66" font-size="24" font-weight="700" fill="white">1</text>
+      <text x="90" y="112" font-size="25" font-weight="700" fill="#0f172a">Events</text>
+      <text x="90" y="143" font-size="17" fill="#475569">local toy sample</text>
+    </g>
+    <g transform="translate(280 90)">
+      <rect width="180" height="180" rx="24" fill="#e0f2fe" stroke="#38bdf8" stroke-width="3"/>
+      <circle cx="90" cy="58" r="25" fill="#0284c7"/>
+      <text x="90" y="66" font-size="24" font-weight="700" fill="white">2</text>
+      <text x="90" y="112" font-size="25" font-weight="700" fill="#0f172a">Selection</text>
+      <text x="90" y="143" font-size="17" fill="#475569">pT &gt; 25 GeV</text>
+    </g>
+    <g transform="translate(500 90)">
+      <rect width="180" height="180" rx="24" fill="#ccfbf1" stroke="#2dd4bf" stroke-width="3"/>
+      <circle cx="90" cy="58" r="25" fill="#0f766e"/>
+      <text x="90" y="66" font-size="24" font-weight="700" fill="white">3</text>
+      <text x="90" y="112" font-size="25" font-weight="700" fill="#0f172a">Regions</text>
+      <text x="90" y="143" font-size="17" fill="#475569">signal + control</text>
+    </g>
+    <g transform="translate(720 90)">
+      <rect width="200" height="180" rx="24" fill="#ede9fe" stroke="#a78bfa" stroke-width="3"/>
+      <circle cx="100" cy="58" r="25" fill="#7c3aed"/>
+      <text x="100" y="66" font-size="24" font-weight="700" fill="white">4</text>
+      <text x="100" y="112" font-size="25" font-weight="700" fill="#0f172a">Result</text>
+      <text x="100" y="143" font-size="17" fill="#475569">4 signal / 2 control</text>
+    </g>
+  </g>
+</svg>

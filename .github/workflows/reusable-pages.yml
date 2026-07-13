@@ -51,7 +51,7 @@ jobs:
       - name: Setup Hugo
         uses: peaceiris/actions-hugo@v3
         with:
-          hugo-version: "0.160.1"
+          hugo-version: "0.164.0"
           extended: true
 
       - name: Setup Go
@@ -110,7 +110,7 @@ jobs:
         run: git fetch --prune origin '+refs/heads/*:refs/remotes/origin/*' --tags
 
       - name: Build link-check artifact
-        run: python3 scripts/build-versioned-site.py --base-url / --destination .cache/linkcheck-site --no-minify
+        run: python3 scripts/build-versioned-site.py --base-url / --destination .cache/linkcheck-site --no-minify --use-current-checkout
 
       - name: Check rendered links
         uses: lycheeverse/lychee-action@v2
@@ -134,7 +134,7 @@ jobs:
           key: ${{ steps.restore-lychee-cache.outputs.cache-primary-key }}
 
       - name: Build deploy artifact
-        run: python3 scripts/build-versioned-site.py --base-url "${{ steps.pages.outputs.base_url }}/"
+        run: python3 scripts/build-versioned-site.py --base-url "${{ steps.pages.outputs.base_url }}/" --use-current-checkout
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v5

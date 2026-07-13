@@ -14,8 +14,32 @@ jobs:
   release-please:
     runs-on: ubuntu-latest
     steps:
-      - uses: googleapis/release-please-action@v5
+      - id: release
+        uses: googleapis/release-please-action@v5
         with:
           token: ${{ secrets.RELEASE_PLEASE_TOKEN }}
           config-file: release-please-config.json
           manifest-file: .release-please-manifest.json
+
+      - name: Check out tags
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.RELEASE_PLEASE_TOKEN }}
+
+      - name: Mirror root releases for the migration module
+        shell: bash
+        run: |
+          git fetch origin --force --tags
+          while IFS= read -r root_tag; do
+            if [[ "$(printf '%s\n' "v0.4.0" "${root_tag}" | sort -V | head -n 1)" != "v0.4.0" ]]; then
+              continue
+            fi
+            module_tag="cmd/hugo-styles-migrate/${root_tag}"
+            if git ls-remote --exit-code --tags origin "refs/tags/${module_tag}" >/dev/null 2>&1; then
+              echo "Already published ${module_tag}"
+              continue
+            fi
+            git tag "${module_tag}" "${root_tag}^{}"
+            git push origin "refs/tags/${module_tag}"
+          done < <(git tag --list 'v*' | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$' || true)

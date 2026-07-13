@@ -3,48 +3,58 @@ title = "Migration Guide"
 weight = 90
 +++
 
-The migration helper is designed to cover the common Carpentries lesson path, not every custom Jekyll feature ever added to a lesson repository.
+The migrator moves lesson content into an existing
+[hugo-styles-template](https://github.com/oer-particle-physics/hugo-styles-template) repository. It deliberately
+keeps the template's configuration and automation instead of creating a second, incomplete site.
 
-## Recommended migration sequence
+## Before you start
 
-1. Run the checker on the legacy repository.
-2. Run the migrator into a clean output directory.
-3. Run the checker again on the migrated Hugo lesson.
-4. Build with Hugo and do a quick manual pass for layout, links, and custom branding.
+The destination must:
+
+- be the root of a Git worktree with no tracked or untracked changes
+- import and require `github.com/oer-particle-physics/hugo-styles` in `hugo.toml` and `go.mod`
+- be separate from the legacy source tree
+
+Commit or stash destination changes first. There is no force option for bypassing these checks.
+
+## Preview, then migrate
 
 ```bash
-go run github.com/oer-particle-physics/hugo-styles/cmd/hugo-styles-migrate@latest check .
-go run github.com/oer-particle-physics/hugo-styles/cmd/hugo-styles-migrate@latest migrate --source ../legacy-lesson --dest /tmp/converted-lesson
-go run github.com/oer-particle-physics/hugo-styles/cmd/hugo-styles-migrate@latest check /tmp/converted-lesson
+go run github.com/oer-particle-physics/hugo-styles/cmd/hugo-styles-migrate@latest check ../legacy-lesson
+go run github.com/oer-particle-physics/hugo-styles/cmd/hugo-styles-migrate@latest migrate \
+  --source ../legacy-lesson \
+  --dest ../new-template-lesson \
+  --dry-run
+go run github.com/oer-particle-physics/hugo-styles/cmd/hugo-styles-migrate@latest migrate \
+  --source ../legacy-lesson \
+  --dest ../new-template-lesson
 ```
 
-## What it converts well
+The dry run prints every absolute path it would add, replace, remove, or preserve. The real migration stages all
+changes first and restores the original destination if applying them fails.
 
-- `_episodes/*.md` into Hugo episode content
-- common metadata fields such as `questions`, `objectives`, `keypoints`, `teaching`, and `exercises`
-- legacy Carpentries exercise blocks
-- common callout classes
-- `{{site.baseurl}}` asset paths
-- common `links.md` include cleanup
-- common YouTube and Vimeo iframe embeds
+## Replaced content
 
-## What usually needs a manual pass
+- the homepage and regular content below `episodes`, `learners`, `instructors`, `glossary`, and `profiles`
+- optional `content/reference.md` and root `AUTHORS`
+- optional `static/fig`, `static/files`, `static/data`, and `static/code`
 
-- custom Jekyll includes or layouts
-- repo-specific branding and footer logic
-- unusual Liquid expressions
-- site-specific navigation widgets
-- custom glossary or reference structures
-- uncommon iframe providers or hand-written embeds
+Section `_index.md` files are preserved. So are template configuration, branding, workflows, generated-resource
+pages, and all other infrastructure outside those managed paths.
 
-That means migrations like `hsf-training-docker` and `hsf-training-cicd` should be mostly systematic, while more customised repositories such as `gitlab-cms` should expect a short manual clean-up phase.
+## What it converts
 
-## What the checker validates after migration
+The common path covers legacy episodes and metadata, Carpentries exercise/callout blocks,
+`{{site.baseurl}}` asset paths, common link includes, and YouTube/Vimeo embeds. Custom Jekyll includes,
+unusual Liquid, repository-specific layouts, branding, and uncommon embeds still need review.
 
-When you run `check` on a Hugo lesson, it validates:
+## Finish the migration
 
-- `title`, `weight`, `questions`, `objectives`, and `keypoints` on episodes
-- unique episode weights
-- glossary/profile shortcode targets
-- image alt text
-- unsupported leftover legacy syntax
+```bash
+cd ../new-template-lesson
+go run github.com/oer-particle-physics/hugo-styles/cmd/hugo-styles-migrate@latest check .
+hugo --gc --minify --panicOnWarning
+```
+
+Then edit lesson metadata and repository URLs in `hugo.toml`, preview both audience views, and review any
+custom legacy constructs reported by the checker.
