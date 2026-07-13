@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.5.0](https://github.com/oer-particle-physics/hugo-styles/compare/v0.4.0...v0.5.0) (2026-07-13)
+
+
+### Features
+
+* deliver v0.5 remediation and feature showcase ([ba8ee81](https://github.com/oer-particle-physics/hugo-styles/commit/ba8ee81f62eac24f7e8470fb74a858d2c00cb933))
+
+
+### Bug Fixes
+
+* force replacement of CI deploy artifact ([b67509b](https://github.com/oer-particle-physics/hugo-styles/commit/b67509b40346ec29aa905f7d7bc22db0c64a8243))
+* preserve Hugo URL filtering for images ([dad21c1](https://github.com/oer-particle-physics/hugo-styles/commit/dad21c140a62d9d7f663e672fff6f7873ff4e0a6))
+
 ## [0.4.0](https://github.com/oer-particle-physics/hugo-styles/compare/v0.3.7...v0.4.0) (2026-07-13)
 
 
