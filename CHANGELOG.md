@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.5.1](https://github.com/oer-particle-physics/hugo-styles/compare/v0.5.0...v0.5.1) (2026-07-13)
+
+
+### Bug Fixes
+
+* keep internal banner links in same tab ([28b4c05](https://github.com/oer-particle-physics/hugo-styles/commit/28b4c053b79dddcb7c0a347b42290cc4d8b5af69))
+
 ## [0.5.0](https://github.com/oer-particle-physics/hugo-styles/compare/v0.4.0...v0.5.0) (2026-07-13)
 
 
