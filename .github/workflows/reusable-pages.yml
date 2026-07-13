@@ -134,7 +134,7 @@ jobs:
           key: ${{ steps.restore-lychee-cache.outputs.cache-primary-key }}
 
       - name: Build deploy artifact
-        run: python3 scripts/build-versioned-site.py --base-url "${{ steps.pages.outputs.base_url }}/" --use-current-checkout
+        run: python3 scripts/build-versioned-site.py --base-url "${{ steps.pages.outputs.base_url }}/" --use-current-checkout --force
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v5
