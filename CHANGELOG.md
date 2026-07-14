@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.5.5](https://github.com/oer-particle-physics/hugo-styles/compare/v0.5.4...v0.5.5) (2026-07-14)
+
+
+### Bug Fixes
+
+* isolate docs banner from downstream sites ([27e4fc2](https://github.com/oer-particle-physics/hugo-styles/commit/27e4fc254c01ddec39fb907e25e294fdb6304113))
+
 ## [0.5.4](https://github.com/oer-particle-physics/hugo-styles/compare/v0.5.3...v0.5.4) (2026-07-13)
 
 
