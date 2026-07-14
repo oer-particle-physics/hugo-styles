@@ -22,7 +22,7 @@ export default defineConfig({
   ],
   webServer: {
     command:
-      "hugo server --disableFastRender --bind 127.0.0.1 --port 13131 --baseURL http://127.0.0.1:13131/",
+      "hugo server --config hugo.toml,hugo-docs.toml --disableFastRender --bind 127.0.0.1 --port 13131 --baseURL http://127.0.0.1:13131/",
     url: "http://127.0.0.1:13131/",
     reuseExistingServer: !process.env.CI,
     timeout: 120_000,

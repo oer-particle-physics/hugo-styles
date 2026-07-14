@@ -20,6 +20,7 @@ jobs:
     with:
       site-root: .
       go-version-file: go.mod
+      hugo-config: "hugo.toml,hugo-docs.toml"
       setup-node: true
       node-version: "22"
       prepare-command: |
@@ -32,5 +33,5 @@ jobs:
         (cd cmd/hugo-styles-migrate && go test ./... && go vet ./...)
       validation-command: |
         (cd cmd/hugo-styles-migrate && go run . check ../..)
-        hugo --panicOnWarning --destination .cache/current-site
+        hugo --config hugo.toml,hugo-docs.toml --panicOnWarning --destination .cache/current-site
         npm run test:browser
