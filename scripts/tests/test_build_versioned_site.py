@@ -1,7 +1,9 @@
 from __future__ import annotations
 
 import importlib.util
+import json
 import os
+import subprocess
 import sys
 import tempfile
 import unittest
@@ -27,6 +29,80 @@ class URLTests(unittest.TestCase):
             builder.join_url("https://example.org/lesson/", "versions", "v1.2.0"),
             "https://example.org/lesson/versions/v1.2.0/",
         )
+
+
+class ConfigTests(unittest.TestCase):
+    def test_missing_secondary_config_is_only_allowed_for_historical_builds(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_name:
+            site = Path(temp_name)
+            (site / "hugo.toml").write_text("title = 'Example'\n", encoding="utf-8")
+
+            with self.assertRaisesRegex(builder.BuildError, "hugo-docs.toml"):
+                builder.load_hugo_config(
+                    site,
+                    "hugo.toml,hugo-docs.toml",
+                    "hugo",
+                    None,
+                    site / "cache",
+                )
+
+            config = builder.load_hugo_config(
+                site,
+                "hugo.toml,hugo-docs.toml",
+                "hugo",
+                None,
+                site / "cache",
+                allow_missing_config_files=True,
+            )
+            self.assertEqual(config["title"], "Example")
+
+    def test_importing_module_does_not_inherit_docs_banner(self) -> None:
+        repo_root = SCRIPT_PATH.parents[1]
+        with tempfile.TemporaryDirectory() as temp_name:
+            site = Path(temp_name)
+            (site / "go.mod").write_text(
+                "\n".join(
+                    [
+                        "module example.org/downstream-lesson",
+                        "",
+                        "go 1.26",
+                        "",
+                        "require github.com/oer-particle-physics/hugo-styles v0.0.0",
+                        "",
+                        "replace github.com/oer-particle-physics/hugo-styles "
+                        f"=> {repo_root}",
+                        "",
+                    ]
+                ),
+                encoding="utf-8",
+            )
+            (site / "hugo.toml").write_text(
+                "\n".join(
+                    [
+                        'baseURL = "https://example.org/lesson/"',
+                        'title = "Downstream lesson"',
+                        "",
+                        "[module]",
+                        "  [[module.imports]]",
+                        '    path = "github.com/oer-particle-physics/hugo-styles"',
+                        "    [[module.imports.mounts]]",
+                        '      source = "layouts"',
+                        '      target = "layouts"',
+                        "",
+                    ]
+                ),
+                encoding="utf-8",
+            )
+
+            completed = subprocess.run(
+                ["hugo", "config", "--quiet", "--format", "json"],
+                cwd=site,
+                check=True,
+                capture_output=True,
+                text=True,
+            )
+            config = json.loads(completed.stdout)
+            self.assertNotIn("banner", config.get("params", {}))
 
 
 class DestinationTests(unittest.TestCase):

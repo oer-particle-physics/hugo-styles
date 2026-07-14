@@ -1,0 +1,3 @@
+[params.banner]
+  key = "hugo-styles-feature-demo-v1"
+  message = "This documentation is a live feature demo. See the [feature guide](/docs/hextra-features/)."

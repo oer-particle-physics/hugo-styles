@@ -38,7 +38,7 @@ Before merging a release PR or sanity-checking a release candidate:
 1. run `go test ./...` and `go vet ./...` in `cmd/hugo-styles-migrate`
 2. run `python3 -m unittest discover -s scripts/tests -v`
 3. run `npm ci`, both `npm run check:*` asset checks, and `npm run test:browser`
-4. run `hugo --gc --minify --panicOnWarning`
+4. run `hugo --config hugo.toml,hugo-docs.toml --gc --minify --panicOnWarning`
 5. build the current checkout and configured archived refs with `--use-current-checkout`
 6. run `lychee` against that versioned output
 7. confirm the `RELEASE_PLEASE_TOKEN` secret is available, then merge the release PR
@@ -50,8 +50,9 @@ npm ci
 npm run check:flexsearch
 npm run check:medium-zoom
 npm run test:browser
-hugo --gc --minify --panicOnWarning
+hugo --config hugo.toml,hugo-docs.toml --gc --minify --panicOnWarning
 python3 scripts/build-versioned-site.py --use-current-checkout \
+  --config hugo.toml,hugo-docs.toml \
   --base-url / --destination .cache/versioned-site --no-minify
 lychee --cache --config lychee.toml --no-progress \
   --root-dir .cache/versioned-site '.cache/versioned-site/**/*.html'

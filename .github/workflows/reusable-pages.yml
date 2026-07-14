@@ -10,6 +10,9 @@ on:
       go-version-file:
         type: string
         default: "go.mod"
+      hugo-config:
+        type: string
+        default: "hugo.toml"
       setup-node:
         type: boolean
         default: false
@@ -110,7 +113,7 @@ jobs:
         run: git fetch --prune origin '+refs/heads/*:refs/remotes/origin/*' --tags
 
       - name: Build link-check artifact
-        run: python3 scripts/build-versioned-site.py --base-url / --destination .cache/linkcheck-site --no-minify --use-current-checkout
+        run: python3 scripts/build-versioned-site.py --config "${{ inputs.hugo-config }}" --base-url / --destination .cache/linkcheck-site --no-minify --use-current-checkout
 
       - name: Check rendered links
         uses: lycheeverse/lychee-action@v2
@@ -134,7 +137,7 @@ jobs:
           key: ${{ steps.restore-lychee-cache.outputs.cache-primary-key }}
 
       - name: Build deploy artifact
-        run: python3 scripts/build-versioned-site.py --base-url "${{ steps.pages.outputs.base_url }}/" --use-current-checkout --force
+        run: python3 scripts/build-versioned-site.py --config "${{ inputs.hugo-config }}" --base-url "${{ steps.pages.outputs.base_url }}/" --use-current-checkout --force
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v5

@@ -90,8 +90,11 @@ For downstream lesson authors, the practical prerequisites are:
 Node.js is only needed in this repository when maintainers refresh vendored frontend assets or run browser tests.
 
 ```bash
-hugo server
+hugo server --config hugo.toml,hugo-docs.toml
 ```
+
+The secondary config keeps documentation-demo settings local to this repository instead of
+exporting them to lessons that import `hugo-styles` as a module.
 
 ## Validation and tests
 
@@ -122,6 +125,7 @@ Rendered-site link checks use `lychee` against a local build that mirrors the Gi
 
 ```bash
 python3 scripts/build-versioned-site.py --use-current-checkout \
+  --config hugo.toml,hugo-docs.toml \
   --base-url / --destination .cache/linkcheck-site --no-minify
 lychee --cache --config lychee.toml --no-progress --root-dir .cache/linkcheck-site '.cache/linkcheck-site/**/*.html'
 ```
@@ -190,8 +194,9 @@ python3 -m unittest discover -s scripts/tests -v
 npm run check:flexsearch
 npm run check:medium-zoom
 npm run test:browser
-hugo --gc --minify --panicOnWarning
+hugo --config hugo.toml,hugo-docs.toml --gc --minify --panicOnWarning
 python3 scripts/build-versioned-site.py --use-current-checkout \
+  --config hugo.toml,hugo-docs.toml \
   --base-url / --destination .cache/linkcheck-site --no-minify
 lychee --cache --config lychee.toml --no-progress --root-dir .cache/linkcheck-site '.cache/linkcheck-site/**/*.html'
 ```
