@@ -35,8 +35,10 @@ Use this order in a fresh lesson repository:
    while the latter is reused by lesson components and metadata snippets.
    Update `params.lesson.repo` and `params.lesson.docsRepo` because they are used for the source, edit, and citation links in the page footer.
    The top-nav GitHub icon is configured separately in `[[menus.main]]`, so update that menu URL too.
+   If the repository's default branch is not `main`, set both `params.lesson.editBranch` and
+   `params.versioning.defaultBranch` to its name.
    If you plan to deploy on GitHub Pages, set `baseURL` to `https://<account>.github.io/<repo>/`.
-   In the repository settings, enable Pages and select `GitHub Actions` as the source before the first push to `main`.
+   In the repository settings, enable Pages and select `GitHub Actions` as the source before the first push to the default branch.
 4. Add episodes with `hugo new content --kind episode episodes/my-episode/index.md`.
    Episode order is controlled by front matter `weight` (not by file or folder name).
    Use unique integer weights such as `10`, `20`, `30`; numbered slugs like `01-intro` are optional.

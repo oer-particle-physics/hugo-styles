@@ -29,6 +29,9 @@ The versioned builder publishes the configured default branch as `Latest` and op
     all = false
 ```
 
+Keep `defaultBranch` aligned with the repository's default branch in GitHub. The deployment workflow discovers the
+GitHub setting at runtime, while local versioned builds use this Hugo configuration value.
+
 Use `refs` for an explicit list, shell-style `patterns = ["v*"]` or `["release/*"]` for matching refs, or
 `all = true` for every local ref of that kind. A missing explicitly named ref fails the build.
 
