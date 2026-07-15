@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.5.6](https://github.com/oer-particle-physics/hugo-styles/compare/v0.5.5...v0.5.6) (2026-07-15)
+
+
+### Bug Fixes
+
+* deploy pages from repository default branch ([9194e6a](https://github.com/oer-particle-physics/hugo-styles/commit/9194e6af85eed8d2c9c0cb3fe65363a9386c7316))
+
 ## [0.5.5](https://github.com/oer-particle-physics/hugo-styles/compare/v0.5.4...v0.5.5) (2026-07-14)
 
 
