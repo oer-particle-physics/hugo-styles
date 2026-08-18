@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.5.7](https://github.com/oer-particle-physics/hugo-styles/compare/v0.5.6...v0.5.7) (2026-08-18)
+
+
+### Bug Fixes
+
+* add workflow sync token preflight ([#65](https://github.com/oer-particle-physics/hugo-styles/issues/65)) ([a0843f4](https://github.com/oer-particle-physics/hugo-styles/commit/a0843f453e9ad488652a4286bd8c1b0b751ed5a2))
+* render inline Markdown in callout titles ([#67](https://github.com/oer-particle-physics/hugo-styles/issues/67)) ([bdd0219](https://github.com/oer-particle-physics/hugo-styles/commit/bdd02191153f49142b1a860d0b86d6d800f0d3e1)), closes [#64](https://github.com/oer-particle-physics/hugo-styles/issues/64)
+
 ## [0.5.6](https://github.com/oer-particle-physics/hugo-styles/compare/v0.5.5...v0.5.6) (2026-07-15)
 
 
