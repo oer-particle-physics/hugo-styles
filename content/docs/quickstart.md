@@ -66,8 +66,9 @@ Use either:
 This extra token is needed because upstream refreshes can update the managed workflow files under `.github/workflows/`.
 GitHub's default `GITHUB_TOKEN` can create the PR, but GitHub rejects pushes that modify workflow files unless the token also has workflow write permission.
 
-If `WORKFLOW_SYNC_TOKEN` is not configured, the refresh workflow can still work for releases that only change `go.mod`, `go.sum`, scripts, or `_vendor/`,
-but it may fail on releases that also update the managed workflow wrappers.
+If `WORKFLOW_SYNC_TOKEN` is not configured and no managed workflow files changed, the refresh emits a warning and continues
+with the default `GITHUB_TOKEN`. If files under `.github/workflows/` changed, it stops before opening the pull request and
+explains how to configure the secret.
 
 ## Migrating existing lessons
 

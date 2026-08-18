@@ -43,8 +43,9 @@ Use either:
 The refresh workflow updates managed files under `.github/workflows/` when `hugo-styles` ships workflow changes.
 GitHub's default `GITHUB_TOKEN` can open pull requests, but GitHub rejects pushes that modify workflow files unless the token also has workflow write permission.
 
-If `WORKFLOW_SYNC_TOKEN` is missing, the refresh workflow may still succeed for releases that do not touch managed workflow files,
-but it can fail during the pull-request step once an upstream release updates `.github/workflows/*`.
+If `WORKFLOW_SYNC_TOKEN` is missing and no managed workflow files changed, the refresh emits a warning and continues with
+the default `GITHUB_TOKEN`. If the refresh changed files under `.github/workflows/`, it stops before the pull-request step
+with an actionable error explaining how to configure the secret.
 
 ### What `_vendor/` is for
 
