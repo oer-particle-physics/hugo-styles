@@ -52,6 +52,23 @@ Pick one event-selection threshold and explain what it removes.
 {{< /codeblock >}}
 {{< /details >}}
 
+### Inline callout titles
+
+Callout titles accept inline Markdown such as code, emphasis, strong text, and links.
+The rendered result must remain structurally inline; otherwise, the original source is displayed literally.
+Goldmark settings and render hooks still apply, including smart punctuation and trusted inline HTML.
+If Goldmark disables raw HTML, its source is displayed literally instead of disappearing from the title.
+
+{{< callout type="note" title="Run `jobs` before continuing" >}}Use the title to name commands and other short technical identifiers precisely.{{< /callout >}}
+
+{{< details title="Use it" closed="true" >}}
+{{< codeblock lang="text" >}}
+{{</* callout type="note" title="Run `jobs` before continuing" */>}}
+Use the title to name commands and other short technical identifiers precisely.
+{{</* /callout */>}}
+{{< /codeblock >}}
+{{< /details >}}
+
 ## Audience-aware content
 
 Supporting pages can place the selector exactly where readers need it. Episode and All-in-One pages include it automatically.

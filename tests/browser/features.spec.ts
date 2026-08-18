@@ -96,3 +96,15 @@ test("Markdown, PDF, and notebook outputs are local and rendered", async ({ page
     "selected=9 signal=4 control=2",
   );
 });
+
+test("callout titles render inline Markdown", async ({ page }, testInfo) => {
+  desktopOnly(testInfo.project.name);
+  await page.goto("/docs/components/");
+
+  const title = page.locator(".lesson-callout-title", {
+    hasText: "Run jobs before continuing",
+  });
+  await expect(title).toHaveCount(1);
+  await expect(title).toBeVisible();
+  await expect(title.locator("code")).toHaveText("jobs");
+});

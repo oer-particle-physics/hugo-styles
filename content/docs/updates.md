@@ -16,6 +16,8 @@ The v0.5 safety changes are intentional:
 - migration writes only into a clean, recognized `hugo-styles-template` Git worktree
 - `lesson/image` requires both `src` and a non-empty `alt`
 - episode metadata now uses strict string, integer, and non-empty-list validation
+- callout titles now render trusted inline Markdown; Goldmark typography and permitted inline HTML therefore apply,
+  while block or media output falls back to the original literal source
 
 Fix validation errors rather than bypassing them. Existing content URLs and shortcode names remain compatible.
 
