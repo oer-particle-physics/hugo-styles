@@ -83,11 +83,14 @@ func TestMigrationReplacesManagedContentAndPreservesInfrastructure(t *testing.T)
 		"content/instructors/instructor-notes.md",
 		"content/reference.md",
 		"static/fig/new.svg",
-		"AUTHORS",
+		"CITATION.cff",
 	} {
 		if _, err := os.Stat(filepath.Join(dest, filepath.FromSlash(path))); err != nil {
 			t.Errorf("expected migrated path %s: %v", path, err)
 		}
+	}
+	if citation := mustReadTestFile(t, filepath.Join(dest, "CITATION.cff")); !strings.Contains(citation, "Legacy") {
+		t.Errorf("expected the source CITATION.cff to replace the template's: %q", citation)
 	}
 	for _, path := range []string{
 		"content/episodes/old/index.md",
@@ -195,10 +198,11 @@ exercises: 5
 	writeTestFile(t, filepath.Join(source, "reference.md"), "---\ntitle: Reference\n---\nReference.\n")
 	writeTestFile(t, filepath.Join(source, "_extras", "guide.md"), "---\ntitle: Guide\n---\nGuide.\n")
 	writeTestFile(t, filepath.Join(source, "fig", "new.svg"), "new figure\n")
-	writeTestFile(t, filepath.Join(source, "AUTHORS"), "Legacy Author\n")
+	writeTestFile(t, filepath.Join(source, "CITATION.cff"), "authors:\n  - given-names: Legacy\n    family-names: Author\n")
 
 	writeTestFile(t, filepath.Join(dest, "hugo.toml"), "[module]\n[[module.imports]]\npath = '"+hugoStylesModule+"'\n")
 	writeTestFile(t, filepath.Join(dest, "go.mod"), "module example.test/lesson\n\nrequire "+hugoStylesModule+" v0.4.0\n")
+	writeTestFile(t, filepath.Join(dest, "CITATION.cff"), "authors:\n  - given-names: Template\n    family-names: Author\n")
 	writeTestFile(t, filepath.Join(dest, "content", "_index.md"), "old homepage\n")
 	writeTestFile(t, filepath.Join(dest, "content", "episodes", "_index.md"), "episode index\n")
 	writeTestFile(t, filepath.Join(dest, "content", "episodes", "old", "index.md"), "old episode\n")

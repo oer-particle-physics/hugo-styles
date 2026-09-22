@@ -216,8 +216,8 @@ func generateMigration(source, staging string) error {
 			}
 		}
 	}
-	if authors := filepath.Join(source, "AUTHORS"); fileExists(authors) {
-		if err := copyFile(authors, filepath.Join(staging, "AUTHORS")); err != nil {
+	if citation := filepath.Join(source, "CITATION.cff"); fileExists(citation) {
+		if err := copyFile(citation, filepath.Join(staging, "CITATION.cff")); err != nil {
 			return err
 		}
 	}
@@ -252,7 +252,7 @@ func planMigrationChanges(staging, dest string) ([]migrationChange, error) {
 		}
 	}
 
-	for _, rel := range []string{filepath.Join("content", "_index.md"), filepath.Join("content", "reference.md"), "AUTHORS"} {
+	for _, rel := range []string{filepath.Join("content", "_index.md"), filepath.Join("content", "reference.md"), "CITATION.cff"} {
 		if fileExists(filepath.Join(staging, rel)) {
 			add(rel)
 		}

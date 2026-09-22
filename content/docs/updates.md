@@ -60,6 +60,7 @@ module version. That currently includes:
 - `scripts/build-versioned-site.py`
 - `scripts/sync-template-files.sh`
 - `lychee.toml`
+- `.github/workflows/cffconvert.yml`
 - `.github/workflows/pages.yml`
 - `.github/workflows/refresh-vendored-modules.yml`
 - `.github/workflows/reusable-pages.yml`

@@ -32,6 +32,7 @@ jobs:
         ./scripts/sync-template-files.sh
         hugo mod vendor
       drift-check-paths: |
+        .github/workflows/cffconvert.yml
         .github/workflows/pages.yml
         .github/workflows/refresh-vendored-modules.yml
         .github/workflows/reusable-pages.yml

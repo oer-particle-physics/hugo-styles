@@ -36,7 +36,7 @@ changes first and restores the original destination if applying them fails.
 ## Replaced content
 
 - the homepage and regular content below `episodes`, `learners`, `instructors`, `glossary`, and `profiles`
-- optional `content/reference.md` and root `AUTHORS`
+- optional `content/reference.md` and root `CITATION.cff`
 - optional `static/fig`, `static/files`, `static/data`, and `static/code`
 
 Section `_index.md` files are preserved. So are template configuration, branding, workflows, generated-resource
