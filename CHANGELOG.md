@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.6.0](https://github.com/oer-particle-physics/hugo-styles/compare/v0.5.7...v0.6.0) (2026-09-22)
+
+
+### Features
+
+* read contributors from CITATION.cff ([#69](https://github.com/oer-particle-physics/hugo-styles/issues/69)) ([b5ef832](https://github.com/oer-particle-physics/hugo-styles/commit/b5ef8321f00ddb690b8e267c8907a0618674efd6))
+
+
+### Bug Fixes
+
+* treat episode questions as optional ([#70](https://github.com/oer-particle-physics/hugo-styles/issues/70)) ([79c0866](https://github.com/oer-particle-physics/hugo-styles/commit/79c08662c87905d5c508725a2c756fda1a08b0e7))
+
 ## [0.5.7](https://github.com/oer-particle-physics/hugo-styles/compare/v0.5.6...v0.5.7) (2026-08-18)
 
 
