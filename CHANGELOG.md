@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.7.0](https://github.com/oer-particle-physics/hugo-styles/compare/v0.6.0...v0.7.0) (2026-09-23)
+
+
+### Features
+
+* add actionable hugo-styles upgrade reports ([#73](https://github.com/oer-particle-physics/hugo-styles/issues/73)) ([a1720ce](https://github.com/oer-particle-physics/hugo-styles/commit/a1720ce599dcee2f0836ef4bd9ce1aa104b384d1))
+
 ## [0.6.0](https://github.com/oer-particle-physics/hugo-styles/compare/v0.5.7...v0.6.0) (2026-09-22)
 
 ### Breaking Changes
