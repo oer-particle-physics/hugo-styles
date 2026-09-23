@@ -34,6 +34,7 @@ jobs:
         npm run check:flexsearch
         npm run check:medium-zoom
         hugo mod tidy
+        python3 scripts/upgrade-report.py check-notes
         python3 -m unittest discover -s scripts/tests -v
         (cd cmd/hugo-styles-migrate && go test ./... && go vet ./...)
       validation-command: |

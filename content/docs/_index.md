@@ -16,5 +16,6 @@ Use these pages to learn the authoring model, migration flow, and update path fo
 - [Troubleshooting]({{< relref "/docs/troubleshooting" >}})
 - [Migration Guide]({{< relref "/docs/migration" >}})
 - [Updating Downstream Lessons]({{< relref "/docs/updates" >}})
+- [Upgrade Notes]({{< relref "/docs/upgrades" >}})
 - [hugo-styles Maintenance]({{< relref "/docs/hugo-styles-maintenance" >}})
 - [Reference and Further Reading]({{< relref "/reference" >}})

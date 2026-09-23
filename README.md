@@ -66,12 +66,13 @@ The example site in this repository doubles as the public documentation for the 
 Downstream lessons should **not** copy layouts, assets, or shortcodes out of this repository. Instead they should import a released version of `hugo-styles` as a Hugo Module.
 
 The `hugo-styles-template` repository commits `_vendor/` so lesson authors can run local builds with Hugo Extended alone.
-Lesson repositories receive released module updates through the scheduled **Refresh vendored Hugo modules** workflow.
-It updates the pinned module, refreshes `_vendor/` and the managed maintainer files, and opens a pull request for review.
+Lesson repositories receive released module updates through the scheduled **Update hugo-styles** workflow.
+It updates the pinned module, refreshes `_vendor/` and the managed maintainer files, and opens a pull request with version information, release highlights, upgrade guidance, and build verification results.
 
 The shared sync currently manages:
 
 - `scripts/build-versioned-site.py`
+- `scripts/upgrade-report.py`
 - `scripts/sync-template-files.sh`
 - `lychee.toml`
 - `.github/workflows/cffconvert.yml`
@@ -89,6 +90,8 @@ For downstream lesson authors, the practical prerequisites are:
 - [lychee](https://lychee.cli.rs/guides/getting-started/) (optional for local rendered-site link checks)
 
 Node.js is only needed in this repository when maintainers refresh vendored frontend assets or run browser tests.
+The upgrade-report helper requires Python 3.11 or later; the managed GitHub Actions
+runner already provides it. Normal lesson authoring still requires only Hugo Extended.
 
 ```bash
 hugo server --config hugo.toml,hugo-docs.toml
@@ -203,4 +206,4 @@ lychee --cache --config lychee.toml --no-progress --root-dir .cache/linkcheck-si
 ```
 
 The `release-please` workflow expects a `RELEASE_PLEASE_TOKEN` secret so the generated release PRs and tags can trigger follow-up GitHub Actions runs normally.
-Once the release PR is merged, downstream lesson repositories pick up the new version through the **Refresh vendored Hugo modules** workflow.
+Once the release PR is merged, downstream lesson repositories pick up the new version through the **Update hugo-styles** workflow.

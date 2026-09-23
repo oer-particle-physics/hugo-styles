@@ -54,7 +54,7 @@ See the [Deployment]({{< relref "/docs/deployment" >}}) guide for the exact step
 
 ## Recommended repository secret for automated upstream refreshes
 
-If you want the **Refresh vendored Hugo modules** workflow to keep opening update PRs without manual intervention,
+If you want the **Update hugo-styles** workflow to keep opening update PRs without manual intervention,
 add a repository Actions secret named `WORKFLOW_SYNC_TOKEN`.
 The managed refresh workflow will use it automatically when it is present.
 
