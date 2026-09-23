@@ -1,0 +1,57 @@
+name: Check upgrade guidance
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, edited]
+
+permissions:
+  contents: read
+
+jobs:
+  upgrade-notes:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+
+      - name: Check upgrade-note policy
+        id: policy
+        env:
+          BASE_REF: ${{ github.event.pull_request.base.sha }}
+          PR_TITLE: ${{ github.event.pull_request.title }}
+          PR_BODY: ${{ github.event.pull_request.body }}
+        run: |
+          python3 scripts/upgrade-report.py check-pr \
+            --base-ref "${BASE_REF}" \
+            --title "${PR_TITLE}" \
+            --body "${PR_BODY}" \
+            --github-output "${GITHUB_OUTPUT}"
+
+      - name: Preview upgrade guidance
+        id: preview
+        if: ${{ !cancelled() }}
+        env:
+          RELEASE_VERSION: ${{ steps.policy.outputs.release-version }}
+        run: |
+          args=()
+          if [[ -n "${RELEASE_VERSION}" ]]; then
+            args+=(--release "${RELEASE_VERSION}")
+          fi
+          python3 scripts/upgrade-report.py preview "${args[@]}" \
+            --output "${RUNNER_TEMP}/upgrade-preview.md" \
+            --summary "${GITHUB_STEP_SUMMARY}"
+
+      - name: Save upgrade preview
+        if: ${{ !cancelled() && steps.preview.outcome == 'success' }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: upgrade-guidance-preview
+          path: ${{ runner.temp }}/upgrade-preview.md
+          if-no-files-found: error

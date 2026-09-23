@@ -7,6 +7,14 @@ This page is for lesson maintainers updating lesson repositories.
 If you maintain the shared `hugo-styles` module itself, use
 [hugo-styles Maintenance]({{< relref "/docs/hugo-styles-maintenance" >}}).
 
+## v0.6 author information
+
+Version v0.6.0 removed support for `AUTHORS`. The `lesson/authors` shortcode now
+reads `CITATION.cff` only. A lesson with no citation file can lose its authors table
+while its build still passes. Follow
+[Move author information to CITATION.cff]({{< relref "/docs/upgrades/authors-citation" >}})
+before merging an upgrade from an older version.
+
 ## v0.5 compatibility notes
 
 The v0.5 safety changes are intentional:
@@ -26,11 +34,53 @@ Fix validation errors rather than bypassing them. Existing content URLs and shor
 For repositories created from `hugo-styles-template`, the intended update flow is:
 
 - keep `_vendor/` committed so lesson authors can build with Hugo Extended only
-- use the **Refresh vendored Hugo modules** GitHub Actions workflow
-- review and merge the PR when it updates `go.mod`, `go.sum`, the managed workflow files, `scripts/build-versioned-site.py`, `scripts/sync-template-files.sh`, `lychee.toml`, and `_vendor/`
+- use the **Update hugo-styles** GitHub Actions workflow
+- review and merge the PR when it updates `go.mod`, `go.sum`, the managed workflows and scripts, `lychee.toml`, and `_vendor/`
 - keep lesson-specific overrides in the lesson repository (`content/`, config, and selected overrides)
 
 This avoids requiring local Go for normal lesson authoring.
+
+### What the upgrade PR tells you
+
+The title identifies the installed and target hugo-styles versions. The description
+contains release and comparison links, upgrade notes for every release crossed,
+the actual changed files, and the outcome of the configured build verification.
+Notes are read from the exact target module version, together with its changelog.
+If the hugo-styles version is unchanged, the title identifies a refresh at that
+version; dependency or managed-file updates may still be included.
+
+Resolve required actions and inspect the rendered lesson before merging. A passing
+build does not prove that content or contributor information was preserved. Checks
+for detectable unfinished migrations run again on later updates, even if the
+release that introduced them has already been installed. The author check looks
+for `AUTHORS` and `lesson/authors` in standard `content/` index files; custom content
+locations and layout overrides need manual review. It does not compare contributors
+or validate the CFF schema.
+
+If verification fails, the updater stops before creating a PR, but the Actions job
+summary retains the upgrade guidance and failed verification status. Non-stable
+versions, missing notes in older modules, and unavailable changelog ranges are
+identified explicitly rather than treated as evidence that no action is needed.
+
+Custom reusable-workflow callers may still set `pr-title`. Their `pr-body` is now
+additional context appended to the generated report. Keep the managed caller's
+defaults to receive automatic version-aware titles. The workflow filenames and the
+`chore/refresh-vendored-hugo-modules` PR branch are unchanged.
+
+### Initial rollout of upgrade reports
+
+An existing lesson runs its committed workflow. Updating workflow files during a
+run cannot change the workflow already executing. The first PR that installs the
+new updater may therefore still be titled **chore: refresh vendored Hugo modules**
+and have the old static description. Its workflow may still appear as **Refresh
+vendored Hugo modules** in Actions until that PR is merged.
+
+Review the target release notes and upgrade guides manually for this first PR,
+especially the v0.6 author migration. If the upgrade needs lesson edits, add them to
+that PR and validate the result before merging. The next update run uses the new
+reporting automatically. Re-running the old workflow before merging does not enable
+the new reporting. A maintainer can also generate a report locally using the
+[downstream report command]({{< relref "/docs/hugo-styles-maintenance" >}}).
 
 ### Configure `WORKFLOW_SYNC_TOKEN` once per lesson repository
 
@@ -58,6 +108,7 @@ The sync helper copies the managed maintainer files from the exact pinned `hugo-
 module version. That currently includes:
 
 - `scripts/build-versioned-site.py`
+- `scripts/upgrade-report.py`
 - `scripts/sync-template-files.sh`
 - `lychee.toml`
 - `.github/workflows/cffconvert.yml`

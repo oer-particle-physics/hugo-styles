@@ -2,6 +2,13 @@
 
 ## [0.6.0](https://github.com/oer-particle-physics/hugo-styles/compare/v0.5.7...v0.6.0) (2026-09-22)
 
+### Breaking Changes
+
+* `lesson/authors` no longer reads `AUTHORS`; it reads `CITATION.cff` only. Reconcile
+  contributor information before upgrading. Without a citation file, the authors
+  table can disappear while the build still passes. See the
+  [migration guide](https://oer-particle-physics.github.io/hugo-styles/docs/upgrades/authors-citation/).
+
 
 ### Features
 

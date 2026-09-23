@@ -41,6 +41,7 @@ jobs:
         go.sum
         lychee.toml
         scripts/build-versioned-site.py
+        scripts/upgrade-report.py
         scripts/sync-template-files.sh
         _vendor
       validation-command: |
