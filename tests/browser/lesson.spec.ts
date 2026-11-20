@@ -195,6 +195,53 @@ test("Continue offers the next unfinished episode after completion", async ({ pa
   );
 });
 
+test("Reset progress asks for confirmation and clears only the current lesson version", async ({ page }) => {
+  await page.goto("/episodes/");
+  const scope = (await page.locator('meta[name="lesson-progress-scope"]').getAttribute("content"))!;
+  const storagePrefix = `hugo-styles:episode-progress:${encodeURIComponent(scope)}:`;
+  const otherScope = "/versions/v0.4.0/";
+  const otherVersionKey = `hugo-styles:episode-progress:${encodeURIComponent(otherScope)}:${otherScope}episodes/01-introduction/`;
+  const savedProgress = JSON.stringify({ percent: 65, visitedAt: 2, section: "mermaid-for-analysis-flow" });
+  const completed = JSON.stringify({ percent: 100, visitedAt: 1, section: "" });
+  const preserved = { [otherVersionKey]: completed, "hugo-styles:lesson-sidebar-collapsed": "false" };
+  await page.evaluate((entries) => {
+    for (const [key, value] of Object.entries(entries)) localStorage.setItem(key, value);
+  }, {
+    ...preserved,
+    [storagePrefix + longEpisodePath]: savedProgress,
+    [storagePrefix + episodePath]: completed,
+    [storagePrefix + "/episodes/retired/"]: completed,
+  });
+  await page.reload();
+
+  const reset = page.getByRole("button", { name: "Reset progress" });
+  const resume = page.locator("[data-episode-resume]");
+  const inProgress = page.locator(`.hextra-nav-menu-items [data-episode-progress="${longEpisodePath}"]`);
+  const finished = page.locator(`.hextra-nav-menu-items [data-episode-progress="${episodePath}"]`);
+  await expect(resume).toBeVisible();
+  await expect(inProgress).toHaveAttribute("aria-label", "65% reached");
+  await expect(finished).toHaveAttribute("aria-label", "Complete");
+
+  page.once("dialog", (dialog) => dialog.dismiss());
+  await reset.click();
+  await page.reload();
+  await expect(resume).toBeVisible();
+  await expect(inProgress).toHaveAttribute("aria-label", "65% reached");
+  await expect(finished).toHaveAttribute("aria-label", "Complete");
+
+  page.once("dialog", (dialog) => dialog.accept());
+  await reset.click();
+  await expect(page.locator("[data-episode-progress-reset-status]")).toHaveText("Progress reset.");
+  await expect(resume).toBeHidden();
+  await expect(inProgress).toHaveAttribute("aria-label", "0% reached");
+  await expect(finished).toHaveAttribute("aria-label", "0% reached");
+
+  await page.reload();
+  await expect(resume).toBeHidden();
+  expect(await page.evaluate((prefix) => Object.keys(localStorage).filter((key) => key.startsWith(prefix)), storagePrefix)).toEqual([]);
+  expect(await page.evaluate((keys) => Object.fromEntries(keys.map((key) => [key, localStorage.getItem(key)])), Object.keys(preserved))).toEqual(preserved);
+});
+
 test("audience selection persists and URL state wins", async ({ page }, testInfo) => {
   test.skip(testInfo.project.name !== "desktop-chromium", "Persistence is viewport-independent.");
 

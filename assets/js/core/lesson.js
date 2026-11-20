@@ -124,6 +124,31 @@
       refreshResume();
     };
     refreshProgress();
+
+    const resetButton = document.querySelector("[data-episode-progress-reset]");
+    if (resetButton) {
+      const status = document.querySelector("[data-episode-progress-reset-status]");
+      resetButton.hidden = false;
+      resetButton.addEventListener("click", () => {
+        if (!window.confirm("Reset all progress for this lesson version in this browser?")) {
+          return;
+        }
+
+        try {
+          const storage = window.localStorage;
+          for (const key of Object.keys(storage)) {
+            if (key.startsWith(storagePrefix)) {
+              storage.removeItem(key);
+            }
+          }
+          status.textContent = "Progress reset.";
+        } catch (_) {
+          status.textContent = "Could not reset progress in this browser.";
+        }
+        refreshProgress();
+      });
+    }
+
     window.addEventListener("pageshow", ({ persisted }) => {
       if (persisted) {
         refreshProgress();
