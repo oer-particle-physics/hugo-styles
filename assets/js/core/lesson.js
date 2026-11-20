@@ -33,13 +33,17 @@
       return;
     }
 
-    const storagePrefix = `hugo-styles:episode-progress:${encodeURIComponent(scope)}:`;
+    const storageScope = encodeURIComponent(scope);
+    const storagePrefix = `hugo-styles:episode-progress:${storageScope}:`;
+    const resetKey = `hugo-styles:episode-progress-reset:${storageScope}`;
+    let resetToken = null;
     const readProgress = (path) => {
       try {
         const record = JSON.parse(readPreference(storagePrefix + path));
-        if (Number.isInteger(record?.percent) && record.percent >= 0 && record.percent <= 100) {
+        const percent = record?.percent;
+        if ((record?.resetToken ?? null) === resetToken && Number.isInteger(percent) && percent >= 0 && percent <= 100) {
           return {
-            percent: record.percent,
+            percent,
             section: typeof record.section === "string" ? record.section : "",
             visitedAt: Number.isFinite(record.visitedAt) ? record.visitedAt : 0,
           };
@@ -66,7 +70,8 @@
     if (path) {
       paths.add(path);
     }
-    if (paths.size === 0) {
+    const resetButton = document.querySelector("[data-episode-progress-reset]");
+    if (paths.size === 0 && !resetButton) {
       return;
     }
 
@@ -118,6 +123,7 @@
     };
 
     const refreshProgress = () => {
+      resetToken = readPreference(resetKey);
       for (const path of paths) {
         setProgress(path, readProgress(path));
       }
@@ -125,7 +131,6 @@
     };
     refreshProgress();
 
-    const resetButton = document.querySelector("[data-episode-progress-reset]");
     if (resetButton) {
       const status = document.querySelector("[data-episode-progress-reset-status]");
       resetButton.hidden = false;
@@ -136,6 +141,8 @@
 
         try {
           const storage = window.localStorage;
+          // Invalidate progress from already-open episodes before removing the saved records.
+          storage.setItem(resetKey, window.crypto.getRandomValues(new Uint32Array(4)).join("-"));
           for (const key of Object.keys(storage)) {
             if (key.startsWith(storagePrefix)) {
               storage.removeItem(key);
@@ -155,7 +162,7 @@
       }
     });
     window.addEventListener("storage", ({ key }) => {
-      if (key === null) {
+      if (key === null || key === resetKey) {
         refreshProgress();
         return;
       }
@@ -181,6 +188,7 @@
     const navbar = document.querySelector(".hextra-nav-container");
     let frame = 0;
     let trackSection = false;
+    let trackingResetToken = resetToken;
 
     const currentSection = () => {
       const readingLine = (navbar?.getBoundingClientRect().bottom || 0) + 32;
@@ -195,8 +203,12 @@
     };
 
     const saveProgress = (nextProgress) => {
+      // A reset can happen before this tab receives its storage event.
+      if (trackingResetToken !== readPreference(resetKey)) {
+        return;
+      }
       const progress = { ...nextProgress, visitedAt: Date.now() };
-      savePreference(storagePrefix + path, JSON.stringify(progress));
+      savePreference(storagePrefix + path, JSON.stringify({ ...progress, resetToken: trackingResetToken }));
       setProgress(path, progress);
       refreshResume();
     };
@@ -253,6 +265,14 @@
         measureInitialPosition();
       }
     });
+    const resumeTracking = (event) => {
+      if (event.isTrusted) {
+        trackingResetToken = resetToken;
+      }
+    };
+    for (const event of ["pointerdown", "keydown", "wheel"]) {
+      window.addEventListener(event, resumeTracking, { passive: true });
+    }
     window.addEventListener("scroll", () => {
       trackSection = true;
       scheduleUpdate();

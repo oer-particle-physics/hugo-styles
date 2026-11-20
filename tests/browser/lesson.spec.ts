@@ -1,4 +1,4 @@
-import { chromium, expect, test, type Locator } from "@playwright/test";
+import { chromium, expect, test, type Locator, type Page } from "@playwright/test";
 
 const episodePath = "/episodes/01-introduction/";
 const longEpisodePath = "/episodes/04-physics-doc-features/";
@@ -10,6 +10,22 @@ const scrollToHeading = (target: Locator) => target.evaluate((anchor) => {
   // Give the scroll handler and its animation frame time to save the reading position.
   return new Promise<void>((resolve) => requestAnimationFrame(() => requestAnimationFrame(() => resolve())));
 });
+
+const delayEpisodeImage = async (page: Page) => {
+  let releaseImage!: () => void;
+  const imagePending = new Promise<void>((resolve) => { releaseImage = resolve; });
+  const imagePath = "/slow-reading-image.png";
+  await page.route(`**${imagePath}`, async (route) => {
+    await imagePending;
+    await route.abort().catch(() => {});
+  });
+  await page.route(`**${longEpisodePath}`, async (route) => {
+    const response = await route.fetch();
+    const html = (await response.text()).replace("</body>", `<img src="${imagePath}" alt="" hidden></body>`);
+    await route.fulfill({ response, body: html });
+  });
+  return releaseImage;
+};
 
 test("footer edit links include the repository content path", async ({ page }, testInfo) => {
   test.skip(testInfo.project.name !== "desktop-chromium", "Link generation is viewport-independent.");
@@ -110,19 +126,7 @@ test("Continue returns to the last-read heading after scrolling back", async ({ 
 });
 
 test("episode progress is saved while a slow image is still loading", async ({ page }) => {
-  let releaseImage!: () => void;
-  const imagePending = new Promise<void>((resolve) => { releaseImage = resolve; });
-  const imagePath = "/slow-reading-image.png";
-  await page.route(`**${imagePath}`, async (route) => {
-    await imagePending;
-    await route.abort().catch(() => {});
-  });
-  await page.route(`**${longEpisodePath}`, async (route) => {
-    const response = await route.fetch();
-    const html = (await response.text()).replace("</body>", `<img src="${imagePath}" alt="" hidden></body>`);
-    await route.fulfill({ response, body: html });
-  });
-
+  const releaseImage = await delayEpisodeImage(page);
   const heading = "mermaid-for-analysis-flow";
   try {
     await page.goto(longEpisodePath, { waitUntil: "domcontentloaded" });
@@ -240,6 +244,58 @@ test("Reset progress asks for confirmation and clears only the current lesson ve
   await expect(resume).toBeHidden();
   expect(await page.evaluate((prefix) => Object.keys(localStorage).filter((key) => key.startsWith(prefix)), storagePrefix)).toEqual([]);
   expect(await page.evaluate((keys) => Object.fromEntries(keys.map((key) => [key, localStorage.getItem(key)])), Object.keys(preserved))).toEqual(preserved);
+});
+
+test("a background episode waits for new reading activity after a reset", async ({ page, context }) => {
+  const reader = await context.newPage();
+  const releaseImage = await delayEpisodeImage(reader);
+  const marker = reader.locator(`.hextra-nav-menu-items [data-episode-progress="${longEpisodePath}"]`);
+  const resume = page.locator("[data-episode-resume]");
+  try {
+    await reader.goto(longEpisodePath, { waitUntil: "domcontentloaded" });
+    await scrollToHeading(reader.locator('[id="mermaid-for-analysis-flow"]'));
+    expect(await reader.evaluate(() => document.readyState)).toBe("interactive");
+
+    await page.goto("/episodes/");
+    await expect(resume).toHaveAttribute("href", `${longEpisodePath}#mermaid-for-analysis-flow`);
+    page.once("dialog", (dialog) => dialog.accept());
+    await page.getByRole("button", { name: "Reset progress" }).click();
+    await expect(resume).toBeHidden();
+    await expect(marker).toHaveAttribute("aria-label", "0% reached");
+
+    releaseImage();
+    await reader.waitForLoadState("load");
+    // Allow the load handler and its scheduled progress measurement to run.
+    await reader.evaluate(() => new Promise<void>((resolve) => requestAnimationFrame(() => requestAnimationFrame(() => resolve()))));
+    await expect(marker).toHaveAttribute("aria-label", "0% reached", { timeout: 1000 });
+    await expect(resume).toBeHidden();
+
+    await reader.bringToFront();
+    await reader.keyboard.press("PageDown");
+    await expect(resume).toBeVisible();
+  } finally {
+    releaseImage();
+    await reader.close();
+  }
+});
+
+test("Reset progress clears retired episode records with an empty episode catalog", async ({ page }) => {
+  await page.route("**/episodes/", async (route) => {
+    const response = await route.fetch();
+    // Keep the real overview and remove the progress hooks for its current episodes.
+    const html = (await response.text()).replace(/ data-episode-(?:progress|resume)="[^"]*"/g, "");
+    await route.fulfill({ response, body: html });
+  });
+  await page.goto("/episodes/");
+  const scope = (await page.locator('meta[name="lesson-progress-scope"]').getAttribute("content"))!;
+  const retiredKey = `hugo-styles:episode-progress:${encodeURIComponent(scope)}:${scope}episodes/retired/`;
+  await page.evaluate((key) => localStorage.setItem(key, JSON.stringify({ percent: 80, visitedAt: 1 })), retiredKey);
+  await page.reload();
+
+  page.once("dialog", (dialog) => dialog.accept());
+  await page.getByRole("button", { name: "Reset progress" }).click({ timeout: 5000 });
+  await expect(page.getByRole("status").filter({ hasText: "Progress reset." })).toBeVisible();
+  expect(await page.evaluate((key) => localStorage.getItem(key), retiredKey)).toBeNull();
 });
 
 test("audience selection persists and URL state wins", async ({ page }, testInfo) => {
