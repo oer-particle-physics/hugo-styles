@@ -18,6 +18,9 @@
           <h1>{{ .Title }}</h1>
         </div>
         {{ with .Content }}<div class="content hx:mt-4 hx:text-gray-600 hx:dark:text-gray-400">{{ . }}</div>{{ end }}
+        {{ if and $isEpisodeList (eq .Path "/episodes") }}
+          {{ partial "episode-resume.html" (sort (where site.RegularPages "Section" "episodes") "Weight") }}
+        {{ end }}
         <div class="hextra-cards not-prose hx:mt-8 hx:grid hx:gap-4" style="--hextra-cards-grid-cols: {{ if $isCompactCollection }}2{{ else }}1{{ end }};">
             {{ range $index, $page := .Pages.ByWeight }}
               {{ $summary := "" }}

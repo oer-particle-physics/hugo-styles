@@ -1,6 +1,15 @@
-import { expect, test } from "@playwright/test";
+import { chromium, expect, test, type Locator } from "@playwright/test";
 
 const episodePath = "/episodes/01-introduction/";
+const longEpisodePath = "/episodes/04-physics-doc-features/";
+
+const scrollToHeading = (target: Locator) => target.evaluate((anchor) => {
+  const heading = anchor.closest("h2, h3, h4, h5, h6")!;
+  const top = window.scrollY + heading.getBoundingClientRect().top - 80;
+  window.scrollTo({ top, behavior: "instant" });
+  // Give the scroll handler and its animation frame time to save the reading position.
+  return new Promise<void>((resolve) => requestAnimationFrame(() => requestAnimationFrame(() => resolve())));
+});
 
 test("footer edit links include the repository content path", async ({ page }, testInfo) => {
   test.skip(testInfo.project.name !== "desktop-chromium", "Link generation is viewport-independent.");
@@ -38,6 +47,154 @@ test("episode controls respect desktop and mobile breakpoints", async ({ page },
   }
 });
 
+test("episode progress advances in both menus and persists as a checkmark", async ({ page }, testInfo) => {
+  await page.goto(longEpisodePath);
+  const progress = page.locator(`[data-episode-progress="${longEpisodePath}"]`);
+  const sidebar = page.locator(".hextra-sidebar-container").locator(progress);
+  const navbar = page.locator(".hextra-nav-menu-items").locator(progress);
+  await expect(navbar).toHaveAttribute("aria-label", /^[1-9]\d?% reached$/);
+  const initial = parseInt((await navbar.getAttribute("aria-label"))!, 10);
+
+  await page.locator("[data-episode-content]").evaluate((content) => {
+    const { top, height } = content.getBoundingClientRect();
+    window.scrollTo({ top: window.scrollY + top + height / 2, behavior: "instant" });
+  });
+  await expect.poll(async () => parseInt((await navbar.getAttribute("aria-label"))!, 10)).toBeGreaterThan(initial);
+  const furthest = (await navbar.getAttribute("aria-label"))!;
+  await expect(furthest).toMatch(/% reached$/);
+  for (const menu of await sidebar.all()) {
+    await expect(menu).toHaveAttribute("aria-label", furthest);
+  }
+
+  await page.evaluate(() => window.scrollTo({ top: 0, behavior: "instant" }));
+  await page.reload();
+  await expect(navbar).toHaveAttribute("aria-label", furthest);
+
+  await page.locator("[data-episode-content]").evaluate((content) => {
+    const { bottom } = content.getBoundingClientRect();
+    window.scrollTo({ top: Math.ceil(window.scrollY + bottom - window.innerHeight), behavior: "instant" });
+  });
+  await expect(navbar).toHaveAttribute("aria-label", "Complete");
+  await page.reload();
+
+  if (testInfo.project.name === "mobile-chromium") {
+    await page.getByRole("button", { name: "Menu", exact: true }).click();
+    await expect(sidebar.locator(".lesson-episode-progress-check:visible")).toBeInViewport();
+  } else {
+    await expect(sidebar.locator(".lesson-episode-progress-check:visible")).toBeVisible();
+    await page.getByRole("button", { name: "Examples", exact: true }).click();
+    await expect(navbar.locator(".lesson-episode-progress-check")).toBeVisible();
+  }
+});
+
+test("Continue returns to the last-read heading after scrolling back", async ({ page }) => {
+  await page.goto("/episodes/");
+  await expect(page.locator("[data-episode-resume]")).toBeHidden();
+
+  await page.goto(longEpisodePath);
+  const progress = page.locator(`.hextra-nav-menu-items [data-episode-progress="${longEpisodePath}"]`);
+  await expect(progress).toHaveAttribute("aria-label", /^[1-9]\d?% reached$/);
+  const laterHeading = "synced-tabs-for-command-variants";
+  const previousHeading = "mermaid-for-analysis-flow";
+  for (const id of [laterHeading, previousHeading]) {
+    await scrollToHeading(page.locator(`[id="${id}"]`));
+  }
+
+  const destination = `${longEpisodePath}#${previousHeading}`;
+  await page.goto("/");
+  await expect(page.getByRole("link", { name: "Continue where you left off" })).toHaveAttribute("href", destination);
+  await page.goto("/episodes/");
+  await page.getByRole("link", { name: "Continue where you left off" }).click();
+  await expect(page).toHaveURL(destination);
+  await expect(page.getByRole("heading", { name: "Mermaid for analysis flow" })).toBeInViewport();
+});
+
+test("episode progress is saved while a slow image is still loading", async ({ page }) => {
+  let releaseImage!: () => void;
+  const imagePending = new Promise<void>((resolve) => { releaseImage = resolve; });
+  const imagePath = "/slow-reading-image.png";
+  await page.route(`**${imagePath}`, async (route) => {
+    await imagePending;
+    await route.abort().catch(() => {});
+  });
+  await page.route(`**${longEpisodePath}`, async (route) => {
+    const response = await route.fetch();
+    const html = (await response.text()).replace("</body>", `<img src="${imagePath}" alt="" hidden></body>`);
+    await route.fulfill({ response, body: html });
+  });
+
+  const heading = "mermaid-for-analysis-flow";
+  try {
+    await page.goto(longEpisodePath, { waitUntil: "domcontentloaded" });
+    await scrollToHeading(page.locator(`[id="${heading}"]`));
+    expect(await page.evaluate(() => document.readyState)).toBe("interactive");
+
+    await page.goto("/episodes/");
+    await expect(page.getByRole("link", { name: "Continue where you left off" })).toHaveAttribute(
+      "href",
+      `${longEpisodePath}#${heading}`,
+    );
+  } finally {
+    releaseImage();
+  }
+});
+
+test("Continue places a generated heading below the sticky navbar", async ({ page }) => {
+  const id = "04-physics-doc-features-objectives";
+  const heading = page.locator(`[id="${id}"]`);
+  await page.goto(longEpisodePath);
+  await scrollToHeading(heading);
+
+  await page.goto("/episodes/");
+  const continueLink = page.getByRole("link", { name: "Continue where you left off" });
+  await expect(continueLink).toHaveAttribute("href", `${longEpisodePath}#${id}`);
+  await continueLink.click();
+
+  await expect.poll(() => heading.evaluate((element) => {
+    const navbar = document.querySelector(".hextra-nav-container")!;
+    return element.getBoundingClientRect().top - navbar.getBoundingClientRect().bottom;
+  })).toBeGreaterThanOrEqual(0);
+  await expect(heading).toBeInViewport();
+});
+
+test("Continue remembers the episode restored from the back-forward cache", async ({ baseURL, viewport }) => {
+  const browser = await chromium.launch({ channel: "chromium", ignoreDefaultArgs: ["--disable-back-forward-cache"] });
+  try {
+    const page = await browser.newPage({ baseURL, viewport });
+    await page.addInitScript(() => window.addEventListener("pageshow", (event) => {
+      document.documentElement.dataset.restoredFromCache = String(event.persisted);
+    }));
+    const firstHeading = "mermaid-for-analysis-flow";
+    await page.goto(longEpisodePath);
+    await scrollToHeading(page.locator(`[id="${firstHeading}"]`));
+    await page.goto("/episodes/02-facilitating-activity/");
+    await scrollToHeading(page.locator('[id="callout-gallery"]'));
+
+    await page.goBack({ waitUntil: "commit" });
+    await expect(page.locator("html")).toHaveAttribute("data-restored-from-cache", "true");
+    await page.goto("/episodes/");
+    await expect(page.getByRole("link", { name: "Continue where you left off" })).toHaveAttribute(
+      "href",
+      `${longEpisodePath}#${firstHeading}`,
+    );
+  } finally {
+    await browser.close();
+  }
+});
+
+test("Continue offers the next unfinished episode after completion", async ({ page }) => {
+  await page.goto(episodePath);
+  await page.evaluate(() => window.scrollTo({ top: document.body.scrollHeight, behavior: "instant" }));
+  const marker = page.locator(`.hextra-nav-menu-items [data-episode-progress="${episodePath}"]`);
+  await expect(marker).toHaveAttribute("aria-label", "Complete");
+
+  await page.goto("/episodes/");
+  await expect(page.getByRole("link", { name: "Continue where you left off" })).toHaveAttribute(
+    "href",
+    "/episodes/02-facilitating-activity/",
+  );
+});
+
 test("audience selection persists and URL state wins", async ({ page }, testInfo) => {
   test.skip(testInfo.project.name !== "desktop-chromium", "Persistence is viewport-independent.");
 
@@ -63,7 +220,7 @@ test("audience selection persists and URL state wins", async ({ page }, testInfo
   );
 });
 
-test("audience controls tolerate unavailable local storage", async ({ browser }, testInfo) => {
+test("lesson controls tolerate unavailable local storage", async ({ browser }, testInfo) => {
   test.skip(testInfo.project.name !== "desktop-chromium", "Storage behavior is viewport-independent.");
 
   const context = await browser.newContext();
@@ -79,6 +236,13 @@ test("audience controls tolerate unavailable local storage", async ({ browser },
   await page.goto("http://127.0.0.1:13131/all-in-one/");
   await page.getByRole("button", { name: "Instructor", exact: true }).click();
   await expect(page.locator('[data-audience="instructor"]').first()).toBeVisible();
+  await page.goto(`http://127.0.0.1:13131${longEpisodePath}`);
+  await expect(page.locator(`.hextra-nav-menu-items [data-episode-progress="${longEpisodePath}"]`)).toHaveAttribute(
+    "aria-label",
+    /^[1-9]\d?% reached$/,
+  );
+  await page.goto("http://127.0.0.1:13131/episodes/");
+  await expect(page.locator("[data-episode-resume]")).toBeHidden();
   await context.close();
 });
 

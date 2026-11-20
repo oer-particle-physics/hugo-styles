@@ -24,6 +24,223 @@
     }
   };
 
+  const initEpisodeProgress = () => {
+    const scope = document.querySelector('meta[name="lesson-progress-scope"]')?.content;
+    const markers = new Map();
+    const content = document.querySelector("[data-episode-content]");
+    const path = content?.dataset.episodeContent;
+    if (!scope) {
+      return;
+    }
+
+    const storagePrefix = `hugo-styles:episode-progress:${encodeURIComponent(scope)}:`;
+    const readProgress = (path) => {
+      try {
+        const record = JSON.parse(readPreference(storagePrefix + path));
+        if (Number.isInteger(record?.percent) && record.percent >= 0 && record.percent <= 100) {
+          return {
+            percent: record.percent,
+            section: typeof record.section === "string" ? record.section : "",
+            visitedAt: Number.isFinite(record.visitedAt) ? record.visitedAt : 0,
+          };
+        }
+      } catch (_) {
+        // A malformed record can be replaced as the learner reads.
+      }
+      return { percent: 0, visitedAt: 0, section: "" };
+    };
+
+    document.querySelectorAll("[data-episode-progress]").forEach((marker) => {
+      const path = marker.dataset.episodeProgress;
+      if (!markers.has(path)) {
+        markers.set(path, []);
+      }
+      markers.get(path).push(marker);
+    });
+
+    const resumeLinks = Array.from(document.querySelectorAll("[data-episode-resume]"), (link) => ({
+      link,
+      paths: JSON.parse(link.dataset.episodeResume),
+    }));
+    const paths = new Set([...markers.keys(), ...resumeLinks.flatMap((entry) => entry.paths)]);
+    if (path) {
+      paths.add(path);
+    }
+    if (paths.size === 0) {
+      return;
+    }
+
+    const progressByPath = new Map();
+    const setProgress = (path, record) => {
+      const previous = progressByPath.get(path);
+      progressByPath.set(path, record);
+      const { percent } = record;
+      if (percent === previous?.percent) {
+        return;
+      }
+
+      for (const marker of markers.get(path) || []) {
+        marker.style.setProperty("--episode-progress", `${percent}%`);
+        marker.querySelector("[data-episode-progress-value]").textContent = `${percent}%`;
+        marker.setAttribute("aria-label", percent === 100 ? "Complete" : `${percent}% reached`);
+        marker.toggleAttribute("data-complete", percent === 100);
+        marker.hidden = false;
+      }
+    };
+
+    const refreshResume = () => {
+      for (const { link, paths } of resumeLinks) {
+        const records = paths.map((path) => progressByPath.get(path));
+        let lastVisited = -1;
+        let lastVisitTime = 0;
+        records.forEach(({ visitedAt }, index) => {
+          if (visitedAt > lastVisitTime) {
+            lastVisited = index;
+            lastVisitTime = visitedAt;
+          }
+        });
+
+        let target = lastVisited;
+        if (target !== -1 && records[target].percent === 100) {
+          target = records.findIndex(({ percent }, index) => index > lastVisited && percent < 100);
+          if (target === -1) {
+            target = records.findIndex(({ percent }) => percent < 100);
+          }
+        }
+
+        link.hidden = target === -1;
+        if (target !== -1) {
+          const { section } = records[target];
+          const fragment = section ? `#${encodeURIComponent(section)}` : "";
+          link.setAttribute("href", paths[target] + fragment);
+        }
+      }
+    };
+
+    const refreshProgress = () => {
+      for (const path of paths) {
+        setProgress(path, readProgress(path));
+      }
+      refreshResume();
+    };
+    refreshProgress();
+    window.addEventListener("pageshow", ({ persisted }) => {
+      if (persisted) {
+        refreshProgress();
+      }
+    });
+    window.addEventListener("storage", ({ key }) => {
+      if (key === null) {
+        refreshProgress();
+        return;
+      }
+
+      if (key.startsWith(storagePrefix)) {
+        const changedPath = key.slice(storagePrefix.length);
+        if (paths.has(changedPath)) {
+          setProgress(changedPath, readProgress(changedPath));
+          refreshResume();
+        }
+      }
+    });
+
+    if (!content) {
+      return;
+    }
+
+    const headings = Array.from(content.querySelectorAll("h2, h3, h4, h5, h6"), (heading) => ({
+      heading,
+      // Hextra puts Markdown heading anchors on an offset span inside the heading.
+      id: heading.id || heading.querySelector(":scope > span[id]")?.id,
+    })).filter(({ id }) => id);
+    const navbar = document.querySelector(".hextra-nav-container");
+    let frame = 0;
+    let trackSection = false;
+
+    const currentSection = () => {
+      const readingLine = (navbar?.getBoundingClientRect().bottom || 0) + 32;
+      let section = "";
+      for (const { heading, id } of headings) {
+        const { top, height } = heading.getBoundingClientRect();
+        if (height > 0 && top <= readingLine) {
+          section = id;
+        }
+      }
+      return section;
+    };
+
+    const saveProgress = (nextProgress) => {
+      const progress = { ...nextProgress, visitedAt: Date.now() };
+      savePreference(storagePrefix + path, JSON.stringify(progress));
+      setProgress(path, progress);
+      refreshResume();
+    };
+
+    const recordVisit = () => {
+      const progress = progressByPath.get(path);
+      if (progress.percent < 100) {
+        saveProgress(progress);
+      }
+    };
+
+    const updateProgress = () => {
+      frame = 0;
+      const { bottom, height } = content.getBoundingClientRect();
+      const progress = progressByPath.get(path);
+      const updateSection = trackSection;
+      trackSection = false;
+      if (height <= 0 || progress.percent === 100) {
+        return;
+      }
+      const remaining = (bottom - window.innerHeight) / height;
+      const reached = Math.max(0, 100 - Math.ceil(Math.max(0, remaining) * 100));
+      const section = updateSection && reached < 100 ? currentSection() : progress.section;
+      if (reached <= progress.percent && section === progress.section) {
+        return;
+      }
+
+      const saved = readProgress(path);
+      saveProgress({
+        percent: Math.max(reached, saved.percent, progress.percent),
+        section: updateSection || progress.visitedAt > saved.visitedAt ? section : saved.section,
+      });
+    };
+
+    const scheduleUpdate = () => {
+      if (!frame) {
+        frame = requestAnimationFrame(updateProgress);
+      }
+    };
+
+    const measureInitialPosition = () => {
+      trackSection ||= Boolean(window.location.hash);
+      scheduleUpdate();
+    };
+    recordVisit();
+    if (document.readyState === "complete") {
+      measureInitialPosition();
+    }
+    window.addEventListener("pageshow", ({ persisted }) => {
+      if (persisted) {
+        recordVisit();
+        scheduleUpdate();
+      } else {
+        measureInitialPosition();
+      }
+    });
+    window.addEventListener("scroll", () => {
+      trackSection = true;
+      scheduleUpdate();
+    }, { passive: true });
+    window.addEventListener("resize", scheduleUpdate);
+    window.addEventListener("pagehide", () => {
+      if (frame) {
+        cancelAnimationFrame(frame);
+        updateProgress();
+      }
+    });
+  };
+
   const scrollToTop = () => {
     const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     window.scroll({
@@ -154,4 +371,5 @@
   document.addEventListener("scroll", syncFloatingBackToTop, { passive: true });
   desktopTocMedia.addEventListener("change", syncFloatingBackToTop);
   syncFloatingBackToTop();
+  initEpisodeProgress();
 })();
