@@ -246,6 +246,50 @@ test("Reset progress asks for confirmation and clears only the current lesson ve
   expect(await page.evaluate((keys) => Object.fromEntries(keys.map((key) => [key, localStorage.getItem(key)])), Object.keys(preserved))).toEqual(preserved);
 });
 
+test("Reset progress frees space for the reset token when browser storage is full", async ({ page }) => {
+  await page.goto("/episodes/");
+  const scope = (await page.locator('meta[name="lesson-progress-scope"]').getAttribute("content"))!;
+  const prefix = `hugo-styles:episode-progress:${encodeURIComponent(scope)}:`;
+  const resetKey = `hugo-styles:episode-progress-reset:${encodeURIComponent(scope)}`;
+  const archiveScope = `${scope}versions/archive/`;
+  const archiveKey = `hugo-styles:episode-progress:${encodeURIComponent(archiveScope)}:${archiveScope}episodes/01-introduction/`;
+  const progress = JSON.stringify({ percent: 65, visitedAt: 1, section: "mermaid-for-analysis-flow" });
+  const fillerSize = await page.evaluate(({ prefix, episodes, archiveKey, progress }) => {
+    for (const path of episodes) localStorage.setItem(prefix + path, progress);
+    localStorage.setItem(archiveKey, progress);
+
+    // Fill Chromium storage up to its actual limit while keeping other saved data in place.
+    let low = 0;
+    let high = 6 * 1024 * 1024;
+    while (high - low > 1) {
+      const length = Math.floor((low + high) / 2);
+      try {
+        localStorage.setItem("unrelated-filler", "x".repeat(length));
+        low = length;
+      } catch (error) {
+        if (!(error instanceof DOMException) || error.name !== "QuotaExceededError") throw error;
+        high = length;
+      }
+    }
+    return low;
+  }, { prefix, episodes: [episodePath, longEpisodePath], archiveKey, progress });
+  expect(fillerSize).toBeGreaterThan(0);
+  expect(fillerSize).toBeLessThan(6 * 1024 * 1024 - 1);
+  await page.reload();
+  await expect(page.locator("[data-episode-resume]")).toBeVisible();
+
+  page.once("dialog", (dialog) => dialog.accept());
+  await page.getByRole("button", { name: "Reset progress" }).click();
+  await expect(page.locator("[data-episode-progress-reset-status]")).toHaveText("Progress reset.");
+  await expect(page.locator("[data-episode-resume]")).toBeHidden();
+  expect(await page.evaluate(({ prefix, resetKey, archiveKey }) => ({
+    records: Object.keys(localStorage).filter((key) => key.startsWith(prefix)),
+    tokenStored: Boolean(localStorage.getItem(resetKey)),
+    archive: localStorage.getItem(archiveKey),
+    fillerSize: localStorage.getItem("unrelated-filler")?.length,
+  }), { prefix, resetKey, archiveKey })).toEqual({ records: [], tokenStored: true, archive: progress, fillerSize });
+});
+
 test("a background episode waits for new reading activity after a reset", async ({ page, context }) => {
   const reader = await context.newPage();
   const releaseImage = await delayEpisodeImage(reader);

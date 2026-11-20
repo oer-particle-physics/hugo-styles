@@ -133,6 +133,13 @@
 
     if (resetButton) {
       const status = document.querySelector("[data-episode-progress-reset-status]");
+      const clearSavedProgress = (storage) => {
+        for (const key of Object.keys(storage)) {
+          if (key.startsWith(storagePrefix)) {
+            storage.removeItem(key);
+          }
+        }
+      };
       resetButton.hidden = false;
       resetButton.addEventListener("click", () => {
         if (!window.confirm("Reset all progress for this lesson version in this browser?")) {
@@ -141,13 +148,18 @@
 
         try {
           const storage = window.localStorage;
-          // Invalidate progress from already-open episodes before removing the saved records.
-          storage.setItem(resetKey, window.crypto.getRandomValues(new Uint32Array(4)).join("-"));
-          for (const key of Object.keys(storage)) {
-            if (key.startsWith(storagePrefix)) {
-              storage.removeItem(key);
+          const token = window.crypto.getRandomValues(new Uint32Array(4)).join("-");
+          try {
+            storage.setItem(resetKey, token);
+          } catch (error) {
+            if (error.name !== "QuotaExceededError") {
+              throw error;
             }
+            clearSavedProgress(storage);
+            storage.setItem(resetKey, token);
           }
+          // Remove any progress an open tab saved before the token was written.
+          clearSavedProgress(storage);
           status.textContent = "Progress reset.";
         } catch (_) {
           status.textContent = "Could not reset progress in this browser.";
