@@ -1,0 +1,7 @@
+{{- $paths := slice -}}
+{{- range . -}}
+  {{- $paths = $paths | append .RelPermalink -}}
+{{- end -}}
+{{- if $paths -}}
+  <a class="lesson-episode-resume" data-episode-resume="{{ $paths | jsonify }}" hidden>Continue where you left off</a>
+{{- end -}}

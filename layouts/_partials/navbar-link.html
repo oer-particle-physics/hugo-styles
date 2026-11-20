@@ -87,6 +87,7 @@
           >
             <span class="hx:mt-0.5 hx:inline-flex hx:min-w-[1.5rem] hx:justify-center hx:rounded-full hx:bg-gray-100 hx:px-1.5 hx:py-0.5 hx:text-[11px] hx:font-semibold hx:text-gray-600 hx:dark:bg-neutral-800 hx:dark:text-gray-300">{{ add $index 1 }}</span>
             <span class="hx:min-w-0 hx:leading-5">{{ $episode.Title }}</span>
+            {{- partial "episode-progress.html" $episode -}}
           </a>
         </li>
       {{- end -}}
@@ -112,6 +113,7 @@
               </span>
             {{- end -}}
             {{- or (T .Identifier) .Name | safeHTML -}}
+            {{- partial "episode-progress.html" .Page -}}
           </a>
         </li>
       {{- end -}}
