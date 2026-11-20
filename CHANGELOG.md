@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.8.0](https://github.com/oer-particle-physics/hugo-styles/compare/v0.7.0...v0.8.0) (2026-11-20)
+
+
+### Features
+
+* track and resume episode progress ([#81](https://github.com/oer-particle-physics/hugo-styles/issues/81)) ([cda4dfe](https://github.com/oer-particle-physics/hugo-styles/commit/cda4dfe07eaf851714001bb0dcd3096a5057ca88))
+
+
+### Bug Fixes
+
+* show latest site update on homepage ([#79](https://github.com/oer-particle-physics/hugo-styles/issues/79)) ([70d3eea](https://github.com/oer-particle-physics/hugo-styles/commit/70d3eea99984f673bc63c39108ef00a870a3b898))
+
 ## [0.7.0](https://github.com/oer-particle-physics/hugo-styles/compare/v0.6.0...v0.7.0) (2026-09-23)
 
 
