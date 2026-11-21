@@ -62,11 +62,9 @@
       markers.get(path).push(marker);
     });
 
-    const resumeLinks = Array.from(document.querySelectorAll("[data-episode-resume]"), (link) => ({
-      link,
-      paths: JSON.parse(link.dataset.episodeResume),
-    }));
-    const paths = new Set([...markers.keys(), ...resumeLinks.flatMap((entry) => entry.paths)]);
+    const resumeLinks = document.querySelectorAll("[data-episode-resume]");
+    const resumePaths = JSON.parse(document.querySelector('meta[name="lesson-progress-episodes"]')?.content ?? "[]");
+    const paths = new Set([...markers.keys(), ...resumePaths]);
     if (path) {
       paths.add(path);
     }
@@ -74,6 +72,30 @@
     if (paths.size === 0 && !resetButton) {
       return;
     }
+
+    const wideNavigation = window.matchMedia("(min-width: 1024px)");
+    const mobileNavigation = window.matchMedia("(max-width: 767px)");
+    const mobileMenuToggle = document.querySelector(".hextra-hamburger-menu");
+    const navigationResume = Array.from(document.querySelectorAll("template[data-episode-resume-placement]"), (template) => {
+      const placement = template.dataset.episodeResumePlacement;
+      const item = template.content.firstElementChild.cloneNode(true);
+      const link = placement === "navbar" ? item : item.querySelector("a");
+      const dropdown = placement === "dropdown"
+        ? template.parentElement
+        : template.previousElementSibling?.querySelector(".hextra-nav-menu-items");
+      const toggle = placement === "mobile" ? mobileMenuToggle : dropdown?.previousElementSibling;
+      link.addEventListener("click", () => {
+        if (link.pathname !== window.location.pathname) {
+          return;
+        }
+        // The audience control may have changed the query since this link was rendered.
+        link.search = window.location.search;
+        if (placement !== "navbar" && toggle?.getAttribute("aria-expanded") === "true") {
+          toggle.click();
+        }
+      });
+      return { placement, template, item, link, toggle };
+    });
 
     const progressByPath = new Map();
     const setProgress = (path, record) => {
@@ -94,33 +116,61 @@
     };
 
     const refreshResume = () => {
-      for (const { link, paths } of resumeLinks) {
-        const records = paths.map((path) => progressByPath.get(path));
-        let lastVisited = -1;
-        let lastVisitTime = 0;
-        records.forEach(({ visitedAt }, index) => {
-          if (visitedAt > lastVisitTime) {
-            lastVisited = index;
-            lastVisitTime = visitedAt;
-          }
-        });
-
-        let target = lastVisited;
-        if (target !== -1 && records[target].percent === 100) {
-          target = records.findIndex(({ percent }, index) => index > lastVisited && percent < 100);
-          if (target === -1) {
-            target = records.findIndex(({ percent }) => percent < 100);
-          }
+      const records = resumePaths.map((path) => progressByPath.get(path));
+      let lastVisited = -1;
+      let lastVisitTime = 0;
+      records.forEach(({ visitedAt }, index) => {
+        if (visitedAt > lastVisitTime) {
+          lastVisited = index;
+          lastVisitTime = visitedAt;
         }
+      });
 
-        link.hidden = target === -1;
-        if (target !== -1) {
-          const { section } = records[target];
-          const fragment = section ? `#${encodeURIComponent(section)}` : "";
-          link.setAttribute("href", paths[target] + fragment);
+      let target = lastVisited;
+      if (target !== -1 && records[target].percent === 100) {
+        target = records.findIndex(({ percent }, index) => index > lastVisited && percent < 100);
+        if (target === -1) {
+          target = records.findIndex(({ percent }) => percent < 100);
         }
       }
+
+      let href = "";
+      if (target !== -1) {
+        const targetPath = resumePaths[target];
+        const search = targetPath === window.location.pathname ? window.location.search : "";
+        const { section } = records[target];
+        href = targetPath + search + (section ? `#${encodeURIComponent(section)}` : "");
+      }
+      for (const link of resumeLinks) {
+        link.hidden = !href;
+        if (href) {
+          link.setAttribute("href", href);
+        }
+      }
+
+      const activePlacement = wideNavigation.matches ? "navbar" : mobileNavigation.matches ? "mobile" : "dropdown";
+      const focusedResume = navigationResume.find(({ link }) => link === document.activeElement);
+      for (const { placement, template, item, link } of navigationResume) {
+        if (href && placement === activePlacement) {
+          link.setAttribute("href", href);
+          if (!item.parentElement) {
+            template.after(item);
+          }
+        } else {
+          // Hextra includes every dropdown menuitem in its arrow-key navigation.
+          item.remove();
+        }
+      }
+      if (focusedResume && !focusedResume.item.isConnected) {
+        const replacement = navigationResume.find(({ placement }) => placement === activePlacement);
+        const link = replacement?.link;
+        const linkVisible = link?.getClientRects().length && getComputedStyle(link).visibility === "visible";
+        const focusTarget = linkVisible ? link : replacement?.toggle;
+        focusTarget?.focus({ preventScroll: true });
+      }
     };
+    wideNavigation.addEventListener("change", refreshResume);
+    mobileNavigation.addEventListener("change", refreshResume);
 
     const refreshProgress = () => {
       resetToken = readPreference(resetKey);
