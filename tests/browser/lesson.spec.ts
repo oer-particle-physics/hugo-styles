@@ -125,6 +125,130 @@ test("Continue returns to the last-read heading after scrolling back", async ({ 
   await expect(page.getByRole("heading", { name: "Mermaid for analysis flow" })).toBeInViewport();
 });
 
+test("Continue is keyboard-accessible in the wide navbar and narrow Episodes dropdown", async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== "desktop-chromium", "Exercises the two desktop navigation widths.");
+  const episodes = page.getByRole("button", { name: "Examples", exact: true });
+  const overview = page.getByRole("menuitem", { name: "Overview", exact: true });
+  const navbarContinue = page.locator('[data-episode-resume-nav="navbar"]');
+  const dropdownContinue = page.getByRole("menuitem", { name: "Continue", exact: true });
+  const heading = "mermaid-for-analysis-flow";
+  const destination = `${longEpisodePath}#${heading}`;
+
+  await page.setViewportSize({ width: 900, height: 900 });
+  await page.goto("/reference/");
+  await episodes.focus();
+  await page.keyboard.press("ArrowDown");
+  await expect(overview).toBeFocused();
+  await expect(dropdownContinue).toHaveCount(0);
+
+  await page.goto(longEpisodePath);
+  await scrollToHeading(page.locator(`[id="${heading}"]`));
+  await page.goto("/reference/");
+  await page.setViewportSize({ width: 1024, height: 900 });
+  await expect(navbarContinue).toHaveAttribute("href", destination);
+  await episodes.focus();
+  await page.keyboard.press("ArrowDown");
+  await expect(overview).toBeFocused();
+  await page.keyboard.press("Escape");
+  await expect(episodes).toBeFocused();
+  await page.keyboard.press("Tab");
+  await expect(navbarContinue).toBeFocused();
+  await page.keyboard.press("Enter");
+  await expect(page).toHaveURL(destination);
+
+  await page.goto("/reference/");
+  await page.setViewportSize({ width: 1023, height: 900 });
+  await expect(navbarContinue).toHaveCount(0);
+  await episodes.focus();
+  await page.keyboard.press("ArrowDown");
+  await expect(dropdownContinue).toBeFocused();
+  await page.keyboard.press("ArrowDown");
+  await expect(overview).toBeFocused();
+  await page.keyboard.press("Home");
+  await expect(dropdownContinue).toBeFocused();
+  await page.keyboard.press("Enter");
+  await expect(page).toHaveURL(destination);
+});
+
+test("Continue is keyboard-accessible near the top of the mobile menu", async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== "mobile-chromium", "Exercises the mobile menu.");
+  const menu = page.getByRole("button", { name: "Menu", exact: true });
+  const mobileContinue = page.locator('[data-episode-resume-nav="mobile"]');
+  const sidebarSearch = page.locator(".hextra-sidebar-container input");
+  const heading = "mermaid-for-analysis-flow";
+  const destination = `${longEpisodePath}#${heading}`;
+
+  await page.goto("/reference/");
+  await expect(mobileContinue).toHaveCount(0);
+  await page.goto(longEpisodePath);
+  await scrollToHeading(page.locator(`[id="${heading}"]`));
+  await page.goto("/reference/");
+  await expect(mobileContinue).toHaveAttribute("href", destination);
+  await expect(mobileContinue).toBeHidden();
+  await menu.focus();
+  await page.keyboard.press("Enter");
+  await expect(sidebarSearch).toBeFocused();
+  await page.keyboard.press("Tab");
+  await expect(mobileContinue).toBeFocused();
+  await page.keyboard.press("Escape");
+  await expect(menu).toBeFocused();
+  await expect(mobileContinue).toBeHidden();
+
+  // Reopen the episode from its plain URL to exercise a same-page resume.
+  await page.goto(longEpisodePath);
+  await menu.focus();
+  await page.keyboard.press("Enter");
+  await page.keyboard.press("Tab");
+  await expect(mobileContinue).toBeFocused();
+  await page.keyboard.press("Enter");
+  await expect(page).toHaveURL(destination);
+  await expect(menu).toHaveAttribute("aria-expanded", "false");
+  await expect(page.getByRole("heading", { name: "Mermaid for analysis flow" })).toBeInViewport();
+});
+
+test("Continue preserves the current episode's explicit audience view", async ({ page }, testInfo) => {
+  const mobile = testInfo.project.name === "mobile-chromium";
+  const heading = "mermaid-for-analysis-flow";
+  const episodeURL = `${longEpisodePath}?view=instructor`;
+  const target = `${episodeURL}#${heading}`;
+  if (!mobile) await page.setViewportSize({ width: 900, height: 900 });
+
+  await page.goto(longEpisodePath);
+  await scrollToHeading(page.locator(`[id="${heading}"]`));
+  await page.goto("/reference/");
+  await page.goto(episodeURL);
+  await expect(page.locator("html")).toHaveAttribute("data-view", "instructor");
+
+  await page.getByRole("button", { name: mobile ? "Menu" : "Examples", exact: true }).focus();
+  await page.keyboard.press(mobile ? "Enter" : "ArrowDown");
+  if (mobile) await page.keyboard.press("Tab");
+  await expect(page.locator(`[data-episode-resume-nav="${mobile ? "mobile" : "dropdown"}"]`)).toBeFocused();
+  await page.keyboard.press("Enter");
+  await expect(page).toHaveURL(target);
+  await expect(page.locator("html")).toHaveAttribute("data-view", "instructor");
+});
+
+test("Continue hands off keyboard focus when its placement changes", async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== "desktop-chromium", "Exercises changes between navigation widths.");
+  const episodes = page.getByRole("button", { name: "Examples", exact: true });
+  const desktopContinue = page.locator('[data-episode-resume-nav="navbar"]');
+  await page.setViewportSize({ width: 900, height: 900 });
+  await page.goto(longEpisodePath);
+  await scrollToHeading(page.locator('[id="mermaid-for-analysis-flow"]'));
+  await page.goto("/reference/");
+
+  await episodes.focus();
+  await page.keyboard.press("ArrowDown");
+  await expect(page.getByRole("menuitem", { name: "Continue", exact: true })).toBeFocused();
+  await page.setViewportSize({ width: 1200, height: 900 });
+  await expect(desktopContinue).toBeFocused();
+
+  await page.keyboard.press("Escape");
+  await desktopContinue.focus();
+  await page.setViewportSize({ width: 900, height: 900 });
+  await expect(episodes).toBeFocused();
+});
+
 test("episode progress is saved while a slow image is still loading", async ({ page }) => {
   const releaseImage = await delayEpisodeImage(page);
   const heading = "mermaid-for-analysis-flow";
@@ -327,7 +451,9 @@ test("Reset progress clears retired episode records with an empty episode catalo
   await page.route("**/episodes/", async (route) => {
     const response = await route.fetch();
     // Keep the real overview and remove the progress hooks for its current episodes.
-    const html = (await response.text()).replace(/ data-episode-(?:progress|resume)="[^"]*"/g, "");
+    const html = (await response.text())
+      .replace(/ data-episode-progress="[^"]*"/g, "")
+      .replace(/<meta name="lesson-progress-episodes"[^>]*>/, "");
     await route.fulfill({ response, body: html });
   });
   await page.goto("/episodes/");
