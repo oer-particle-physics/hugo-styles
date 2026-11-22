@@ -32,28 +32,54 @@
   scroll-margin-top: calc(var(--navbar-height) + 1rem);
 }
 
+.lesson-episode-resume:not([hidden]),
+.lesson-episode-resume-nav {
+  color: rgb(29 78 216);
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
 .lesson-episode-resume:not([hidden]) {
   display: inline-block;
   margin-block: 0.75rem;
   border: 1px solid currentColor;
   border-radius: 0.375rem;
   padding: 0.5rem 0.75rem;
-  color: rgb(29 78 216);
-  font-size: 0.875rem;
-  font-weight: 500;
   text-decoration: none;
 }
 
-.lesson-episode-resume:hover {
+.lesson-episode-resume-nav {
+  display: block;
+  padding: 0.375rem 0.5rem;
+  border-radius: 0.25rem;
+}
+
+.lesson-episode-resume:hover,
+.lesson-episode-resume-nav:hover {
   background: rgb(239 246 255);
 }
 
-.dark .lesson-episode-resume {
+.dark .lesson-episode-resume,
+.dark .lesson-episode-resume-nav {
   color: rgb(147 197 253);
 }
 
-.dark .lesson-episode-resume:hover {
+.dark .lesson-episode-resume:hover,
+.dark .lesson-episode-resume-nav:hover {
   background: rgb(30 58 138 / 0.3);
+}
+
+[data-episode-resume-nav="navbar"] {
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+[data-episode-resume-nav="dropdown"] {
+  padding-inline: 0.75rem;
+}
+
+.hextra-sidebar-container:not([aria-hidden="false"]) [data-episode-resume-nav="mobile"] {
+  visibility: hidden;
 }
 
 .lesson-audience-toggle {
