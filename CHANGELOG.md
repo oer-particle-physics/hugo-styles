@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.9.0](https://github.com/oer-particle-physics/hugo-styles/compare/v0.8.0...v0.9.0) (2026-11-22)
+
+
+### Features
+
+* add responsive Continue navigation ([#83](https://github.com/oer-particle-physics/hugo-styles/issues/83)) ([fd12685](https://github.com/oer-particle-physics/hugo-styles/commit/fd126852f55df5b654511881f134bb814b435411))
+
 ## [0.8.0](https://github.com/oer-particle-physics/hugo-styles/compare/v0.7.0...v0.8.0) (2026-11-20)
 
 
